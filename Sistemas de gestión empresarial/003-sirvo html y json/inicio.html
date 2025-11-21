@@ -1,0 +1,20 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Recibiendo datos desde Nodejs</title>
+  </head>
+  <body>
+    <h1></h1>
+    <h2></h2>
+    <script>
+      fetch("/api")
+      .then(function(respuesta){return respuesta.json()})
+      .then(function(datos){
+        console.log(datos);
+        document.querySelector("h1").textContent = datos.nombre
+        document.querySelector("h2").textContent = datos.apellidos
+      })
+    </script>
+  </body>
+</html>
+

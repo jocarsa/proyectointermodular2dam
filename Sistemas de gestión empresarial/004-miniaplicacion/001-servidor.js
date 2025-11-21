@@ -11,10 +11,9 @@ servidor.createServer(function(req,res){
       });
       break;
     case "/api":
-      var datos = {"nombre":"Jose Vicente","apellidos":"Carratalá Sanchis"};
-      res.end(JSON.stringify(datos));
+      var entidades = ['clientes','pedidos','productos','categorias'];
+      res.end(JSON.stringify(entidades));
       break;
   }
 }).listen(5000) // Escucho en el puerto 5000
-
 
