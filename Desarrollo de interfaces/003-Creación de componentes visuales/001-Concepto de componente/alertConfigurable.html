@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Componente E: Alert Box</title>
+<style>
+    .alert {
+        padding: 15px;
+        margin: 10px 0;
+        border-radius: 5px;
+        color: white;
+        font-family: Arial;
+    }
+    .success { background: #28a745; }
+    .error { background: #dc3545; }
+    .warning { background: #ffc107; color: #000; }
+</style>
+</head>
+<body>
+
+<h1>Componente E: Alert Box</h1>
+
+<button onclick="alertSuccess.show()">Mostrar éxito</button>
+<button onclick="alertError.show()">Mostrar error</button>
+<button onclick="alertWarning.show()">Mostrar aviso</button>
+
+<div id="app"></div>
+
+<script>
+class AlertBox {
+    constructor(type, message) {
+        this.type = type;
+        this.message = message;
+
+        this.element = document.createElement("div");
+        this.element.className = `alert ${type}`;
+        this.element.textContent = message;
+        this.element.style.display = "none";
+    }
+
+    show() {
+        this.element.style.display = "block";
+
+        setTimeout(() => {
+            this.element.style.display = "none";
+        }, 2500);
+    }
+
+    render(container) {
+        container.appendChild(this.element);
+    }
+}
+
+const alertSuccess = new AlertBox("success", "Operación completada con éxito.");
+const alertError   = new AlertBox("error",   "Ha ocurrido un error.");
+const alertWarning = new AlertBox("warning", "Aviso importante.");
+
+const app = document.getElementById("app");
+alertSuccess.render(app);
+alertError.render(app);
+alertWarning.render(app);
+</script>
+
+</body>
+</html>
