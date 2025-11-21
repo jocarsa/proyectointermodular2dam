@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Componente C: Modal</title>
+<style>
+    .overlay {
+        position: fixed;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        background: rgba(0,0,0,0.6);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .modal {
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        min-width: 300px;
+    }
+</style>
+</head>
+<body>
+
+<h1>Componente C: Modal</h1>
+
+<button id="openBtn">Abrir Modal</button>
+
+<template id="modalTemplate">
+    <div class="overlay">
+        <div class="modal">
+            <h2>Título del modal</h2>
+            <p>Este es un componente modal reutilizable.</p>
+            <button class="close">Cerrar</button>
+        </div>
+    </div>
+</template>
+
+<script>
+class Modal {
+    constructor() {
+        const tpl = document.getElementById("modalTemplate");
+        this.element = tpl.content.firstElementChild.cloneNode(true);
+
+        this.element.querySelector(".close").onclick = () => this.close();
+    }
+
+    open() {
+        document.body.appendChild(this.element);
+    }
+
+    close() {
+        document.body.removeChild(this.element);
+    }
+}
+
+const modal = new Modal();
+document.getElementById("openBtn").onclick = () => modal.open();
+</script>
+
+</body>
+</html>

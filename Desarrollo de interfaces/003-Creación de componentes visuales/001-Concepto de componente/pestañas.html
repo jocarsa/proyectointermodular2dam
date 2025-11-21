@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Componente D: Tabs</title>
+<style>
+    .tabs {
+        font-family: Arial;
+        margin-bottom: 20px;
+    }
+    .tab-buttons button {
+        padding: 10px;
+        margin-right: 5px;
+        cursor: pointer;
+    }
+    .tab-content {
+        border: 1px solid #333;
+        padding: 15px;
+        border-radius: 5px;
+        margin-top: 10px;
+    }
+</style>
+</head>
+<body>
+
+<h1>Componente D: Tabs</h1>
+<div id="app"></div>
+
+<script>
+class Tabs {
+    constructor(config) {
+        this.tabs = config;
+
+        this.container = document.createElement("div");
+        this.container.className = "tabs";
+
+        this.btnArea = document.createElement("div");
+        this.btnArea.className = "tab-buttons";
+
+        this.contentArea = document.createElement("div");
+        this.contentArea.className = "tab-content";
+
+        this.container.append(this.btnArea, this.contentArea);
+
+        this.createTabs();
+        this.showTab(Object.keys(this.tabs)[0]);
+    }
+
+    createTabs() {
+        for (let name in this.tabs) {
+            const btn = document.createElement("button");
+            btn.textContent = name;
+            btn.onclick = () => this.showTab(name);
+            this.btnArea.appendChild(btn);
+        }
+    }
+
+    showTab(name) {
+        this.contentArea.textContent = this.tabs[name];
+    }
+
+    render(container) {
+        container.appendChild(this.container);
+    }
+}
+
+const tab1 = new Tabs({
+    "Home": "Bienvenido a la pestaña Home",
+    "Perfil": "Aquí está tu perfil",
+    "Opciones": "Opciones disponibles"
+});
+
+tab1.render(document.getElementById("app"));
+</script>
+
+</body>
+</html>

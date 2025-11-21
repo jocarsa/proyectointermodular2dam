@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Componente B: Botón Personalizado</title>
+<style>
+    .myButton {
+        padding: 10px 20px;
+        font-size: 18px;
+        background: #007bff;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    .myButton.disabled {
+        background: gray !important;
+        cursor: not-allowed;
+    }
+</style>
+</head>
+<body>
+
+<h1>Componente B: Botón Personalizado</h1>
+
+<div id="app"></div>
+
+<button id="toggle">Activar/Desactivar Botón</button>
+
+<script>
+class MyButton {
+    constructor(text) {
+        this.enabled = true;
+
+        this.button = document.createElement("button");
+        this.button.className = "myButton";
+        this.button.textContent = text;
+
+        this.button.onclick = () => {
+            if (this.enabled) alert("¡Botón pulsado!");
+        };
+    }
+
+    disable() {
+        this.enabled = false;
+        this.button.classList.add("disabled");
+    }
+
+    enable() {
+        this.enabled = true;
+        this.button.classList.remove("disabled");
+    }
+
+    render(container) {
+        container.appendChild(this.button);
+    }
+}
+
+const btn = new MyButton("Haz clic");
+btn.render(document.getElementById("app"));
+
+document.getElementById("toggle").onclick = () => {
+    if (btn.enabled) btn.disable();
+    else btn.enable();
+};
+</script>
+
+</body>
+</html>
