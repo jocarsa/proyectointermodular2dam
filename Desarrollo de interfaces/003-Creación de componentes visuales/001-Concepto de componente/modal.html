@@ -32,7 +32,7 @@
     <div class="overlay">
         <div class="modal">
             <h2>Título del modal</h2>
-            <p>Este es un componente modal reutilizable.</p>
+            <p class="mensaje"></p>
             <button class="close">Cerrar</button>
         </div>
     </div>
@@ -44,10 +44,14 @@ class Modal {
         const tpl = document.getElementById("modalTemplate");
         this.element = tpl.content.firstElementChild.cloneNode(true);
 
+        this.mensaje = this.element.querySelector(".mensaje");
+
         this.element.querySelector(".close").onclick = () => this.close();
     }
 
     open() {
+        let nombre = prompt("Dime como te llamas");
+        this.mensaje.textContent = "Hola " + nombre + "!";
         document.body.appendChild(this.element);
     }
 
