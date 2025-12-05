@@ -1,0 +1,59 @@
+{
+  "formas": [
+    {
+      "id": "forma-1",
+      "tipo": "rectangle",
+      "left": "424.174px",
+      "top": "349.07px",
+      "width": "",
+      "height": "",
+      "texto": "MySQL"
+    },
+    {
+      "id": "forma-2",
+      "tipo": "rectangle",
+      "left": "423.806px",
+      "top": "307.809px",
+      "width": "",
+      "height": "",
+      "texto": "node.js"
+    },
+    {
+      "id": "forma-3",
+      "tipo": "rectangle",
+      "left": "424.683px",
+      "top": "267.802px",
+      "width": "",
+      "height": "",
+      "texto": "htmlcssjs"
+    },
+    {
+      "id": "forma-4",
+      "tipo": "pill",
+      "left": "543.807px",
+      "top": "306.068px",
+      "width": "",
+      "height": "",
+      "texto": "SSGG"
+    },
+    {
+      "id": "forma-5",
+      "tipo": "pill",
+      "left": "544.683px",
+      "top": "346.938px",
+      "width": "",
+      "height": "",
+      "texto": "Acceso a datos"
+    },
+    {
+      "id": "forma-6",
+      "tipo": "pill",
+      "left": "545.542px",
+      "top": "264.754px",
+      "width": "",
+      "height": "",
+      "texto": "Interfaces"
+    }
+  ],
+  "flechas": []
+}
