@@ -24,6 +24,8 @@
   - [pasamos una tabla](#pasamos-una-tabla)
   - [Conectamos con MySQL](#conectamos-con-mysql)
   - [stack completo](#stack-completo)
+  - [multitabla](#multitabla)
+  - [Ollama](#ollama)
 
 ---
 
@@ -104,3 +106,11 @@
 
 <a id="stack-completo"></a>
 ## stack completo
+
+
+<a id="multitabla"></a>
+## multitabla
+
+
+<a id="ollama"></a>
+## Ollama
