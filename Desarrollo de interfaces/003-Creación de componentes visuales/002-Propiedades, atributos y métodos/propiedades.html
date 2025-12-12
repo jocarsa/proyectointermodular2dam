@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Propiedades públicas y privadas en JS</title>
+</head>
+<body>
+
+<script>
+class Persona {
+
+    // PROPIEDAD PRIVADA REAL (moderna)
+    #dni;
+
+    constructor(nombre, edad, dni) {
+        // PROPIEDAD PÚBLICA
+        this.nombre = nombre;
+
+        // PROPIEDAD PRIVADA POR CONVENCIÓN (NO es realmente privada)
+        this._edad = edad;
+
+        // PRIVADA REAL
+        this.#dni = dni;
+    }
+
+    // ============================
+    // MÉTODOS GETTERS
+    // ============================
+
+    getPublica() {
+        return this.nombre;
+    }
+
+    getConvencion() {
+        return this._edad;
+    }
+
+    getPrivada() {
+        return this.#dni;
+    }
+
+    // Setter real del DNI
+    setDNI(nuevoDni) {
+        this.#dni = nuevoDni;
+    }
+
+}
+
+const p = new Persona("María", 25, "12345678A");
+
+console.log("===== ACCESO DESDE FUERA =====");
+
+// PROPIEDAD PÚBLICA → funciona
+console.log("Accediendo a nombre:", p.getPublica());
+p.nombre = "Ana";
+console.log("Nuevo nombre:", p.getPublica());
+
+// PROPIEDAD POR CONVENCIÓN → funciona, pero NO debería tocarse
+console.log("Accediendo a _edad:", p.getConvencion());
+p._edad = 99;
+console.log("Cambiando _edad:", p.getConvencion());
+
+// PROPIEDAD PRIVADA REAL → no se puede acceder por fuera
+// console.log(p.#dni);  ERROR, pero sí mediante getter
+console.log("Accediendo al DNI:", p.getPrivada());
+
+// Modificamos el DNI con el setter
+p.setDNI("99999999Z");
+console.log("Nuevo DNI:", p.getPrivada());
+
+console.log("===== MOSTRAR CON MÉTODOS GETTERS =====");
+console.log("Nombre:", p.getPublica());
+console.log("Edad:", p.getConvencion());
+console.log("DNI:", p.getPrivada());
+
+</script>
+
+</body>
+</html>

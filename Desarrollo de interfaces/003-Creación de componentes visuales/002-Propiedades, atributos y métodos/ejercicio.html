@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Ejercicio Alertas - Versión Esqueleto</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+
+        .alert {
+            margin-top: 20px;
+            padding: 10px 15px;
+            margin: 10px 0;
+            border-radius: 4px;
+            color: #fff;
+            font-size: 14px;
+        }
+
+        .success {
+            background: #28a745;
+        }
+
+        .error {
+            background: #dc3545;
+        }
+
+        .warning {
+            background: #ffc107;
+            color: #000;
+        }
+
+        button {
+            margin: 5px;
+            padding: 6px 10px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Ejercicio: Refactorización de Alertas</h1>
+
+<button id="btnShowSuccess">Mostrar éxito</button>
+<button id="btnActionSuccess">Acción éxito</button>
+
+<br>
+
+<button id="btnShowError">Mostrar error</button>
+<button id="btnActionError">Acción error</button>
+
+<br>
+
+<button id="btnShowWarning">Mostrar aviso</button>
+<button id="btnActionWarning">Acción aviso</button>
+
+<div id="alerts"></div>
+
+<script>
+/* ==========================================================
+   CLASE PADRE: AlertGeneric
+   - ESTA CLASE YA ESTÁ COMPLETA
+   - Sus atributos son PÚBLICOS
+========================================================== */
+class AlertGeneric {
+
+    // ATRIBUTOS PÚBLICOS
+    // TODO: Convertirlos en privado
+    type;
+    message;
+    element;
+
+    constructor(type, message) {
+        this.type = type;
+        this.message = message;
+
+        this.element = document.createElement("div");
+        this.element.className = `alert ${type}`;
+    }
+
+    render(container) {
+        // Muestra el mensaje genérico
+        this.element.textContent = this.type + ": " + this.message;
+
+        if (!this.element.parentNode) {
+            container.appendChild(this.element);
+        }
+    }
+}
+
+/* ==========================================================
+   CLASE HIJA: AlertSuccess
+   TODO:
+   - Heredar de AlertGeneric
+   - Convertir atributos a privados
+   - Añadir un parámetro extra en el constructor (ej: tiempo)
+   - Implementar el método autoClose()
+========================================================== */
+class AlertSuccess{
+
+    // DECLARAR ATRIBUTOS PRIVADOS AQUÍ
+
+    constructor(/* message, parametroExtra */) {
+        // LLAMAR A super("success", message)
+        // INICIALIZAR ATRIBUTOS
+        // AÑADIR CLASE CSS "alert-success"
+    }
+
+    render(container) {
+        // MOSTRAR EL MENSAJE DE LA ALERTA
+        // LLAMAR A super.render(container)
+    }
+
+    autoClose() {
+        // CERRAR AUTOMÁTICAMENTE LA ALERTA
+        // USAR EL PARÁMETRO EXTRA DEL CONSTRUCTOR
+    }
+}
+
+/* ==========================================================
+   CLASE HIJA: AlertError
+   TODO:
+   - Heredar de AlertGeneric
+   - Añadir un parámetro extra (ej: texto de ayuda)
+   - Implementar el método showHelp()
+========================================================== */
+class AlertError{
+
+    // DECLARAR ATRIBUTOS PRIVADOS AQUÍ
+
+    constructor(/* message, textoAyuda */) {
+        // LLAMAR A super("error", message)
+        // INICIALIZAR ATRIBUTOS
+        // AÑADIR CLASE CSS "alert-error"
+    }
+
+    render(container) {
+        // MOSTRAR EL MENSAJE DE ERROR
+        // LLAMAR A super.render(container)
+    }
+
+    showHelp() {
+        // MOSTRAR EL TEXTO DE AYUDA
+        // PUEDE SER UN alert() O console.log()
+    }
+}
+
+/* ==========================================================
+   CLASE HIJA: AlertWarning
+   TODO:
+   - Heredar de AlertGeneric
+   - Añadir un contador privado
+   - Implementar el método highlight()
+   - Mostrar el contador en la alerta
+========================================================== */
+class AlertWarning{
+
+    // DECLARAR ATRIBUTOS PRIVADOS AQUÍ (contador)
+
+    constructor(/* message */) {
+        // LLAMAR A super("warning", message)
+        // INICIALIZAR CONTADOR
+        // AÑADIR CLASE CSS "alert-warning"
+    }
+
+    render(container) {
+        // MOSTRAR EL MENSAJE Y EL CONTADOR
+        // LLAMAR A super.render(container)
+    }
+
+    highlight() {
+        // INCREMENTAR EL CONTADOR
+        // ACTUALIZAR EL TEXTO DE LA ALERTA
+    }
+}
+
+const container = document.getElementById("alerts");
+
+// ESTAS INSTANCIAS DEBEN FUNCIONAR CUANDO EL EJERCICIO ESTÉ COMPLETO
+const success = new AlertSuccess("Operación completada", 2000);
+const error   = new AlertError("Error al guardar", "Comprueba tu conexión");
+const warning = new AlertWarning("Faltan datos obligatorios");
+
+document.getElementById("btnShowSuccess").onclick = () =>
+    success.render(container);
+
+document.getElementById("btnActionSuccess").onclick = () =>
+    success.autoClose();
+
+document.getElementById("btnShowError").onclick = () =>
+    error.render(container);
+
+document.getElementById("btnActionError").onclick = () =>
+    error.showHelp();
+
+document.getElementById("btnShowWarning").onclick = () =>
+    warning.render(container);
+
+document.getElementById("btnActionWarning").onclick = () =>
+    warning.highlight();
+
+</script>
+
+</body>
+</html>

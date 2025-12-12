@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="es">
+<head><meta charset="UTF-8"><title>Herencia Simple</title></head>
+<body>
+
+<script>
+// Clase padre
+class Vehiculo {
+    constructor(marca) {
+        this.marca = marca;
+    }
+
+    arrancar() {
+        console.log(`${this.marca} está arrancando...`);
+    }
+}
+
+// Clase hija
+class Coche extends Vehiculo {
+    constructor(marca, modelo) {
+        super(marca);  // Llama al constructor del padre
+        this.modelo = modelo;
+    }
+
+    info() {
+        console.log(`Soy un coche ${this.marca} modelo ${this.modelo}`);
+    }
+}
+
+// USO
+const miCoche = new Coche("Toyota", "Corolla");
+miCoche.arrancar(); // heredado
+miCoche.info();     // propio
+</script>
+
+</body>
+</html>
