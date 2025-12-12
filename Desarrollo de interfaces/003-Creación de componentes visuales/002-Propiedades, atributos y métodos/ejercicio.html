@@ -80,7 +80,7 @@ class AlertGeneric {
         this.message = message;
 
         this.element = document.createElement("div");
-        this.element.className = "alert";
+        this.element.className = `alert ${type}`;
     }
 
     render(container) {
