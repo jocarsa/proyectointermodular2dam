@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>microchatgpt (Ollama local)</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div id="app">
+    <header>
+      <h1>microchatgpt</h1>
+      <p>Backend: Ollama local</p>
+    </header>
+
+    <main>
+      <div id="chat-window"></div>
+
+      <form id="chat-form">
+        <textarea
+          id="user-input"
+          rows="3"
+          placeholder="Escribe tu mensaje..."
+        ></textarea>
+        <button type="submit">Enviar</button>
+      </form>
+    </main>
+  </div>
+
+  <script src="main.js"></script>
+</body>
+</html>

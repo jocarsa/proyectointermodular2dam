@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="321.73752494480294" height="204.3124986731487" viewBox="0 0 321.73752494480294 204.3124986731487">
+
+  <defs>
+    <style>
+      text { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; font-size: 12px; fill: #111827; }
+      .shape-rect { fill: #ffffff; stroke: #9ca3af; stroke-width: 1; }
+      .shape-entity { fill: #ffffff; stroke: #111827; stroke-width: 2; }
+      .shape-circle { fill: #ffffff; stroke: #9ca3af; stroke-width: 1; }
+      .shape-pill { fill: #ffffff; stroke: #9ca3af; stroke-width: 1; }
+      .shape-db { fill: #ffffff; stroke: #9ca3af; stroke-width: 1; }
+      .conn { stroke: #111827; stroke-width: 2; fill: none; }
+    </style>
+    <marker id="arrow-end" markerWidth="10" markerHeight="7" refX="10" refY="3.5"
+            orient="auto" markerUnits="strokeWidth">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#111827"/>
+    </marker>
+    <marker id="arrow-start" markerWidth="10" markerHeight="7" refX="0" refY="3.5"
+            orient="auto" markerUnits="strokeWidth">
+      <polygon points="10 0, 0 3.5, 10 7" fill="#111827"/>
+    </marker>
+  </defs>
+        
+<rect class="shape-rect" x="40.36252229110056" y="124.3124986731487" width="119.99999999999994" height="39.99999999999998" rx="4" ry="4" />
+<text x="100.36252229110053" y="148.3124986731487" text-anchor="middle">MySQL</text>
+<rect class="shape-rect" x="40" y="83.0499997346297" width="119.99999999999994" height="39.99999999999998" rx="4" ry="4" />
+<text x="99.99999999999997" y="107.04999973462968" text-anchor="middle">node.js</text>
+<rect class="shape-rect" x="40.87500530740488" y="43.04999973462975" width="119.99999999999994" height="39.99999999999998" rx="4" ry="4" />
+<text x="100.87500530740485" y="67.04999973462974" text-anchor="middle">htmlcssjs</text>
+<rect class="shape-rect" x="160.0000132685122" y="81.31250132685119" width="119.99999999999994" height="39.99999999999998" rx="19.99999999999999" ry="19.99999999999999" />
+<text x="220.00001326851216" y="105.31250132685118" text-anchor="middle">SSGG</text>
+<rect class="shape-rect" x="160.87499203889257" y="122.18750663425607" width="119.99999999999994" height="39.99999999999998" rx="19.99999999999999" ry="19.99999999999999" />
+<text x="220.87499203889254" y="146.18750663425607" text-anchor="middle">Acceso a datos</text>
+<rect class="shape-rect" x="161.73752494480294" y="40" width="119.99999999999994" height="39.99999999999998" rx="19.99999999999999" ry="19.99999999999999" />
+<text x="221.7375249448029" y="63.999999999999986" text-anchor="middle">Interfaces</text>
+</svg>
