@@ -26,6 +26,9 @@
   - [stack completo](#stack-completo)
   - [multitabla](#multitabla)
   - [Ollama](#ollama)
+  - [Enrutamiento paralelo](#enrutamiento-paralelo)
+  - [Enrutamiento secuencial](#enrutamiento-secuencial)
+  - [resumen servidores](#resumen-servidores)
 
 ---
 
@@ -114,3 +117,15 @@
 
 <a id="ollama"></a>
 ## Ollama
+
+
+<a id="enrutamiento-paralelo"></a>
+## Enrutamiento paralelo
+
+
+<a id="enrutamiento-secuencial"></a>
+## Enrutamiento secuencial
+
+
+<a id="resumen-servidores"></a>
+## resumen servidores

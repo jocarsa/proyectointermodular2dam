@@ -1,0 +1,104 @@
+{
+  "formas": [
+    {
+      "id": "forma-1",
+      "tipo": "rectangle",
+      "left": "374.375px",
+      "top": "218.931px",
+      "width": "",
+      "height": "",
+      "texto": "Dominio"
+    },
+    {
+      "id": "forma-2",
+      "tipo": "rectangle",
+      "left": "374.188px",
+      "top": "180.354px",
+      "width": "",
+      "height": "",
+      "texto": "Proveedor"
+    },
+    {
+      "id": "forma-3",
+      "tipo": "rectangle",
+      "left": "220.516px",
+      "top": "287.698px",
+      "width": "",
+      "height": "",
+      "texto": "Al. Compartido"
+    },
+    {
+      "id": "forma-4",
+      "tipo": "text",
+      "left": "264.849px",
+      "top": "333.026px",
+      "width": "",
+      "height": "",
+      "texto": "Barato"
+    },
+    {
+      "id": "forma-5",
+      "tipo": "text",
+      "left": "250.516px",
+      "top": "351.021px",
+      "width": "",
+      "height": "",
+      "texto": "PHP/MySQL"
+    },
+    {
+      "id": "forma-6",
+      "tipo": "rectangle",
+      "left": "376.193px",
+      "top": "286.354px",
+      "width": "",
+      "height": "",
+      "texto": "VPS"
+    },
+    {
+      "id": "forma-7",
+      "tipo": "text",
+      "left": "421.854px",
+      "top": "333.349px",
+      "width": "",
+      "height": "",
+      "texto": "Linux"
+    },
+    {
+      "id": "forma-8",
+      "tipo": "text",
+      "left": "363.516px",
+      "top": "353.021px",
+      "width": "",
+      "height": "",
+      "texto": "Te instalas lo que quieres"
+    },
+    {
+      "id": "forma-9",
+      "tipo": "rectangle",
+      "left": "529.859px",
+      "top": "284.693px",
+      "width": "",
+      "height": "",
+      "texto": "Dedicado"
+    },
+    {
+      "id": "forma-10",
+      "tipo": "text",
+      "left": "580.839px",
+      "top": "328.698px",
+      "width": "",
+      "height": "",
+      "texto": "Linux"
+    },
+    {
+      "id": "forma-11",
+      "tipo": "text",
+      "left": "530.526px",
+      "top": "348.365px",
+      "width": "",
+      "height": "",
+      "texto": "Te instalas lo que quieres"
+    }
+  ],
+  "flechas": []
+}
