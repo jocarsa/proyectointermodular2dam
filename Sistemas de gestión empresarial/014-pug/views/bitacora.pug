@@ -1,0 +1,19 @@
+doctype html
+html(lang="es")
+  head
+    meta(charset="utf-8")
+    meta(name="viewport", content="width=device-width, initial-scale=1.0")
+    title Bitácora
+    style.
+      body { font-family: system-ui, sans-serif; margin: 40px; }
+      article { margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid #ddd; }
+      h2 { margin: 0 0 8px 0; }
+      p { margin: 0; color: #444; }
+
+  body
+    h1 Bitácora
+
+    each articulo in mensaje
+      article
+        h2= articulo.titulo
+        p= articulo.contenido
