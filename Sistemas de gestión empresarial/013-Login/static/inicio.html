@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <title>Aplicación empresarial</title>
+    <style>
+      body,html{width:100%;height:100%;padding:0px;margin:0px;}
+      body{background:teal;display:flex;align-items:center;justify-content:center;}
+      form{width:200px;height:200px;background:white;padding:40px;
+      display:flex;flex-direction:column;gap:20px;justify-content:center;
+      }
+      form input{padding:10px;border:1px solid teal;}
+    </style>
+  </head>
+  <body>
+    <form action="/comprobar" method="POST">
+      <input type="text" name="usuario" placeholder="usuario">
+      <input type="password" name="contrasena" placeholder="contraseña">
+      <input type="submit">
+    </form>
+  </body>
+</html>
