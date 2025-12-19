@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Eventos de teclado</title>
+    <style>
+        input {
+            padding: 6px;
+            font-size: 16px;
+            width: 300px;
+        }
+
+        #info {
+            margin-top: 15px;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Ejemplo de eventos de teclado</h1>
+
+<p>Escribe en el campo de texto y observa los eventos.</p>
+
+<input type="text" id="textInput" placeholder="Escribe algo...">
+
+<div id="info">
+    Última tecla: ninguna
+</div>
+
+<script>
+/* ==================================================
+   ELEMENTOS
+================================================== */
+const input = document.getElementById("textInput");
+const info = document.getElementById("info");
+
+/* ==================================================
+   keydown
+   Se dispara cuando se pulsa una tecla
+================================================== */
+input.addEventListener("keydown", function (event) {
+    info.textContent = "keydown → tecla pulsada: " + event.key;
+});
+
+/* ==================================================
+   keyup
+   Se dispara cuando se suelta una tecla
+================================================== */
+input.addEventListener("keyup", function (event) {
+    info.textContent = "keyup → tecla soltada: " + event.key;
+});
+
+/* ==================================================
+   Detectar una tecla concreta (Enter)
+================================================== */
+input.addEventListener("keydown", function (event) {
+    if (event.key === "Enter") {
+        alert("Has pulsado la tecla Enter");
+    }
+});
+</script>
+
+</body>
+</html>

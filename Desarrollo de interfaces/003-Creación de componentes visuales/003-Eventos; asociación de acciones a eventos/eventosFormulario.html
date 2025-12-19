@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Eventos de formulario</title>
+    <style>
+        form {
+            width: 300px;
+        }
+
+        input, select, button {
+            display: block;
+            margin-bottom: 10px;
+            padding: 6px;
+            width: 100%;
+        }
+
+        .focused {
+            border: 2px solid blue;
+        }
+
+        #info {
+            margin-top: 15px;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Ejemplo de eventos de formulario</h1>
+
+<form id="myForm">
+    <input type="text" id="name" placeholder="Nombre">
+    <input type="email" id="email" placeholder="Email">
+
+    <select id="role">
+        <option value="">Selecciona un rol</option>
+        <option value="alumno">Alumno</option>
+        <option value="profesor">Profesor</option>
+    </select>
+
+    <button type="submit">Enviar formulario</button>
+</form>
+
+<div id="info">Estado: esperando interacción</div>
+
+<script>
+/* ==================================================
+   ELEMENTOS
+================================================== */
+const form = document.getElementById("myForm");
+const nameInput = document.getElementById("name");
+const emailInput = document.getElementById("email");
+const roleSelect = document.getElementById("role");
+const info = document.getElementById("info");
+
+/* ==================================================
+   submit
+   Se dispara al enviar el formulario
+================================================== */
+form.addEventListener("submit", function (event) {
+    event.preventDefault(); // Evita recargar la página
+
+    info.textContent =
+        "Formulario enviado → " +
+        "Nombre: " + nameInput.value +
+        ", Email: " + emailInput.value +
+        ", Rol: " + roleSelect.value;
+});
+
+/* ==================================================
+   input
+   Se dispara con cada cambio de valor
+================================================== */
+nameInput.addEventListener("input", function () {
+    info.textContent = "Escribiendo nombre: " + nameInput.value;
+});
+
+/* ==================================================
+   change
+   Se dispara cuando el cambio se confirma
+================================================== */
+roleSelect.addEventListener("change", function () {
+    info.textContent = "Rol seleccionado: " + roleSelect.value;
+});
+
+/* ==================================================
+   focus
+   El campo recibe el foco
+================================================== */
+emailInput.addEventListener("focus", function () {
+    emailInput.classList.add("focused");
+    info.textContent = "El campo email tiene el foco";
+});
+
+/* ==================================================
+   blur
+   El campo pierde el foco
+================================================== */
+emailInput.addEventListener("blur", function () {
+    emailInput.classList.remove("focused");
+    info.textContent = "El campo email ha perdido el foco";
+});
+</script>
+
+</body>
+</html>
