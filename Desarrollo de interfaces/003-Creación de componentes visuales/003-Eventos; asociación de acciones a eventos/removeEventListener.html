@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>removeEventListener</title>
+</head>
+<body>
+
+<h1>Ejemplo: removeEventListener</h1>
+
+<button id="btnAdd">Añadir evento</button>
+<button id="btnRemove">Eliminar evento</button>
+
+<br><br>
+
+<button id="btnAction">Botón con evento</button>
+
+<script>
+/* ==================================================
+   EJEMPLO 2: removeEventListener
+================================================== */
+
+// Función con nombre (OBLIGATORIA para poder eliminar el evento)
+function manejarClick() {
+    alert("Evento activo");
+}
+
+const btnAction = document.getElementById("btnAction");
+
+// Añadir evento
+document.getElementById("btnAdd").addEventListener("click", function () {
+    btnAction.addEventListener("click", manejarClick);
+    alert("Evento añadido");
+});
+
+// Eliminar evento
+document.getElementById("btnRemove").addEventListener("click", function () {
+    btnAction.removeEventListener("click", manejarClick);
+    alert("Evento eliminado");
+});
+</script>
+
+</body>
+</html>

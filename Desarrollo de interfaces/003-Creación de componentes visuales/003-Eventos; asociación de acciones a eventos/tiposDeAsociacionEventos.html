@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Ejemplo de event handlers click</title>
+</head>
+<body>
+
+<h1>Ejemplo de uso del evento click</h1>
+
+<!-- ============================= -->
+<!-- FORMA 1: ATRIBUTO HTML -->
+<!-- (NO recomendada) -->
+<!-- ============================= -->
+<button onclick="clickHTML()">Click con HTML</button>
+
+<br><br>
+
+<!-- ============================= -->
+<!-- FORMA 2: PROPIEDAD JAVASCRIPT -->
+<!-- ============================= -->
+<button id="btnJS">Click con propiedad JS</button>
+
+<br><br>
+
+<!-- ============================= -->
+<!-- FORMA 3: addEventListener -->
+<!-- (RECOMENDADA) -->
+<!-- ============================= -->
+<button id="btnListener">Click con addEventListener</button>
+
+<script>
+/* ==================================================
+   FUNCIÓN COMÚN PARA MOSTRAR MENSAJES
+================================================== */
+function mostrarMensaje(texto) {
+    alert(texto);
+}
+
+/* ==================================================
+   FORMA 1: ATRIBUTO HTML
+   El evento se define directamente en el HTML
+================================================== */
+function clickHTML() {
+    mostrarMensaje("Has hecho click usando atributo HTML");
+}
+
+/* ==================================================
+   FORMA 2: PROPIEDAD JAVASCRIPT
+   Se asigna el handler desde JS
+================================================== */
+const botonJS = document.getElementById("btnJS");
+
+botonJS.onclick = function () {
+    mostrarMensaje("Has hecho click usando propiedad JavaScript");
+};
+
+/* ==================================================
+   FORMA 3: addEventListener
+   Permite múltiples eventos y mejor control
+================================================== */
+const botonListener = document.getElementById("btnListener");
+
+botonListener.addEventListener("click", function () {
+    mostrarMensaje("Has hecho click usando addEventListener");
+});
+</script>
+
+</body>
+</html>

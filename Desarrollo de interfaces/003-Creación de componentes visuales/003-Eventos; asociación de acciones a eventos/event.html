@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Uso del objeto event</title>
+</head>
+<body>
+
+<h1>Ejemplo: Objeto event</h1>
+
+<a href="https://www.google.com" id="link">Ir a Google</a>
+
+<br><br>
+
+<button id="btn">Haz click</button>
+
+<script>
+/* ==================================================
+   EJEMPLO 1: OBJETO EVENT
+================================================== */
+
+// Evento click en un botón
+document.getElementById("btn").addEventListener("click", function (event) {
+
+    console.log("Tipo de evento:", event.type);
+    console.log("Elemento que lanzó el evento:", event.target);
+    console.log("Posición del click:", event.clientX, event.clientY);
+});
+
+// Evento click en un enlace
+document.getElementById("link").addEventListener("click", function (event) {
+
+    // Evita que el enlace navegue
+    // Útil también en paso de información de cliente a servidor para evitar que el cliente se recargue al recibir esta información
+    event.preventDefault();
+
+    alert("Se ha cancelado la navegación usando event.preventDefault()");
+});
+</script>
+
+</body>
+</html>
