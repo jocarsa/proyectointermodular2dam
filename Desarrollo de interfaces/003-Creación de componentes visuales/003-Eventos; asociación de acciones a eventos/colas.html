@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Cola con Clase y Bucle</title>
+</head>
+<body>
+
+  <h2>Cola (Queue) usando clase y bucle</h2>
+
+  <input id="entrada" placeholder="Elemento" />
+  <button onclick="encolar()">Encolar</button>
+  <button onclick="desencolar()">Desencolar</button>
+
+  <p><strong>Cola:</strong> <span id="cola"></span></p>
+  <p><strong>Salida:</strong> <span id="salida"></span></p>
+
+  <script>
+    // ===== Clase Cola =====
+    class Cola {
+      constructor() {
+        this.items = [];
+      }
+
+      enqueue(elemento) {
+        this.items.push(elemento);
+      }
+
+      dequeue() {
+        if (this.isEmpty()) {
+          return "La cola está vacía";
+        }
+        return this.items.shift();
+      }
+
+      front() {
+        return this.isEmpty() ? "La cola está vacía" : this.items[0];
+      }
+
+      size() {
+        return this.items.length;
+      }
+
+      isEmpty() {
+        return this.items.length === 0;
+      }
+    }
+
+    // ===== Uso =====
+    const cola = new Cola();
+
+    function encolar() {
+      const valor = document.getElementById("entrada").value;
+      if (valor === "") return;
+
+      cola.enqueue(valor);
+      document.getElementById("entrada").value = "";
+      mostrarCola();
+    }
+
+    function desencolar() {
+      const resultado = cola.dequeue();
+      document.getElementById("salida").textContent = resultado;
+      mostrarCola();
+    }
+
+    function mostrarCola() {
+      const contenedor = document.getElementById("cola");
+      contenedor.textContent = ""; // limpiar
+
+      if (cola.isEmpty()) {
+        contenedor.textContent = "(vacía)";
+        return;
+      }
+
+      // Mostrar con bucle
+      for (let i = 0; i < cola.items.length; i++) {
+        contenedor.textContent += cola.items[i];
+        if (i < cola.items.length - 1) {
+          contenedor.textContent += " → ";
+        }
+      }
+    }
+  </script>
+
+</body>
+</html>
