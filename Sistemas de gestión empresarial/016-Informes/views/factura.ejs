@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>Factura</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/factura.css">
+</head>
+
+<body>
+<main>
+<div class="card">
+
+<header>
+  <div>
+    <h1>Factura</h1>
+    <div class="muted">Documento de facturación</div>
+  </div>
+  <div class="meta">
+    <div class="badge"><%= f.datos_de_la_factura.fecha %></div><br>
+    <div>
+      <span class="pill">Albarán</span>
+      <strong class="mono"><%= f.datos_de_la_factura.albaran %></strong>
+    </div>
+    <div class="muted">
+      IVA: <strong><%= f.datos_de_la_factura.iva %>%</strong> ·
+      IRPF: <strong><%= f.datos_de_la_factura.irpf %>%</strong>
+    </div>
+  </div>
+</header>
+
+<div class="grid">
+
+<section>
+<h3>Emisor</h3>
+<div class="kv">
+  <div class="k">Razón social</div><div class="v"><%= f.emisor.razon_social %></div>
+  <div class="k">Nombre</div><div class="v"><%= f.emisor.nombre %> <%= f.emisor.apellidos %></div>
+  <div class="k">ID fiscal</div><div class="v mono"><%= f.emisor.idfiscal %></div>
+</div>
+</section>
+
+<section>
+<h3>Receptor</h3>
+<div class="kv">
+  <div class="k">Razón social</div><div class="v"><%= f.receptor.razon_social %></div>
+  <div class="k">Nombre</div><div class="v"><%= f.receptor.nombre %> <%= f.receptor.apellidos %></div>
+  <div class="k">ID fiscal</div><div class="v mono"><%= f.receptor.idfiscal %></div>
+</div>
+</section>
+
+<section>
+<h3>Datos de la factura</h3>
+<div class="kv">
+  <div class="k">Fecha</div><div class="v mono"><%= f.datos_de_la_factura.fecha %></div>
+  <div class="k">Albarán</div><div class="v mono"><%= f.datos_de_la_factura.albaran %></div>
+  <div class="k">IVA</div><div class="v mono"><%= f.datos_de_la_factura.iva %>%</div>
+  <div class="k">IRPF</div><div class="v mono"><%= f.datos_de_la_factura.irpf %>%</div>
+</div>
+</section>
+
+<section>
+<h3>Resumen</h3>
+<div class="note">
+Factura generada automáticamente desde MongoDB.
+</div>
+</section>
+
+</div>
+
+<section id="lineas">
+  <article>
+    <h4>Producto</h4>
+    <p class="right">Unidades</p>
+    <p class="right">Precio</p>
+    <p class="right">Subtotal</p>
+  </article>
+
+  <% f.lineas.forEach(l => { %>
+  <article>
+    <h4><%= l.nombre %> <span class="muted">· <%= l.color %></span></h4>
+    <p class="right mono"><%= l.unidades %></p>
+    <p class="right mono"><%= euros(l.precio) %></p>
+    <p class="right mono"><%= euros(l.precio * l.unidades) %></p>
+  </article>
+  <% }) %>
+</section>
+
+<section id="totales">
+<div class="note">
+<strong>Notas</strong><br>
+IVA se suma · IRPF se retiene
+</div>
+
+<div class="totals">
+  <div class="row">
+    <span class="muted">Base imponible</span>
+    <span class="mono"><strong><%= euros(base) %></strong></span>
+  </div>
+  <div class="row">
+    <span class="muted">IVA</span>
+    <span class="mono"><%= euros(iva) %></span>
+  </div>
+  <div class="row">
+    <span class="muted">IRPF</span>
+    <span class="mono">-<%= euros(irpf) %></span>
+  </div>
+  <div class="row total">
+    <span><strong>Total a pagar</strong></span>
+    <span class="mono"><strong><%= euros(total) %></strong></span>
+  </div>
+</div>
+</section>
+
+</div>
+</main>
+</body>
+</html>
