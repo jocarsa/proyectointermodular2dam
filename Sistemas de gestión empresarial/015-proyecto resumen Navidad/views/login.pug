@@ -1,0 +1,22 @@
+extends layout
+
+block content
+  .page
+    .card.login
+      h1 ERP educativo
+      p.muted Acceso al panel de gestión
+
+      if error
+        .alert #{error}
+
+      form(method="post", action="/login")
+        label(for="usuario") Usuario
+        input#usuario(type="text", name="usuario", autocomplete="username", required)
+
+        label(for="contrasena") Contraseña
+        input#contrasena(type="password", name="contrasena", autocomplete="current-password", required)
+
+        button.btn(type="submit") Entrar
+
+      p.help
+        | Consejo: crea un usuario de prueba con el script SQL.

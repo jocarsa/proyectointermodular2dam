@@ -34,3 +34,16 @@ wget https://downloads.mongodb.com/compass/mongodb-compass_1.43.4_amd64.deb
 sudo apt install ./mongodb-compass_1.43.4_amd64.deb
 
 mongodb-compass
+
+
+comandos simplificados: /////////////////////////////////////////
+
+sudo apt install mongodb-server
+sudo apt install mongodb-compass
+
+////////////////////////////////////////////////////////////////
+
+
+
+
+

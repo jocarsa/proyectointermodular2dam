@@ -1,0 +1,46 @@
+{
+  "receptor": {
+    "razon_social": "Tecnologias Alba S.L.",
+    "nombre": "Maria",
+    "apellidos": "Alba Ruiz",
+    "idfiscal": "B23456789"
+  },
+  "emisor": {
+    "razon_social": "JOCARSA",
+    "nombre": "Jose Vicente",
+    "apellidos": "Carratala Sanchis",
+    "idfiscal": "12345678A"
+  },
+  "datos_de_la_factura": {
+    "fecha": "2026-01-09",
+    "albaran": "ALB-1008",
+    "iva": 21,
+    "irpf": 15
+  },
+  "lineas": [
+    {
+      "nombre": "Tostadora Max",
+      "color": "blanco",
+      "precio": 515,
+      "unidades": 1
+    },
+    {
+      "nombre": "Hervidor Eco",
+      "color": "verde",
+      "precio": 251,
+      "unidades": 1
+    },
+    {
+      "nombre": "Tetera Pro",
+      "color": "negro",
+      "precio": 188,
+      "unidades": 1
+    },
+    {
+      "nombre": "Cafetera Plus",
+      "color": "plateado",
+      "precio": 595,
+      "unidades": 3
+    }
+  ]
+}

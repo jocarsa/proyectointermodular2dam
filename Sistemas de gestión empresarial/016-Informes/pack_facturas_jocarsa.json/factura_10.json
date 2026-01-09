@@ -1,0 +1,40 @@
+{
+  "receptor": {
+    "razon_social": "Servicios Norte S.A.",
+    "nombre": "Carlos",
+    "apellidos": "Fernandez Gil",
+    "idfiscal": "A87654321"
+  },
+  "emisor": {
+    "razon_social": "JOCARSA",
+    "nombre": "Jose Vicente",
+    "apellidos": "Carratala Sanchis",
+    "idfiscal": "12345678A"
+  },
+  "datos_de_la_factura": {
+    "fecha": "2026-01-11",
+    "albaran": "ALB-1010",
+    "iva": 21,
+    "irpf": 15
+  },
+  "lineas": [
+    {
+      "nombre": "Batidora Ultra",
+      "color": "rojo",
+      "precio": 269,
+      "unidades": 5
+    },
+    {
+      "nombre": "Tetera Pro",
+      "color": "negro",
+      "precio": 156,
+      "unidades": 2
+    },
+    {
+      "nombre": "Tostadora Max",
+      "color": "blanco",
+      "precio": 124,
+      "unidades": 3
+    }
+  ]
+}

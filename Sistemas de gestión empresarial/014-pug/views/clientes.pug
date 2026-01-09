@@ -1,0 +1,43 @@
+doctype html
+html(lang="es")
+  head
+    meta(charset="utf-8")
+    meta(name="viewport", content="width=device-width, initial-scale=1")
+    title Clientes
+    style.
+      body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial; margin:24px; background:#f6f7fb;}
+      h1{margin:0 0 16px;}
+      .grid{display:grid; grid-template-columns:repeat(auto-fill, minmax(320px, 1fr)); gap:12px;}
+      .card{background:#fff; border:1px solid #e7e9f2; border-radius:14px; padding:14px; box-shadow:0 10px 30px rgba(15,23,42,.06);}
+      .name{font-weight:700; font-size:16px; margin-bottom:8px;}
+      .muted{color:#64748b; font-size:13px;}
+      ul{margin:6px 0 0 18px;}
+      .tag{display:inline-block; padding:2px 8px; border-radius:999px; background:#eef2ff; border:1px solid #e0e7ff; font-size:12px; margin-right:6px;}
+  body
+    h1 Clientes
+
+    if !clientes || clientes.length === 0
+      p.muted No hay clientes en la colección "clientes".
+    else
+      .grid
+        each c in clientes
+          .card
+            .name #{c.nombre} #{c.apellidos}
+            .muted ID: #{c._id}
+
+            if c.emails
+              if c.emails.personal && c.emails.personal.length
+                div
+                  span.tag Personal
+                ul
+                  each e in c.emails.personal
+                    li #{e}
+
+              if c.emails.trabajo && c.emails.trabajo.length
+                div(style="margin-top:10px;")
+                  span.tag Trabajo
+                ul
+                  each e in c.emails.trabajo
+                    li #{e}
+            else
+              p.muted Sin emails

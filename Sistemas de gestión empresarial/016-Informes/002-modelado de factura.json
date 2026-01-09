@@ -1,0 +1,25 @@
+{
+	"receptor":{
+  	"razon_social":"Juan Lopez S.L.",
+    "nombre":"Juan",
+    "apellidos":"Lopez Martinez",
+    "idfiscal":"A12345678"
+  },
+  "emisor":{
+  	"razon_social":"JOCARSA",
+    "nombre":"Jose Vicente",
+    "apellidos":"Carratala Sanchis",
+    "idfiscal":"12345678A"
+  },
+  "datos_de_la_factura":{
+		"fecha":"2026-01-09",
+  	"albaran":"X",
+    "iva":21,
+    "irpf":15
+	},
+  "lineas":[
+    {"nombre":"Tetera v2","color":"rojo","precio":253,"unidades":3},
+    {"nombre":"Tetera v3","color":"blanco","precio":345,"unidades":2},
+    {"nombre":"Tetera v4","color":"azul","precio":234,"unidades":1}
+  ]
+}

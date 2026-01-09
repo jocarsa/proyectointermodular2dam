@@ -1,0 +1,28 @@
+{
+  "receptor": {
+    "razon_social": "Tecnologias Alba S.L.",
+    "nombre": "Maria",
+    "apellidos": "Alba Ruiz",
+    "idfiscal": "B23456789"
+  },
+  "emisor": {
+    "razon_social": "JOCARSA",
+    "nombre": "Jose Vicente",
+    "apellidos": "Carratala Sanchis",
+    "idfiscal": "12345678A"
+  },
+  "datos_de_la_factura": {
+    "fecha": "2026-01-03",
+    "albaran": "ALB-1002",
+    "iva": 21,
+    "irpf": 15
+  },
+  "lineas": [
+    {
+      "nombre": "Tostadora Max",
+      "color": "blanco",
+      "precio": 372,
+      "unidades": 3
+    }
+  ]
+}

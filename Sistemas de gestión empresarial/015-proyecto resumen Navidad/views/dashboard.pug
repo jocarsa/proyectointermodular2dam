@@ -1,0 +1,71 @@
+extends layout
+
+block content
+  .appShell(data-db=dbName)
+    header.topbar
+      .brand
+        .logo ERP
+        .title
+          strong ERP educativo
+          span.muted BD: #{dbName}
+      .user
+        span Hola, #{user.fullname || user.user}
+        a.link(href="/logout") Salir
+
+    .main
+      aside.sidebar
+        h2 Tablas
+        input#tableSearch(type="search", placeholder="Buscar...", autocomplete="off")
+        ul#tableList
+          each t in tables
+            li
+              button.tableBtn(type="button", data-table=t) #{t}
+        .foot
+          p.muted
+            | Selecciona una tabla para ver y gestionar sus datos.
+
+      section.content
+        .panel
+          .panelHeader
+            .panelTitle
+              h2#currentTable (selecciona una tabla)
+              p.muted#tableHint Metadatos y filas se cargan automáticamente.
+            .panelActions
+              button.btn#btnInsert(type="button", disabled) Insertar
+              button.btn.ghost#btnRefresh(type="button", disabled) Actualizar
+
+          .panelBody
+            #messages
+            .tableWrap
+              table#dataTable
+                thead
+                  tr
+                    th Cargando...
+                tbody
+                  tr
+                    td
+
+    // Modal (Insert/Update)
+    .modal.hidden#editModal
+      .modalBackdrop(data-close="1")
+      .modalCard
+        .modalHeader
+          h3#modalTitle Formulario
+          button.iconBtn(type="button", data-close="1") ✕
+        form#editForm
+          .formGrid#formFields
+          .modalFooter
+            button.btn.ghost(type="button", data-close="1") Cancelar
+            button.btn(type="submit") Guardar
+
+    // Modal confirmar borrado
+    .modal.hidden#deleteModal
+      .modalBackdrop(data-close="1")
+      .modalCard.small
+        .modalHeader
+          h3 Borrar fila
+          button.iconBtn(type="button", data-close="1") ✕
+        p ¿Seguro que quieres borrar esta fila? Esta acción no se puede deshacer.
+        .modalFooter
+          button.btn.ghost(type="button", data-close="1") Cancelar
+          button.btn.danger#confirmDelete(type="button") Borrar

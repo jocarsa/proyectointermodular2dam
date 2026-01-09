@@ -1,0 +1,46 @@
+{
+  "receptor": {
+    "razon_social": "Comercial Vega S.L.",
+    "nombre": "Ana",
+    "apellidos": "Lopez Torres",
+    "idfiscal": "B55667788"
+  },
+  "emisor": {
+    "razon_social": "JOCARSA",
+    "nombre": "Jose Vicente",
+    "apellidos": "Carratala Sanchis",
+    "idfiscal": "12345678A"
+  },
+  "datos_de_la_factura": {
+    "fecha": "2026-01-04",
+    "albaran": "ALB-1003",
+    "iva": 21,
+    "irpf": 15
+  },
+  "lineas": [
+    {
+      "nombre": "Cafetera Plus",
+      "color": "plateado",
+      "precio": 120,
+      "unidades": 1
+    },
+    {
+      "nombre": "Cafetera Plus",
+      "color": "plateado",
+      "precio": 288,
+      "unidades": 1
+    },
+    {
+      "nombre": "Batidora Ultra",
+      "color": "rojo",
+      "precio": 424,
+      "unidades": 2
+    },
+    {
+      "nombre": "Cafetera Plus",
+      "color": "plateado",
+      "precio": 377,
+      "unidades": 5
+    }
+  ]
+}
