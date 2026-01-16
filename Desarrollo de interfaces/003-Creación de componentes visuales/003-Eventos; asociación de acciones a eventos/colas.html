@@ -6,7 +6,7 @@
 </head>
 <body>
 
-  <h2>Cola (Queue) usando clase y bucle</h2>
+  <h2>Cola (Queue) usando clase, bucle y atributo privado</h2>
 
   <input id="entrada" placeholder="Elemento" />
   <button onclick="encolar()">Encolar</button>
@@ -16,72 +16,73 @@
   <p><strong>Salida:</strong> <span id="salida"></span></p>
 
   <script>
-    // ===== Clase Cola =====
-    class Cola {
-      constructor() {
-        this.items = [];
-      }
+  // ===== Clase Cola =====
+  class Cola {
+    #items; // atributo privado
 
-      enqueue(elemento) {
-        this.items.push(elemento);
-      }
-
-      dequeue() {
-        if (this.isEmpty()) {
-          return "La cola está vacía";
-        }
-        return this.items.shift();
-      }
-
-      front() {
-        return this.isEmpty() ? "La cola está vacía" : this.items[0];
-      }
-
-      size() {
-        return this.items.length;
-      }
-
-      isEmpty() {
-        return this.items.length === 0;
-      }
+    constructor() {
+      this.#items = [];
     }
 
-    // ===== Uso =====
-    const cola = new Cola();
-
-    function encolar() {
-      const valor = document.getElementById("entrada").value;
-      if (valor === "") return;
-
-      cola.enqueue(valor);
-      document.getElementById("entrada").value = "";
-      mostrarCola();
+    enqueue(elemento) {
+      this.#items.push(elemento);
     }
 
-    function desencolar() {
-      const resultado = cola.dequeue();
-      document.getElementById("salida").textContent = resultado;
-      mostrarCola();
+    dequeue() {
+      if (this.isEmpty()) {
+        return "La cola está vacía";
+      }
+      return this.#items.shift();
     }
 
-    function mostrarCola() {
-      const contenedor = document.getElementById("cola");
-      contenedor.textContent = ""; // limpiar
+    isEmpty() {
+      return this.#items.length === 0;
+    }
 
-      if (cola.isEmpty()) {
-        contenedor.textContent = "(vacía)";
-        return;
+    size() {
+      return this.#items.length;
+    }
+
+    mostrar() {
+      if (this.isEmpty()) {
+        return "(vacía)";
       }
 
-      // Mostrar con bucle
-      for (let i = 0; i < cola.items.length; i++) {
-        contenedor.textContent += cola.items[i];
-        if (i < cola.items.length - 1) {
-          contenedor.textContent += " → ";
+      let resultado = "";
+      for (let i = 0; i < this.#items.length; i++) {
+        resultado += this.#items[i];
+        if (i < this.#items.length - 1) {
+          resultado += " → ";
         }
       }
+      return resultado;
     }
-  </script>
+  }
+
+  // ===== Uso =====
+  const cola = new Cola();
+
+  function encolar() {
+    const valor = document.getElementById("entrada").value;
+    if (valor === "") return;
+
+    cola.enqueue(valor);
+    document.getElementById("entrada").value = "";
+    mostrarCola();
+  }
+
+  function desencolar() {
+    const resultado = cola.dequeue();
+    document.getElementById("salida").textContent = resultado;
+    mostrarCola();
+  }
+
+  function mostrarCola() {
+    document.getElementById("cola").textContent =
+      cola.mostrar() + " (tamaño: " + cola.size() + ")";
+  }
+</script>
+
 
 </body>
 </html>
