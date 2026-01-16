@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ejemplo de localStorage</title>
+</head>
+<body>
+  <h1>Ejemplo de manejo de localStorage</h1>
+
+  <button id="guardar">Guardar dato</button>
+  <button id="leer">Leer dato</button>
+  <button id="borrar">Borrar dato</button>
+
+  <p id="resultado"></p>
+
+  <script>
+    // Guardar un valor
+    document.getElementById("guardar").addEventListener("click", () => {
+      localStorage.setItem("usuario", "Juan Pérez");
+      document.getElementById("resultado").textContent = "Dato guardado en localStorage.";
+    });
+
+    // Leer un valor
+    document.getElementById("leer").addEventListener("click", () => {
+      const usuario = localStorage.getItem("usuario");
+      document.getElementById("resultado").textContent =
+        usuario ? `Dato encontrado: ${usuario}` : "No hay dato guardado.";
+    });
+
+    // Borrar un valor
+    document.getElementById("borrar").addEventListener("click", () => {
+      localStorage.removeItem("usuario");
+      document.getElementById("resultado").textContent = "Dato eliminado.";
+    });
+  </script>
+</body>
+</html>

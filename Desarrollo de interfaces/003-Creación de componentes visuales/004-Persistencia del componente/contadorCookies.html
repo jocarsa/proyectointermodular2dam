@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Contador con Cookies</title>
+<style>
+    .counter {
+        display: inline-block;
+        padding: 20px;
+        border: 2px solid #333;
+        border-radius: 10px;
+        width: 180px;
+        text-align: center;
+        font-family: Arial, sans-serif;
+    }
+    button {
+        margin: 5px;
+    }
+</style>
+</head>
+<body>
+
+<h1>Contador persistente con Cookies</h1>
+
+<div id="app"></div>
+
+<script>
+/* ==================================================
+   FUNCIONES DE COOKIES (SIN MODIFICAR)
+================================================== */
+function setCookie(nombre, valor, dias) {
+    const fecha = new Date();
+    fecha.setTime(fecha.getTime() + (dias * 24 * 60 * 60 * 1000));
+    const expiracion = "expires=" + fecha.toUTCString();
+    document.cookie = nombre + "=" + encodeURIComponent(valor) + ";" + expiracion + ";path=/";
+}
+
+function getCookie(nombre) {
+    const nombreEQ = nombre + "=";
+    const cookies = document.cookie.split(';');
+    for (let i = 0; i < cookies.length; i++) {
+        let c = cookies[i].trim();
+        if (c.indexOf(nombreEQ) === 0) {
+            return decodeURIComponent(c.substring(nombreEQ.length));
+        }
+    }
+    return null;
+}
+
+function deleteCookie(nombre) {
+    document.cookie = nombre + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+}
+
+/* ==================================================
+   CONTADOR COMO COMPONENTE CON COOKIES
+================================================== */
+class Counter {
+    constructor(cookieName = "counterValue", days = 7) {
+        this.cookieName = cookieName;
+        this.days = days;
+
+        // Cargar estado desde cookie
+        const saved = getCookie(this.cookieName);
+        this.value = saved !== null ? Number(saved) : 0;
+
+        // Construcción del DOM del componente
+        this.element = document.createElement("div");
+        this.element.className = "counter";
+
+        this.display = document.createElement("p");
+        this.display.textContent = this.value;
+
+        this.btnInc = document.createElement("button");
+        this.btnInc.textContent = "Incrementar";
+        this.btnInc.addEventListener("click", () => this.increment());
+
+        this.btnReset = document.createElement("button");
+        this.btnReset.textContent = "Resetear";
+        this.btnReset.addEventListener("click", () => this.reset());
+
+        // Botón extra opcional para borrar la persistencia
+        this.btnClear = document.createElement("button");
+        this.btnClear.textContent = "Borrar guardado";
+        this.btnClear.addEventListener("click", () => this.clearStored());
+
+        this.element.append(this.display, this.btnInc, this.btnReset, this.btnClear);
+    }
+
+    save() {
+        setCookie(this.cookieName, String(this.value), this.days);
+    }
+
+    increment() {
+        this.value++;
+        this.display.textContent = this.value;
+        this.save();
+    }
+
+    reset() {
+        this.value = 0;
+        this.display.textContent = this.value;
+    }
+
+    clearStored() {
+        deleteCookie(this.cookieName);
+        this.value = 0;
+        this.display.textContent = this.value;
+    }
+
+    render(container) {
+        container.appendChild(this.element);
+    }
+}
+
+const counter = new Counter("contador_cookie", 7);
+counter.render(document.getElementById("app"));
+</script>
+
+</body>
+</html>

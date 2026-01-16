@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Contador con localStorage</title>
+<style>
+    .counter {
+        display: inline-block;
+        padding: 20px;
+        border: 2px solid #333;
+        border-radius: 10px;
+        width: 180px;
+        text-align: center;
+        font-family: Arial, sans-serif;
+    }
+    button {
+        margin: 5px;
+    }
+</style>
+</head>
+<body>
+
+<h1>Contador persistente con localStorage</h1>
+
+<div id="app"></div>
+
+<script>
+class Counter {
+    constructor(storageKey = "counterValue") {
+        this.storageKey = storageKey;
+
+        // Cargar estado desde localStorage
+        const saved = localStorage.getItem(this.storageKey);
+        this.value = saved !== null ? Number(saved) : 0;
+
+        // Construcción del DOM del componente
+        this.element = document.createElement("div");
+        this.element.className = "counter";
+
+        this.display = document.createElement("p");
+        this.display.textContent = this.value;
+
+        this.btnInc = document.createElement("button");
+        this.btnInc.textContent = "Incrementar";
+        this.btnInc.addEventListener("click", () => this.increment());
+
+        this.btnReset = document.createElement("button");
+        this.btnReset.textContent = "Resetear";
+        this.btnReset.addEventListener("click", () => this.reset());
+
+        this.btnClear = document.createElement("button");
+        this.btnClear.textContent = "Borrar guardado";
+        this.btnClear.addEventListener("click", () => this.clearStored());
+
+        this.element.append(this.display, this.btnInc, this.btnReset, this.btnClear);
+    }
+
+    save() {
+        localStorage.setItem(this.storageKey, String(this.value));
+    }
+
+    increment() {
+        this.value++;
+        this.display.textContent = this.value;
+        this.save();
+    }
+
+    reset() {
+        this.value = 0;
+        this.display.textContent = this.value;
+    }
+
+    clearStored() {
+        localStorage.removeItem(this.storageKey);
+        this.value = 0;
+        this.display.textContent = this.value;
+    }
+
+    render(container) {
+        container.appendChild(this.element);
+    }
+}
+
+const counter = new Counter("contador_localstorage");
+counter.render(document.getElementById("app"));
+</script>
+
+</body>
+</html>

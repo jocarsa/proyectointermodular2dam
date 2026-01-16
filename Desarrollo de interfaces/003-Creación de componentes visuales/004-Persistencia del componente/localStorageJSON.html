@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ejemplo de localStorage con JSON</title>
+</head>
+<body>
+
+  <h1>Ejemplo de manejo de localStorage</h1>
+
+  <button id="guardar">Guardar dato</button>
+  <button id="leer">Leer dato</button>
+  <button id="borrar">Borrar dato</button>
+
+  <p id="resultado"></p>
+
+  <script>
+    /* ==================================================
+       Guardar un objeto usando JSON
+    ================================================== */
+    document.getElementById("guardar").addEventListener("click", () => {
+
+      // Objeto que queremos guardar
+      const usuario = {
+        nombre: "Juan Pérez",
+        edad: 25
+      };
+
+      // Convertimos el objeto a texto JSON
+      localStorage.setItem("usuario", JSON.stringify(usuario));
+
+      document.getElementById("resultado").textContent =
+        "Objeto guardado en localStorage.";
+    });
+
+    /* ==================================================
+       Leer el objeto desde localStorage
+       (con comprobación de null)
+    ================================================== */
+    document.getElementById("leer").addEventListener("click", () => {
+
+      const usuarioJSON = localStorage.getItem("usuario");
+
+      // Comprobamos si existe el dato
+      if (usuarioJSON !== null) {
+
+        // Convertimos el texto JSON a objeto
+        const usuario = JSON.parse(usuarioJSON);
+
+        document.getElementById("resultado").textContent =
+          "Dato encontrado: " +
+          usuario.nombre +
+          " (" + usuario.edad + " años)";
+
+      } else {
+        document.getElementById("resultado").textContent =
+          "No hay ningún dato guardado en localStorage.";
+      }
+    });
+
+    /* ==================================================
+       Borrar el dato guardado
+    ================================================== */
+    document.getElementById("borrar").addEventListener("click", () => {
+      localStorage.removeItem("usuario");
+      document.getElementById("resultado").textContent =
+        "Dato eliminado de localStorage.";
+    });
+  </script>
+
+</body>
+</html>
