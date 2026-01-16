@@ -1,0 +1,46 @@
+{
+  "receptor": {
+    "razon_social": "Servicios Norte S.A.",
+    "nombre": "Carlos",
+    "apellidos": "Fernandez Gil",
+    "idfiscal": "A87654321"
+  },
+  "emisor": {
+    "razon_social": "JOCARSA",
+    "nombre": "Jose Vicente",
+    "apellidos": "Carratala Sanchis",
+    "idfiscal": "12345678A"
+  },
+  "datos_de_la_factura": {
+    "fecha": "2026-01-07",
+    "albaran": "ALB-1006",
+    "iva": 21,
+    "irpf": 15
+  },
+  "lineas": [
+    {
+      "nombre": "Hervidor Eco",
+      "color": "verde",
+      "precio": 564,
+      "unidades": 1
+    },
+    {
+      "nombre": "Cafetera Plus",
+      "color": "plateado",
+      "precio": 465,
+      "unidades": 3
+    },
+    {
+      "nombre": "Tetera Pro",
+      "color": "negro",
+      "precio": 177,
+      "unidades": 5
+    },
+    {
+      "nombre": "Batidora Ultra",
+      "color": "rojo",
+      "precio": 489,
+      "unidades": 1
+    }
+  ]
+}

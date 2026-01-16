@@ -30,6 +30,9 @@
   - [Enrutamiento secuencial](#enrutamiento-secuencial)
   - [resumen servidores](#resumen-servidores)
   - [Login](#login)
+  - [pug](#pug)
+  - [proyecto resumen Navidad](#proyecto-resumen-navidad)
+  - [Informes](#informes)
 
 ---
 
@@ -174,3 +177,21 @@
 ## Login
 
 [📁 Ver carpeta en GitHub](https://github.com/jocarsa/proyectointermodular2dam/tree/main/Sistemas%20de%20gesti%C3%B3n%20empresarial/013-Login)
+
+
+<a id="pug"></a>
+## pug
+
+[📁 Ver carpeta en GitHub](https://github.com/jocarsa/proyectointermodular2dam/tree/main/Sistemas%20de%20gesti%C3%B3n%20empresarial/014-pug)
+
+
+<a id="proyecto-resumen-navidad"></a>
+## proyecto resumen Navidad
+
+[📁 Ver carpeta en GitHub](https://github.com/jocarsa/proyectointermodular2dam/tree/main/Sistemas%20de%20gesti%C3%B3n%20empresarial/015-proyecto%20resumen%20Navidad)
+
+
+<a id="informes"></a>
+## Informes
+
+[📁 Ver carpeta en GitHub](https://github.com/jocarsa/proyectointermodular2dam/tree/main/Sistemas%20de%20gesti%C3%B3n%20empresarial/016-Informes)

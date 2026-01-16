@@ -1,0 +1,40 @@
+{
+  "receptor": {
+    "razon_social": "Distribuciones Levante S.L.",
+    "nombre": "Laura",
+    "apellidos": "Perez Soler",
+    "idfiscal": "B99887766"
+  },
+  "emisor": {
+    "razon_social": "JOCARSA",
+    "nombre": "Jose Vicente",
+    "apellidos": "Carratala Sanchis",
+    "idfiscal": "12345678A"
+  },
+  "datos_de_la_factura": {
+    "fecha": "2026-01-08",
+    "albaran": "ALB-1007",
+    "iva": 21,
+    "irpf": 15
+  },
+  "lineas": [
+    {
+      "nombre": "Cafetera Plus",
+      "color": "plateado",
+      "precio": 434,
+      "unidades": 3
+    },
+    {
+      "nombre": "Hervidor Eco",
+      "color": "verde",
+      "precio": 591,
+      "unidades": 2
+    },
+    {
+      "nombre": "Cafetera Plus",
+      "color": "plateado",
+      "precio": 544,
+      "unidades": 1
+    }
+  ]
+}

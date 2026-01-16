@@ -1,0 +1,28 @@
+{
+  "receptor": {
+    "razon_social": "Consultoria Delta S.L.",
+    "nombre": "Sergio",
+    "apellidos": "Martin Cano",
+    "idfiscal": "B11223344"
+  },
+  "emisor": {
+    "razon_social": "JOCARSA",
+    "nombre": "Jose Vicente",
+    "apellidos": "Carratala Sanchis",
+    "idfiscal": "12345678A"
+  },
+  "datos_de_la_factura": {
+    "fecha": "2026-01-02",
+    "albaran": "ALB-1001",
+    "iva": 21,
+    "irpf": 15
+  },
+  "lineas": [
+    {
+      "nombre": "Hervidor Eco",
+      "color": "verde",
+      "precio": 537,
+      "unidades": 1
+    }
+  ]
+}

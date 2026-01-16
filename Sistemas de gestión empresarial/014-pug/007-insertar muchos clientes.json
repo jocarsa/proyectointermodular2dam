@@ -1,0 +1,50 @@
+[
+  {
+    "nombre": "Jose Vicente",
+    "apellidos": "Carratalá Sanchis",
+    "emails": {
+      "personal": ["jocarsa2@gmail.com"],
+      "trabajo": ["info@jocarsa.com", "info@josevicentecarratala.com"]
+    }
+  },
+  {
+    "nombre": "Ana",
+    "apellidos": "García López",
+    "emails": {
+      "personal": ["ana.garcia@gmail.com"],
+      "trabajo": ["ana@empresa.com"]
+    }
+  },
+  {
+    "nombre": "Luis",
+    "apellidos": "Martínez Pérez",
+    "emails": {
+      "personal": ["luis.mp@gmail.com"],
+      "trabajo": ["luis.martinez@empresa.com", "ventas@empresa.com"]
+    }
+  },
+  {
+    "nombre": "Marta",
+    "apellidos": "Sánchez Ruiz",
+    "emails": {
+      "personal": ["marta.sanchez@gmail.com"],
+      "trabajo": []
+    }
+  },
+  {
+    "nombre": "Carlos",
+    "apellidos": "Navarro Gil",
+    "emails": {
+      "personal": [],
+      "trabajo": ["carlos.navarro@empresa.com"]
+    }
+  },
+  {
+    "nombre": "Lucía",
+    "apellidos": "Fernández Mora",
+    "emails": {
+      "personal": ["lucia.fm@gmail.com"],
+      "trabajo": ["lucia@consultoria.com"]
+    }
+  }
+]
