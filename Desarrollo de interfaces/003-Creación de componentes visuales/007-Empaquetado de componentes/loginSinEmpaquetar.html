@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Login Sin Empaquetar</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .login {
+            background: white;
+            padding: 25px;
+            border: 3px solid #333;
+            border-radius: 12px;
+            width: 300px;
+            box-sizing: border-box;
+        }
+
+        .login h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        input,
+        button {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 12px;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+
+        input {
+            border: 2px solid #777;
+            border-radius: 5px;
+        }
+
+        button {
+            border: 3px solid #333;
+            background: #f2f2f2;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        button:hover {
+            background: #e0e0e0;
+        }
+
+        .message {
+            margin-top: 10px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .error {
+            color: red;
+        }
+
+        .success {
+            color: green;
+        }
+
+    </style>
+</head>
+<body>
+
+<div id="app"></div>
+
+<script>
+/* ==========================================================
+   Aseguramos que existen credenciales en localStorage o damos valores por defecto
+========================================================== */
+function ensureCredentialsInLocalStorage(storageKey) {
+    const existing = localStorage.getItem(storageKey);
+    if (existing === null) {
+        const defaultCreds = { user: "admin", pass: "1234" };
+        localStorage.setItem(storageKey, JSON.stringify(defaultCreds));
+    }
+}
+
+/* ==========================================================
+   CLASE Login
+   - El usuario y contraseña (inputs) se pasan por parámetros
+   - Las credenciales correctas se leen desde localStorage
+========================================================== */
+class Login {
+    constructor(storageKey = "loginCredentials") {
+        this.storageKey = storageKey;
+
+        // Cargar credenciales correctas desde localStorage (JSON)
+        const credsJSON = localStorage.getItem(this.storageKey);
+        this.correctCreds = credsJSON !== null ? JSON.parse(credsJSON) : null;
+
+        // Construcción del DOM del componente
+        this.element = document.createElement("div");
+        this.element.className = "login";
+
+        this.title = document.createElement("h2");
+        this.title.textContent = "Login";
+
+        this.inputUser = document.createElement("input");
+        this.inputUser.type = "text";
+        this.inputUser.placeholder = "Usuario";
+
+        this.inputPass = document.createElement("input");
+        this.inputPass.type = "password";
+        this.inputPass.placeholder = "Contraseña";
+
+        this.button = document.createElement("button");
+        this.button.textContent = "Entrar";
+        this.button.addEventListener("click", () => this.checkLogin());
+
+        this.message = document.createElement("div");
+        this.message.className = "message";
+
+        this.element.append(
+            this.title,
+            this.inputUser,
+            this.inputPass,
+            this.button,
+            this.message
+        );
+    }
+
+    checkLogin() {
+        const usuario = this.inputUser.value;
+        const password = this.inputPass.value;
+
+        if (usuario === this.correctCreds.user && password === this.correctCreds.pass) {
+            this.showSuccess("Bienvenido, " + usuario);
+        } else {
+            this.showError("Usuario o contraseña incorrectos");
+        }
+    }
+
+    showSuccess(text) {
+        this.message.textContent = text;
+        this.message.className = "message success";
+    }
+
+    showError(text) {
+        this.message.textContent = text;
+        this.message.className = "message error";
+    }
+
+    render(container) {
+        container.appendChild(this.element);
+    }
+}
+
+/* ==========================================================
+   - Guardamos credenciales por defecto si no existen
+   - Creamos el componente con valores iniciales pasados por parámetro
+========================================================== */
+const STORAGE_KEY = "loginCredentials";
+ensureCredentialsInLocalStorage(STORAGE_KEY);
+
+// Valores iniciales de los inputs (pasados por parámetros)
+const login = new Login(STORAGE_KEY);
+login.render(document.getElementById("app"));
+</script>
+
+</body>
+</html>

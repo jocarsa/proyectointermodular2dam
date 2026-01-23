@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Login Empaquetado</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+    </style>
+
+    <!-- CSS del componente -->
+    <link rel="stylesheet" href="componentes/login.css">
+</head>
+<body>
+
+<div id="app"></div>
+
+<!-- JS del componente -->
+<script src="componentes/storage.js"></script>
+<script src="componentes/login.js"></script>
+
+<script>
+    const STORAGE_KEY = "loginCredentials";
+
+    // Inicializar credenciales por defecto si no existen
+    LoginStorage.ensureCredentialsInLocalStorage(STORAGE_KEY);
+
+    // Crear y renderizar componente
+    const login = new Login(STORAGE_KEY);
+    login.render(document.getElementById("app"));
+</script>
+
+</body>
+</html>
