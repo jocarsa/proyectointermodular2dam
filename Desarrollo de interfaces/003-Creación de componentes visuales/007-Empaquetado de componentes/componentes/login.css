@@ -1,0 +1,52 @@
+.login {
+    background: white;
+    padding: 25px;
+    border: 3px solid #333;
+    border-radius: 12px;
+    width: 300px;
+    box-sizing: border-box;
+}
+
+.login h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.login input,
+.login button {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 12px;
+    box-sizing: border-box;
+    font-size: 16px;
+}
+
+.login input {
+    border: 2px solid #777;
+    border-radius: 5px;
+}
+
+.login button {
+    border: 3px solid #333;
+    background: #f2f2f2;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.login button:hover {
+    background: #e0e0e0;
+}
+
+.login .message {
+    margin-top: 10px;
+    text-align: center;
+    font-weight: bold;
+}
+
+.login .error {
+    color: red;
+}
+
+.login .success {
+    color: green;
+}
