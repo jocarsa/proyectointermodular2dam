@@ -1,6 +1,6 @@
 # proyectointermodular2dam — Estado de ejercicios
 
-Generado: 2026-01-09 18:00
+Generado: 2026-01-23 18:00
 
 ---
 
@@ -39,3 +39,5 @@ _Sin subunidades_
 - 🔴 pug
 - 🔴 proyecto resumen Navidad
 - 🔴 Informes
+- 🔴 Serverside y clientside
+- 🔴 chat

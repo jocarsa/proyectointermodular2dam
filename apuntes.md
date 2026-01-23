@@ -33,6 +33,8 @@
   - [pug](#pug)
   - [proyecto resumen Navidad](#proyecto-resumen-navidad)
   - [Informes](#informes)
+  - [Serverside y clientside](#serverside-y-clientside)
+  - [chat](#chat)
 
 ---
 
@@ -195,3 +197,15 @@
 ## Informes
 
 [📁 Ver carpeta en GitHub](https://github.com/jocarsa/proyectointermodular2dam/tree/main/Sistemas%20de%20gesti%C3%B3n%20empresarial/016-Informes)
+
+
+<a id="serverside-y-clientside"></a>
+## Serverside y clientside
+
+[📁 Ver carpeta en GitHub](https://github.com/jocarsa/proyectointermodular2dam/tree/main/Sistemas%20de%20gesti%C3%B3n%20empresarial/017-Serverside%20y%20clientside)
+
+
+<a id="chat"></a>
+## chat
+
+[📁 Ver carpeta en GitHub](https://github.com/jocarsa/proyectointermodular2dam/tree/main/Sistemas%20de%20gesti%C3%B3n%20empresarial/018-chat)
