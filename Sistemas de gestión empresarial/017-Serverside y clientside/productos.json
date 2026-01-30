@@ -1,0 +1,42 @@
+[
+  {
+    "nombre": "Zapatillas",
+    "precio": 60
+  },
+  {
+    "nombre": "Camiseta deportiva",
+    "precio": 25
+  },
+  {
+    "nombre": "Pantalón corto",
+    "precio": 30
+  },
+  {
+    "nombre": "Sudadera",
+    "precio": 45
+  },
+  {
+    "nombre": "Chándal completo",
+    "precio": 70
+  },
+  {
+    "nombre": "Mallas deportivas",
+    "precio": 35
+  },
+  {
+    "nombre": "Chaqueta deportiva",
+    "precio": 55
+  },
+  {
+    "nombre": "Calcetines técnicos",
+    "precio": 8
+  },
+  {
+    "nombre": "Gorra deportiva",
+    "precio": 15
+  },
+  {
+    "nombre": "Mochila deportiva",
+    "precio": 40
+  }
+]

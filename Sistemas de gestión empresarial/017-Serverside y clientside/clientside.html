@@ -1,0 +1,129 @@
+<!doctype html>
+<html>
+  <head>
+    <style>	
+      /* style.css — simple, clean shop UI */
+:root{
+  --bg:#f6f7fb;
+  --card:#ffffff;
+  --text:#111827;
+  --muted:#6b7280;
+  --border:#e5e7eb;
+  --shadow: 0 8px 24px rgba(17,24,39,.08);
+  --radius: 14px;
+  --max: 1100px;
+}
+
+*{ box-sizing:border-box; }
+html,body{ height:100%; }
+body{
+  margin:0;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, "Noto Sans", Arial, sans-serif;
+  color:var(--text);
+  background:var(--bg);
+  line-height:1.45;
+}
+
+header, main, footer{
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: 20px;
+}
+
+header{
+  padding-top: 28px;
+  padding-bottom: 12px;
+}
+header h1{
+  margin:0;
+  font-size: clamp(1.4rem, 2.6vw, 2rem);
+  letter-spacing:-0.02em;
+}
+
+main{
+  display:grid;
+  grid-template-columns: repeat( auto-fit, minmax(220px, 1fr) );
+  gap: 16px;
+  padding-top: 8px;
+  padding-bottom: 28px;
+}
+
+article{
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+  box-shadow: var(--shadow);
+  transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease;
+}
+
+article:hover{
+  transform: translateY(-2px);
+  border-color: #d1d5db;
+  box-shadow: 0 14px 32px rgba(17,24,39,.12);
+}
+
+article h3{
+  margin: 0 0 8px 0;
+  font-size: 1.05rem;
+}
+
+article p{
+  margin: 0;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+article p::before{
+  content: "€ ";
+  font-weight: 600;
+  color: var(--muted);
+}
+
+footer{
+  color: var(--muted);
+  font-size: .95rem;
+  padding-top: 10px;
+  padding-bottom: 28px;
+  border-top: 1px solid var(--border);
+}
+
+/* Small screens */
+@media (max-width: 520px){
+  header, main, footer{ padding-left: 14px; padding-right: 14px; }
+  article{ padding: 14px; }
+}
+
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Tienda de ropa</h1>
+    </header>
+    <main>
+      
+    </main>
+    <footer>
+      (c)2026 Jose Vicente Carratala
+    </footer>
+  </body>
+  <script>
+    fetch("productos.json")
+    .then(function(respuesta){return respuesta.json()})
+    .then(function(datos){
+    	let contenedor = document.querySelector("main")
+      datos.forEach(function(dato){
+      	contenedor.innerHTML += `
+        	<article>
+          	<h3>`+dato.nombre+`</h3>
+            <p>`+dato.precio+`</p>
+          </article>
+        `
+      })
+    })
+  </script>
+</html>
+
+
+
+
