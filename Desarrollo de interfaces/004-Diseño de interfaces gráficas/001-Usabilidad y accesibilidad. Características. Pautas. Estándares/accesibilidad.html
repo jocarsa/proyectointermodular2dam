@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Ejemplo usababilidad</title>
+  <style>
+    body { font-family: system-ui, Arial, sans-serif; padding: 20px; max-width: 700px; margin: 0 auto; }
+    .combo { width: 320px; }
+
+    button {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: 1px solid #bbb;
+      background: #fff;
+      text-align: left;
+      cursor: pointer;
+    }
+    button:focus { outline: 3px solid rgba(0,0,0,0.12); }
+
+    .listbox {
+      margin-top: 6px;
+      border: 1px solid #bbb;
+      border-radius: 8px;
+      padding: 6px;
+      max-height: 180px;
+      overflow: auto;
+      background: #fff;
+    }
+
+    .hidden { display: none; }
+
+    .option {
+      padding: 8px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .option.selected { font-weight: 700; }
+    .option.active { outline: 2px solid rgba(0,0,0,0.25); }
+
+    .hint { color: #555; font-size: 0.95rem; margin-top: 10px; }
+    .status {
+      margin-top: 12px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      background: #f4f4f4;
+      border: 1px solid #ddd;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>Ejemplo usabilidad (lista desplegabe)</h1>
+  <p class="hint">
+    Teclado: <b>Enter/Espacio</b> abre/selecciona, <b>↑ ↓</b> mueve,
+    <b>Inicio/Fin</b>, <b>Esc</b> cierra.
+  </p>
+
+  <div class="combo">
+    <button id="comboBtn" type="button">Elige una opción…</button>
+
+    <div id="comboList" class="listbox hidden" tabindex="-1">
+      <div class="option" data-value="Perfil">Perfil</div>
+      <div class="option" data-value="Configuración">Configuración</div>
+      <div class="option" data-value="Ayuda">Ayuda</div>
+      <div class="option" data-value="Cerrar sesión">Cerrar sesión</div>
+    </div>
+  </div>
+
+  <div id="status" class="status">Aún no has seleccionado nada.</div>
+
+  <script>
+    const btn = document.getElementById("comboBtn");
+    const list = document.getElementById("comboList");
+    const options = Array.from(list.querySelectorAll(".option"));
+    const status = document.getElementById("status");
+
+    let open = false;
+    let activeIndex = 0;
+    let selectedIndex = -1;
+
+    function setOpen(nextOpen) {
+      open = nextOpen;
+      list.classList.toggle("hidden", !open);
+
+      if (open) {
+        // foco a la lista para poder capturar flechas/esc/enter
+        list.focus();
+        activeIndex = selectedIndex >= 0 ? selectedIndex : 0;
+        updateActive();
+      } else {
+        // foco vuelve al botón
+        btn.focus();
+        clearActive();
+      }
+    }
+
+    function clearActive() {
+      options.forEach(o => o.classList.remove("active"));
+    }
+
+    function updateActive() {
+      clearActive();
+      options[activeIndex].classList.add("active");
+    }
+
+    function selectIndex(i) {
+      selectedIndex = i;
+
+      options.forEach((opt, idx) => {
+        opt.classList.toggle("selected", idx === selectedIndex);
+      });
+
+      const value = options[selectedIndex].dataset.value;
+      btn.textContent = value;
+      status.textContent = `Has seleccionado: ${value}.`;
+
+      setOpen(false);
+    }
+
+    // Click en botón abre/cierra
+    btn.addEventListener("click", () => setOpen(!open));
+
+    // Teclado en el botón
+    btn.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " " || e.key === "ArrowDown") {
+        e.preventDefault();
+        setOpen(true);
+      }
+    });
+
+    // Click en opciones
+    options.forEach((opt, idx) => {
+      opt.addEventListener("click", () => selectIndex(idx));
+    });
+
+    // Teclado en la lista
+    list.addEventListener("keydown", (e) => {
+      if (!open) return;
+
+      switch (e.key) {
+        case "Escape":
+          e.preventDefault();
+          setOpen(false);
+          break;
+
+        case "ArrowDown":
+          e.preventDefault();
+          activeIndex = Math.min(activeIndex + 1, options.length - 1);
+          updateActive();
+          break;
+
+        case "ArrowUp":
+          e.preventDefault();
+          activeIndex = Math.max(activeIndex - 1, 0);
+          updateActive();
+          break;
+
+        case "Home": // Inicio
+          e.preventDefault();
+          activeIndex = 0;
+          updateActive();
+          break;
+
+        case "End": // Fin
+          e.preventDefault();
+          activeIndex = options.length - 1;
+          updateActive();
+          break;
+
+        case "Enter":
+        case " ":
+          e.preventDefault();
+          selectIndex(activeIndex);
+          break;
+      }
+    });
+
+    // Click fuera para cerrar
+    document.addEventListener("click", (e) => {
+      if (!open) return;
+      const clickInside = e.target === btn || list.contains(e.target);
+      if (!clickInside) setOpen(false);
+    });
+  </script>
+</body>
+</html>
