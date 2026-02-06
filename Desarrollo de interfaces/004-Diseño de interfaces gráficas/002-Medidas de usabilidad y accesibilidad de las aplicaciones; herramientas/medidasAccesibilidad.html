@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Medidas de accesibilidad</title>
+
+  <style>
+    body {
+      font-family: system-ui, Arial, sans-serif;
+      padding: 20px;
+      max-width: 720px;
+      margin: 0 auto;
+    }
+
+    .card {
+      border: 1px solid #ddd;
+      border-radius: 12px;
+      padding: 16px;
+      margin-top: 12px;
+    }
+
+    .row { display: grid; gap: 12px; }
+
+    button, a, input {
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #bbb;
+      font-size: 1rem;
+    }
+
+    button:focus, a:focus, input:focus {
+      outline: 3px solid rgba(0,0,0,0.15);
+    }
+
+    .fake-button {
+      padding: 10px;
+      background: #eee;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .bad {
+      background: #ffeaea;
+      border: 1px solid #e5a5a5;
+    }
+
+    .status {
+      margin-top: 12px;
+      padding: 10px;
+      border-radius: 10px;
+      border: 1px solid transparent;
+    }
+
+    .ok { background: #eefaf0; border-color: #b9e7c3; }
+    .warn { background: #fff8e6; border-color: #f2dd9a; }
+
+    ul { margin-left: 20px; }
+  </style>
+</head>
+
+<body>
+<h1>Ejemplo: medidas de accesibilidad</h1>
+<p>
+  Prueba a usar esta página <strong>solo con teclado</strong>.  
+  El sistema detecta problemas comunes de accesibilidad.
+</p>
+
+<div class="card row" id="app">
+  <button id="mainBtn">Acción principal</button>
+
+  <a href="#" id="link">Enlace normal</a>
+
+  <input id="name" type="text" placeholder="Escribe tu nombre">
+
+  <!-- Elemento INACCESIBLE a propósito -->
+  <div id="fakeBtn" class="fake-button bad">
+    Botón no accesible (div)
+  </div>
+
+  <button id="sendBtn">Enviar</button>
+</div>
+
+<div class="card">
+  <strong>Resultados de accesibilidad</strong>
+  <ul id="report"></ul>
+</div>
+
+<div id="status" class="status warn">
+  Aún no se ha evaluado la accesibilidad.
+</div>
+
+<script>
+  const report = document.getElementById("report");
+  const status = document.getElementById("status");
+  const app = document.getElementById("app");
+
+  let usedMouse = false;
+  let usedKeyboard = false;
+
+  const focusOrder = [];
+
+  // --- Detectar uso de ratón o teclado ---
+  document.addEventListener("mousedown", () => usedMouse = true);
+  document.addEventListener("keydown", (e) => {
+    usedKeyboard = true;
+    if (e.key === "Tab") {
+      const el = document.activeElement;
+      if (el && !focusOrder.includes(el)) {
+        focusOrder.push(el);
+      }
+    }
+  });
+
+  // --- Gestión del foco tras acciones importantes ---
+  document.getElementById("mainBtn").addEventListener("click", () => {
+    document.getElementById("name").focus();
+    log("Foco movido al campo de texto tras acción principal");
+  });
+
+  document.getElementById("sendBtn").addEventListener("click", () => {
+    status.textContent = "Formulario enviado (simulado)";
+    status.className = "status ok";
+    log("Acción final ejecutada");
+  });
+
+  // Listener del botón falso
+  const fakeBtn = document.getElementById("fakeBtn");
+  fakeBtn.onclick = () => alert("Soy un botón falso");
+
+
+  // --- Detección de elementos inaccesibles ---
+  function detectInaccessibleElements() {
+    const items = app.querySelectorAll("*");
+    const problems = [];
+
+    items.forEach(el => {
+      const isInteractive =
+        el.tagName === "BUTTON" ||
+        el.tagName === "A" ||
+        el.tagName === "INPUT";
+
+      if (!isInteractive && el.onclick && el.tabIndex < 0) {
+        problems.push(el);
+      }
+    });
+
+    return problems;
+  }
+
+  function log(msg) {
+    const li = document.createElement("li");
+    li.textContent = msg;
+    report.append(li);
+  }
+
+  // --- Evaluación al salir de la página ---
+  window.addEventListener("blur", () => {
+    report.innerHTML = "";
+
+    log(usedKeyboard
+      ? "✔ Navegación por teclado detectada"
+      : "⚠ No se ha usado teclado");
+
+    log(!usedMouse
+      ? "✔ Simulación sin ratón correcta"
+      : "⚠ Se ha usado ratón");
+
+    log(`Orden de foco detectado: ${focusOrder.length} elementos`);
+
+    const bad = detectInaccessibleElements();
+    if (bad.length > 0) {
+      log(`⚠ Elementos inaccesibles detectados: ${bad.length}`);
+      bad.forEach(el =>
+        log(`— Elemento <${el.tagName.toLowerCase()}> sin acceso por teclado`)
+      );
+    } else {
+      log("✔ No se detectan elementos inaccesibles");
+    }
+  });
+</script>
+</body>
+</html>
