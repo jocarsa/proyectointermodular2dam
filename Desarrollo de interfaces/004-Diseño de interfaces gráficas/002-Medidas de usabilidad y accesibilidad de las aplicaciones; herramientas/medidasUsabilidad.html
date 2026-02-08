@@ -1,0 +1,326 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Medidas de usabilidad</title>
+  <style>
+    body { font-family: system-ui, Arial, sans-serif; padding: 20px; max-width: 760px; margin: 0 auto; }
+    .card { border: 1px solid #ddd; border-radius: 12px; padding: 16px; margin-top: 12px; }
+    .row { display: grid; gap: 10px; }
+    label { font-weight: 600; }
+    input { padding: 10px; border: 1px solid #bbb; border-radius: 8px; font-size: 1rem; }
+    input:focus { outline: 3px solid rgba(0,0,0,0.10); }
+
+    .hint { font-size: 0.9rem; color: #555; margin-top: -6px; }
+    .invalid { border-color: #c62828; background: #fff5f5; }
+    .hint.error { color: #c62828; font-weight: 700; }
+
+    .actions { display: flex; gap: 10px; align-items: center; margin-top: 10px; }
+    button { padding: 10px 14px; border: 0; border-radius: 8px; cursor: pointer; }
+    button.primary { background: #111; color: #fff; }
+    button.secondary { background: #eee; }
+    button:disabled { opacity: .55; cursor: not-allowed; }
+
+    .status { margin-top: 12px; padding: 10px 12px; border-radius: 10px; border: 1px solid transparent; }
+    .status.ok { background: #eefaf0; border-color: #b9e7c3; }
+    .status.err { background: #fff0f0; border-color: #f0b5b5; }
+    .status.warn { background: #fff8e6; border-color: #f2dd9a; }
+
+    .metrics { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 10px; }
+    .metric { border: 1px solid #eee; border-radius: 10px; padding: 10px; }
+    .metric .n { font-size: 1.3rem; font-weight: 800; }
+    .metric .t { color: #555; font-size: 0.9rem; }
+
+    ul { margin: 8px 0 0 18px; }
+    .small { color: #555; font-size: 0.92rem; margin-top: 6px; }
+    .pill { display:inline-block; padding: 2px 8px; border-radius: 999px; background:#f4f4f4; font-size: .85rem; }
+  </style>
+</head>
+<body>
+
+<h1>Ejemplo: medidas de usabilidad en un formulario</h1>
+<p class="small">
+  Este formulario “mide” cómo interactúa el usuario: errores, pasos, intentos repetidos y feedback.
+</p>
+
+<div class="card">
+  <div class="metrics">
+    <div class="metric">
+      <div class="n" id="mSteps">0</div>
+      <div class="t">Pasos (acciones)</div>
+    </div>
+    <div class="metric">
+      <div class="n" id="mErrors">0</div>
+      <div class="t">Errores totales</div>
+    </div>
+    <div class="metric">
+      <div class="n" id="mRepeats">0</div>
+      <div class="t">Acciones repetidas</div>
+    </div>
+    <div class="metric">
+      <div class="n" id="mTime">0s</div>
+      <div class="t">Tiempo hasta completar</div>
+    </div>
+  </div>
+</div>
+
+<form id="form" class="card" novalidate>
+  <div class="row">
+    <div>
+      <label for="name">Nombre</label>
+      <input id="name" type="text" placeholder="Ej. Ana" autocomplete="given-name">
+      <div id="nameHint" class="hint">Mínimo 2 caracteres.</div>
+    </div>
+
+    <div>
+      <label for="email">Email</label>
+      <input id="email" type="email" placeholder="ana@email.com" autocomplete="email">
+      <div id="emailHint" class="hint">Debe tener formato válido.</div>
+    </div>
+
+    <div>
+      <label for="code">Código (4 dígitos)</label>
+      <input id="code" type="text" inputmode="numeric" placeholder="Ej. 1234" maxlength="4">
+      <div id="codeHint" class="hint">Introduce 4 números.</div>
+    </div>
+
+    <div class="actions">
+      <button class="primary" id="submitBtn" type="submit">Enviar</button>
+      <button class="secondary" id="resetBtn" type="button">Reiniciar</button>
+      <span class="pill" id="progressLabel">Completa los campos</span>
+    </div>
+
+    <div id="status" class="status hidden" role="status"></div>
+  </div>
+</form>
+
+<div class="card">
+  <strong>Registro (log) de la sesión</strong>
+  <div class="small">Se registran errores y acciones repetidas para analizar usabilidad.</div>
+  <ul id="log"></ul>
+</div>
+
+<script>
+  // --- Referencias DOM ---
+  const form = document.getElementById("form");
+  const nameInput = document.getElementById("name");
+  const emailInput = document.getElementById("email");
+  const codeInput = document.getElementById("code");
+
+  const nameHint = document.getElementById("nameHint");
+  const emailHint = document.getElementById("emailHint");
+  const codeHint = document.getElementById("codeHint");
+
+  const submitBtn = document.getElementById("submitBtn");
+  const resetBtn = document.getElementById("resetBtn");
+  const statusBox = document.getElementById("status");
+  const progressLabel = document.getElementById("progressLabel");
+
+  const logList = document.getElementById("log");
+
+  // Métricas visuales
+  const mSteps = document.getElementById("mSteps");
+  const mErrors = document.getElementById("mErrors");
+  const mRepeats = document.getElementById("mRepeats");
+  const mTime = document.getElementById("mTime");
+
+  // --- Estado de métricas (medidas de usabilidad) ---
+  const session = {
+    startedAt: Date.now(),
+    steps: 0,        // "pasos" = acciones relevantes (click, enter, cambios)
+    errors: 0,       // errores totales detectados
+    repeats: 0,      // acciones repetidas / innecesarias
+    lastSubmitAt: 0, // para detectar doble click
+    errorByField: { name: 0, email: 0, code: 0 } // registro por campo
+  };
+
+  // --- Utilidades ---
+  function nowSeconds() {
+    return Math.floor((Date.now() - session.startedAt) / 1000);
+  }
+
+  function renderMetrics() {
+    mSteps.textContent = session.steps;
+    mErrors.textContent = session.errors;
+    mRepeats.textContent = session.repeats;
+    mTime.textContent = `${nowSeconds()}s`;
+  }
+
+  function log(msg) {
+    const li = document.createElement("li");
+    li.textContent = `[${nowSeconds()}s] ${msg}`;
+    logList.prepend(li);
+  }
+
+  function incStep(reason) {
+    session.steps += 1;
+    renderMetrics();
+    if (reason) log(`Paso: ${reason}`);
+  }
+
+  function showStatus(type, msg) {
+    statusBox.className = `status ${type}`;
+    statusBox.textContent = msg;
+    statusBox.classList.remove("hidden");
+  }
+
+  function hideStatus() {
+    statusBox.classList.add("hidden");
+  }
+
+  // Validaciones (simples para clase)
+  function validName() { return nameInput.value.trim().length >= 2; }
+  function validEmail() { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailInput.value.trim()); }
+  function validCode() { return /^\d{4}$/.test(codeInput.value.trim()); }
+
+  // Feedback visual + registro de errores
+  function setFieldState(field, ok, hintEl, baseHint, fieldKey) {
+    const input = field;
+    if (ok) {
+      input.classList.remove("invalid");
+      hintEl.classList.remove("error");
+      hintEl.textContent = baseHint;
+      return true;
+    }
+
+    // Error detectado -> métricas
+    input.classList.add("invalid");
+    hintEl.classList.add("error");
+    hintEl.textContent = `⚠ ${baseHint}`;
+
+    session.errors += 1;
+    session.errorByField[fieldKey] += 1;
+
+    renderMetrics();
+    log(`Error en "${fieldKey}" (contador: ${session.errorByField[fieldKey]})`);
+    return false;
+  }
+
+  function updateProgressLabel() {
+    const okCount = [validName(), validEmail(), validCode()].filter(Boolean).length;
+    progressLabel.textContent = okCount === 3
+      ? "Listo para enviar"
+      : `Progreso: ${okCount}/3 campos correctos`;
+  }
+
+  // Evita contar pasos exageradamente: solo cuenta cuando hay cambios reales.
+  function makeStepOnChange(inputEl, reasonLabel) {
+    let lastValue = inputEl.value;
+    inputEl.addEventListener("input", () => {
+      if (inputEl.value !== lastValue) {
+        lastValue = inputEl.value;
+        incStep(reasonLabel);
+      }
+      // No validamos aquí siempre para no inflar errores; validamos al salir del campo (blur) y al enviar.
+      updateProgressLabel();
+      hideStatus();
+    });
+  }
+
+  // --- Medición de pasos ---
+  makeStepOnChange(nameInput, "Escritura en nombre");
+  makeStepOnChange(emailInput, "Escritura en email");
+  makeStepOnChange(codeInput, "Escritura en código");
+
+  // Contar paso por click en botones
+  submitBtn.addEventListener("click", () => incStep("Click en Enviar"));
+  resetBtn.addEventListener("click", () => incStep("Click en Reiniciar"));
+
+  // --- Registro de errores (en blur y en submit) ---
+  nameInput.addEventListener("blur", () => {
+    setFieldState(nameInput, validName(), nameHint, "Mínimo 2 caracteres.", "name");
+    updateProgressLabel();
+  });
+
+  emailInput.addEventListener("blur", () => {
+    setFieldState(emailInput, validEmail(), emailHint, "Debe tener formato válido.", "email");
+    updateProgressLabel();
+  });
+
+  codeInput.addEventListener("blur", () => {
+    setFieldState(codeInput, validCode(), codeHint, "Introduce 4 números.", "code");
+    updateProgressLabel();
+  });
+
+  // --- Control de acciones repetidas / innecesarias ---
+  function isRepeatSubmit() {
+    const t = Date.now();
+    const tooSoon = (t - session.lastSubmitAt) < 1200; // 1.2s
+    session.lastSubmitAt = t;
+    return tooSoon;
+  }
+
+  // --- Envío (la tarea principal) ---
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+
+    // Detecta doble envío innecesario
+    if (isRepeatSubmit()) {
+      session.repeats += 1;
+      renderMetrics();
+      log("Acción repetida: doble intento de envío");
+      showStatus("warn", "Has pulsado enviar muy rápido. Revisa si ya se ha enviado.");
+      return;
+    }
+
+    // Validación final + registro de errores
+    const okName = setFieldState(nameInput, validName(), nameHint, "Mínimo 2 caracteres.", "name");
+    const okEmail = setFieldState(emailInput, validEmail(), emailHint, "Debe tener formato válido.", "email");
+    const okCode = setFieldState(codeInput, validCode(), codeHint, "Introduce 4 números.", "code");
+    updateProgressLabel();
+
+    if (!okName || !okEmail || !okCode) {
+      showStatus("err", "Hay errores. Corrige los campos marcados en rojo.");
+      // Feedback según comportamiento: foco al primer campo inválido
+      if (!okName) nameInput.focus();
+      else if (!okEmail) emailInput.focus();
+      else codeInput.focus();
+      return;
+    }
+
+    // Éxito: final de la tarea
+    showStatus("ok", "Formulario enviado correctamente ✅");
+
+    // Feedback visual: desactivar envío para evitar reenvíos innecesarios
+    submitBtn.disabled = true;
+    session.repeats += 0; // (no suma, pero dejamos claro que lo controlamos)
+    log(`Éxito: tarea completada en ${nowSeconds()}s y ${session.steps} pasos.`);
+  });
+
+  // Reiniciar sesión y métricas
+  resetBtn.addEventListener("click", () => {
+    form.reset();
+    hideStatus();
+
+    // reset visual
+    [nameInput, emailInput, codeInput].forEach(i => i.classList.remove("invalid"));
+    [nameHint, emailHint, codeHint].forEach(h => h.classList.remove("error"));
+
+    nameHint.textContent = "Mínimo 2 caracteres.";
+    emailHint.textContent = "Debe tener formato válido.";
+    codeHint.textContent = "Introduce 4 números.";
+
+    // reset métricas (nueva sesión)
+    session.startedAt = Date.now();
+    session.steps = 0;
+    session.errors = 0;
+    session.repeats = 0;
+    session.lastSubmitAt = 0;
+    session.errorByField = { name: 0, email: 0, code: 0 };
+
+    submitBtn.disabled = false;
+    log("Reinicio de sesión");
+    updateProgressLabel();
+    renderMetrics();
+    nameInput.focus();
+  });
+
+  // Estado inicial
+  updateProgressLabel();
+  renderMetrics();
+  log("Inicio de sesión");
+</script>
+
+</body>
+</html>

@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Formulario usababilidad</title>
+
+  <style>
+    body {
+      font-family: system-ui, Arial, sans-serif;
+      padding: 20px;
+      max-width: 720px;
+      margin: 0 auto;
+    }
+
+    h1 { font-size: 1.4rem; }
+
+    .card {
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      padding: 16px;
+      margin-top: 12px;
+    }
+
+    .row { display: grid; gap: 12px; }
+
+    label { font-weight: 600; }
+
+    input[type="text"],
+    input[type="email"] {
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #bbb;
+      font-size: 1rem;
+    }
+
+    input:focus {
+      outline: 3px solid rgba(0,0,0,0.08);
+    }
+
+    /* Validación */
+    .invalid {
+      border-color: #c62828;
+      background: #fff5f5;
+    }
+
+    .hint {
+      font-size: 0.9rem;
+      color: #555;
+    }
+
+    .hint.error {
+      color: #c62828;
+      font-weight: 600;
+    }
+
+    .hidden { display: none; }
+
+    .inline {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .pill {
+      font-size: 0.85rem;
+      background: #f4f4f4;
+      padding: 4px 8px;
+      border-radius: 999px;
+    }
+
+    button {
+      padding: 10px 14px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    button:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+
+    .primary { background: #111; color: #fff; }
+    .secondary { background: #eee; }
+
+    /* Feedback */
+    .status {
+      margin-top: 12px;
+      padding: 10px;
+      border-radius: 10px;
+      border: 1px solid transparent;
+    }
+
+    .status.ok {
+      background: #eefaf0;
+      border-color: #b9e7c3;
+    }
+
+    .status.err {
+      background: #fff0f0;
+      border-color: #f0b5b5;
+    }
+  </style>
+</head>
+
+<body>
+<h1>Registro</h1>
+
+<form id="form" class="card" novalidate>
+  <!-- Paso 1 -->
+  <section class="row">
+    <div>
+      <label for="name">Nombre</label>
+      <input id="name" type="text" placeholder="Ej. Ana">
+      <div id="nameHint" class="hint">Mínimo 2 caracteres</div>
+    </div>
+
+    <div>
+      <label for="email">Email</label>
+      <input id="email" type="email" placeholder="ana@email.com">
+      <div id="emailHint" class="hint">Formato válido de correo</div>
+    </div>
+
+    <div class="inline">
+      <span id="badge" class="pill">Paso 1: incompleto</span>
+      <button type="button" id="nextBtn" class="secondary" disabled>
+        Continuar
+      </button>
+    </div>
+  </section>
+
+  <!-- Paso 2 -->
+  <section id="step2" class="row hidden">
+    <label>
+      <input id="terms" type="checkbox">
+      Acepto los términos
+    </label>
+
+    <div class="inline">
+      <button type="submit" id="submitBtn" class="primary" disabled>
+        Crear cuenta
+      </button>
+      <button type="button" id="resetBtn" class="secondary">
+        Reiniciar
+      </button>
+    </div>
+  </section>
+
+  <div id="status" class="status hidden" role="status"></div>
+</form>
+
+<script>
+  const form = document.getElementById("form");
+
+  const nameInput = document.getElementById("name");
+  const emailInput = document.getElementById("email");
+
+  const nameHint = document.getElementById("nameHint");
+  const emailHint = document.getElementById("emailHint");
+
+  const badge = document.getElementById("badge");
+  const nextBtn = document.getElementById("nextBtn");
+  const step2 = document.getElementById("step2");
+
+  const terms = document.getElementById("terms");
+  const submitBtn = document.getElementById("submitBtn");
+  const resetBtn = document.getElementById("resetBtn");
+
+  const status = document.getElementById("status");
+
+  function validName() {
+    return nameInput.value.trim().length >= 2;
+  }
+
+  function validEmail() {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailInput.value.trim());
+  }
+
+  function updateValidation() {
+    // Nombre
+    if (!validName()) {
+      nameInput.classList.add("invalid");
+      nameHint.classList.add("error");
+    } else {
+      nameInput.classList.remove("invalid");
+      nameHint.classList.remove("error");
+    }
+
+    // Email
+    if (!validEmail()) {
+      emailInput.classList.add("invalid");
+      emailHint.classList.add("error");
+    } else {
+      emailInput.classList.remove("invalid");
+      emailHint.classList.remove("error");
+    }
+
+    const ok = validName() && validEmail();
+    badge.textContent = ok ? "Paso 1: listo" : "Paso 1: incompleto";
+    nextBtn.disabled = !ok;
+
+    if (!ok) {
+      step2.classList.add("hidden");
+      terms.checked = false;
+      submitBtn.disabled = true;
+    }
+  }
+
+  function showStatus(type, msg) {
+    status.className = `status ${type}`;
+    status.textContent = msg;
+    status.classList.remove("hidden");
+  }
+
+  nameInput.addEventListener("input", updateValidation);
+  emailInput.addEventListener("input", updateValidation);
+
+  nextBtn.addEventListener("click", () => {
+    step2.classList.remove("hidden");
+    terms.focus();
+  });
+
+  terms.addEventListener("change", () => {
+    submitBtn.disabled = !terms.checked;
+  });
+
+  resetBtn.addEventListener("click", () => {
+    form.reset();
+    status.classList.add("hidden");
+    step2.classList.add("hidden");
+    updateValidation();
+    nameInput.focus();
+  });
+
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+
+    showStatus("ok", "Cuenta creada correctamente.");
+  });
+
+  updateValidation();
+</script>
+</body>
+</html>
