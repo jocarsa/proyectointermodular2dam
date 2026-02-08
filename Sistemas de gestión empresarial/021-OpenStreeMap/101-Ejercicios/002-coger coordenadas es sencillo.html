@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Get Latitude and Longitude</title>
+</head>
+<body>
+
+<button onclick="getLocation()">Get location</button>
+
+<p id="output"></p>
+
+<script>
+function getLocation() {
+    if (!navigator.geolocation) {
+        document.getElementById("output").innerText =
+            "Geolocation is not supported by this browser.";
+        return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+        success,
+        error,
+        {
+            enableHighAccuracy: true,
+            timeout: 10000,
+            maximumAge: 0
+        }
+    );
+}
+
+function success(position) {
+    const lat = position.coords.latitude;
+    const lon = position.coords.longitude;
+
+    document.getElementById("output").innerText =
+        `Latitude: ${lat}\nLongitude: ${lon}`;
+}
+
+function error(err) {
+    document.getElementById("output").innerText =
+        `Error (${err.code}): ${err.message}`;
+}
+</script>
+
+</body>
+</html>

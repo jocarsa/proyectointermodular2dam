@@ -1,0 +1,49 @@
+<!doctype html>
+<html>
+<head>
+</head>
+<body>
+
+<div></div>
+
+<script>
+fetch("modelo.json")
+.then(respuesta => respuesta.json())
+.then(datos => {
+
+  let contenedor = document.querySelector("div")
+  let tabla = document.createElement("table")
+  contenedor.appendChild(tabla)
+
+  Object.entries(datos).forEach(([categoria, ingresos]) => {
+
+    // Fila de cabecera de categoría
+    let filaCategoria = document.createElement("tr")
+    let celdaCategoria = document.createElement("th")
+    celdaCategoria.colSpan = 2
+    celdaCategoria.textContent = categoria
+    filaCategoria.appendChild(celdaCategoria)
+    tabla.appendChild(filaCategoria)
+
+    // Filas de datos
+    ingresos.forEach(ingreso => {
+      let fila = document.createElement("tr")
+
+      let tdNombre = document.createElement("td")
+      tdNombre.textContent = ingreso.nombre
+
+      let tdCantidad = document.createElement("td")
+      tdCantidad.textContent = ingreso.cantidad
+
+      fila.appendChild(tdNombre)
+      fila.appendChild(tdCantidad)
+      tabla.appendChild(fila)
+    })
+
+  })
+
+})
+</script>
+
+</body>
+</html>

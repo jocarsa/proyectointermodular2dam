@@ -1,0 +1,38 @@
+{
+  "categoria 1": {
+    "subcategoria 1.1": {
+      "detalle 1.1.1": [
+        { "nombre": "ingreso 1", "cantidad": 1000 },
+        { "nombre": "ingreso 2", "cantidad": 2000 }
+      ],
+      "detalle 1.1.2": [
+        { "nombre": "ingreso 5", "cantidad": 500 }
+      ]
+    },
+    "subcategoria 1.2": {
+      "detalle 1.2.1": {
+        "nivel 4.1": [
+          { "nombre": "ingreso 6", "cantidad": 750 }
+        ],
+        "nivel 4.2": [
+          { "nombre": "ingreso 7", "cantidad": 1250 }
+        ]
+      }
+    }
+  },
+  "categoria 2": {
+    "subcategoria 2.1": {
+      "detalle 2.1.1": [
+        { "nombre": "ingreso 3", "cantidad": 1000 },
+        { "nombre": "ingreso 4", "cantidad": 2000 }
+      ]
+    },
+    "subcategoria 2.2": {
+      "detalle 2.2.1": {
+        "nivel 4.1": [
+          { "nombre": "ingreso 8", "cantidad": 300 }
+        ]
+      }
+    }
+  }
+}

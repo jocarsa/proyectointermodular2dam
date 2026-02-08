@@ -1,0 +1,10 @@
+{
+	"categoria 1":[
+    {"nombre":"ingreso 1","cantidad":1000},
+    {"nombre":"ingreso 2","cantidad":2000}
+  ],
+  "categoria 2":[
+    {"nombre":"ingreso 3","cantidad":1000},
+    {"nombre":"ingreso 4","cantidad":2000}
+  ]
+}
