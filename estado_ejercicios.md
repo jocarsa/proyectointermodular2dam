@@ -1,6 +1,6 @@
 # proyectointermodular2dam — Estado de ejercicios
 
-Generado: 2026-01-23 18:00
+Generado: 2026-02-08 16:00
 
 ---
 
@@ -41,3 +41,6 @@ _Sin subunidades_
 - 🔴 Informes
 - 🔴 Serverside y clientside
 - 🔴 chat
+- 🟢 escritorio — 2026-02-06
+- 🟢 fundamentos de mongo — 2026-02-06
+- 🟢 OpenStreeMap — 2026-02-06
