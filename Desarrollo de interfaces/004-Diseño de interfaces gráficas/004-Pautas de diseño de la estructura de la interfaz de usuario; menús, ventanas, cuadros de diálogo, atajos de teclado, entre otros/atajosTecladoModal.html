@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Modales + Atajos</title>
+<style>
+  body { font-family: system-ui, Arial, sans-serif; padding: 20px; max-width: 720px; margin: 0 auto; }
+  form { display: grid; gap: 10px; max-width: 420px; }
+  label { font-weight: 700; }
+
+  input {
+    padding: 10px 12px;
+    border: 1px solid #bbb;
+    border-radius: 8px;
+    font-size: 1rem;
+  }
+  input:focus { outline: 3px solid rgba(0,0,0,0.12); }
+
+  /* Estado visual para Ctrl+B */
+  .bold-mode {
+    font-weight: 800;
+    border-color: #111;
+  }
+
+  .hint { color: #555; }
+  .pill {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: #f4f4f4;
+    font-size: 0.9rem;
+  }
+
+  /* Modal */
+  .overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .modal {
+    background: white;
+    padding: 18px;
+    border-radius: 12px;
+    min-width: 320px;
+    max-width: 520px;
+  }
+  .modal h2 { margin: 0 0 8px; font-size: 1.2rem; }
+  .modal p { margin: 0 0 14px; color: #333; }
+  .modal .actions { display: flex; gap: 10px; justify-content: flex-end; }
+
+  button {
+    padding: 10px 14px;
+    border-radius: 8px;
+    border: 0;
+    cursor: pointer;
+  }
+  .primary { background: #111; color: #fff; }
+  .secondary { background: #eee; }
+</style>
+</head>
+<body>
+
+<h1>Atajos de teclado + Modales</h1>
+<p class="hint">
+  Atajos sobre el input:
+  <span class="pill">Ctrl+B</span> negrita,
+  <span class="pill">Ctrl+I</span> ayuda (modal),
+  <span class="pill">Ctrl+Z</span> vaciar (confirmación).
+</p>
+
+<form id="form" novalidate>
+  <label for="campo">Campo único</label>
+  <input id="campo" type="text" placeholder="Escribe algo aquí…" autocomplete="off">
+  <div id="estado" class="hint">Negrita: OFF</div>
+</form>
+
+<!-- Plantilla de modal-->
+<template id="modalTemplate">
+  <div class="overlay">
+    <div class="modal">
+      <h2 class="titulo"></h2>
+      <p class="mensaje"></p>
+      <div class="actions"></div>
+    </div>
+  </div>
+</template>
+
+<script>
+class Modal {
+  constructor() {
+    const tpl = document.getElementById("modalTemplate");
+    this.element = tpl.content.firstElementChild.cloneNode(true);
+
+    this.titleEl = this.element.querySelector(".titulo");
+    this.msgEl = this.element.querySelector(".mensaje");
+    this.actionsEl = this.element.querySelector(".actions");
+
+    this.returnFocusEl = null;
+
+    // Click fuera para cerrar
+    this.element.addEventListener("click", (e) => {
+      if (e.target === this.element && this.canCloseOnOverlay) {
+        this.close();
+      }
+    });
+
+    // Esc para cerrar
+    document.addEventListener("keydown", (e) => {
+      if (!this.isOpen) return;
+      if (e.key === "Escape" && this.canCloseWithEsc) {
+        e.preventDefault();
+        this.close();
+      }
+    });
+
+    this.isOpen = false;
+    this.canCloseOnOverlay = true;
+    this.canCloseWithEsc = true;
+  }
+
+  open({ title, message, buttons, returnFocusEl, closeOnOverlay = true, closeWithEsc = true }) {
+    this.returnFocusEl = returnFocusEl || null;
+    this.canCloseOnOverlay = closeOnOverlay;
+    this.canCloseWithEsc = closeWithEsc;
+
+    this.titleEl.textContent = title;
+    this.msgEl.textContent = message;
+
+    this.actionsEl.innerHTML = "";
+
+    // Crear botones dinámicamente
+    buttons.forEach(btn => {
+      const b = document.createElement("button");
+      b.textContent = btn.text;
+      b.className = btn.className || "secondary";
+      b.type = "button";
+      b.onclick = () => btn.onClick?.();
+      this.actionsEl.appendChild(b);
+    });
+
+    // Mostrar modal
+    document.body.appendChild(this.element);
+    this.isOpen = true;
+
+    // Foco al primer botón del modal
+    const firstBtn = this.actionsEl.querySelector("button");
+    if (firstBtn) firstBtn.focus();
+  }
+
+  close() {
+    if (!this.isOpen) return;
+    document.body.removeChild(this.element);
+    this.isOpen = false;
+
+    // Devolver foco a quien lo abrió
+    if (this.returnFocusEl) this.returnFocusEl.focus();
+  }
+}
+
+// ---- APP ----
+const input = document.getElementById("campo");
+const estado = document.getElementById("estado");
+const modal = new Modal();
+
+let boldOn = false;
+
+function toggleBold() {
+  boldOn = !boldOn;
+  input.classList.toggle("bold-mode", boldOn);
+  estado.textContent = `Negrita: ${boldOn ? "ON" : "OFF"}`;
+}
+
+function openInfoModal() {
+  modal.open({
+    title: "Cómo rellenar el campo",
+    message: "Introduce un texto breve y claro. Evita símbolos raros y usa entre 3 y 30 caracteres.",
+    returnFocusEl: input,
+    closeOnOverlay: true,
+    closeWithEsc: true,
+    buttons: [
+      { text: "Cerrar", className: "primary", onClick: () => modal.close() }
+    ]
+  });
+}
+
+function openConfirmClearModal() {
+  modal.open({
+    title: "Confirmación",
+    message: "¿Quieres vaciar el contenido del campo?",
+    returnFocusEl: input,
+    closeOnOverlay: false,
+    closeWithEsc: true,
+    buttons: [
+      {
+        text: "Cancelar",
+        className: "secondary",
+        onClick: () => modal.close()
+      },
+      {
+        text: "Aceptar",
+        className: "primary",
+        onClick: () => {
+          input.value = "";
+          modal.close();
+        }
+      }
+    ]
+  });
+}
+
+// Atajos SOLO cuando el foco está en el input
+input.addEventListener("keydown", (e) => {
+  if (!e.ctrlKey) return;
+
+  const key = e.key.toLowerCase();
+
+  if (key === "b") {
+    e.preventDefault();
+    toggleBold();
+  }
+
+  if (key === "i") {
+    e.preventDefault();
+    openInfoModal();
+  }
+
+  if (key === "z") {
+    e.preventDefault();
+    if (input.value.trim() === "") return;
+    openConfirmClearModal();
+  }
+});
+
+// Estado inicial
+estado.textContent = "Negrita: OFF";
+</script>
+
+</body>
+</html>
