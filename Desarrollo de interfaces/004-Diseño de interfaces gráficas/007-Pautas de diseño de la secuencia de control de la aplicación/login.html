@@ -1,0 +1,307 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Login</title>
+  <style>
+    body { font-family: system-ui, Arial, sans-serif; padding: 20px; max-width: 760px; margin: 0 auto; }
+    .card { border: 1px solid #ddd; border-radius: 12px; padding: 16px; margin-top: 12px; }
+    .row { display: grid; gap: 10px; }
+    label { font-weight: 700; }
+    input {
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid #bbb;
+      font-size: 1rem;
+    }
+    input:focus { outline: 3px solid rgba(0,0,0,0.12); }
+    .invalid { border-color: #c62828; background: #fff5f5; }
+
+    button {
+      padding: 10px 14px;
+      border-radius: 10px;
+      border: 1px solid #bbb;
+      background: #fff;
+      cursor: pointer;
+      font-size: 1rem;
+      width: fit-content;
+    }
+    button.primary { background: #111; color: #fff; border-color: #111; }
+    button:disabled { opacity: .6; cursor: not-allowed; }
+
+    .hint { color: #555; font-size: 0.95rem; }
+    .status { padding: 10px 12px; border-radius: 10px; border: 1px solid transparent; }
+    .status.ok { background: #eefaf0; border-color: #b9e7c3; }
+    .status.err { background: #fff0f0; border-color: #f0b5b5; }
+    .status.info { background: #f4f4f4; border-color: #ddd; }
+
+    .inline { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+
+    .hidden { display: none; }
+
+    .spinner {
+      width: 16px;
+      height: 16px;
+      border: 3px solid rgba(255,255,255,0.35);
+      border-top: 3px solid #fff;
+      border-radius: 50%;
+      display: inline-block;
+      margin-left: 10px;
+      vertical-align: middle;
+      animation: spin .8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .pill { display:inline-block; padding: 2px 8px; border-radius: 999px; background:#eee; font-size: .9rem; }
+    .muted { opacity: .85; }
+  </style>
+</head>
+<body>
+
+<h1>Login</h1>
+<p class="hint">
+  Flujo: <span class="pill">Formulario</span> → <span class="pill">Loading</span> → <span class="pill">Éxito/Error</span>.
+  Prueba: usuario <b>admin</b> y contraseña <b>1234</b>.
+</p>
+
+<!-- Vista 1: Formulario -->
+<section id="viewForm" class="card row">
+  <h2>Iniciar sesión</h2>
+
+  <div class="row">
+    <div>
+      <label for="user">Usuario</label>
+      <input id="user" type="text" autocomplete="username" placeholder="admin">
+      <div id="userHint" class="hint">Obligatorio. Mínimo 3 caracteres.</div>
+    </div>
+
+    <div>
+      <label for="pass">Contraseña</label>
+      <input id="pass" type="password" autocomplete="current-password" placeholder="1234">
+      <div id="passHint" class="hint">Obligatorio. Mínimo 4 caracteres.</div>
+    </div>
+
+    <div class="inline">
+      <button id="loginBtn" class="primary" type="button">Entrar</button>
+      <button id="resetBtn" type="button">Limpiar</button>
+      <span class="hint muted" id="attemptInfo">Intentos fallidos: 0/3</span>
+    </div>
+
+    <div id="formStatus" class="status info">Rellena los datos y pulsa Entrar.</div>
+  </div>
+</section>
+
+<!-- Vista 2: Panel (éxito) -->
+<section id="viewApp" class="card row hidden">
+  <h2>Panel de usuario</h2>
+  <div id="welcome" class="status ok">Sesión iniciada</div>
+  <p class="hint">Aquí iría el contenido de la aplicación (perfil, ajustes, etc.).</p>
+  <button id="logoutBtn" type="button">Cerrar sesión</button>
+</section>
+
+<script>
+  // -----------------------------
+  // 1) Estado (secuencia de control)
+  // -----------------------------
+  const state = {
+    view: "form",      // "form" | "loading" | "app"
+    attempts: 0,
+    lockedUntil: 0     // timestamp ms; si > Date.now() => bloqueado
+  };
+
+  // Credenciales simuladas
+  const VALID_USER = "admin";
+  const VALID_PASS = "1234";
+
+  // -----------------------------
+  // 2) DOM
+  // -----------------------------
+  const viewForm = document.getElementById("viewForm");
+  const viewApp = document.getElementById("viewApp");
+
+  const user = document.getElementById("user");
+  const pass = document.getElementById("pass");
+  const loginBtn = document.getElementById("loginBtn");
+  const resetBtn = document.getElementById("resetBtn");
+  const logoutBtn = document.getElementById("logoutBtn");
+
+  const userHint = document.getElementById("userHint");
+  const passHint = document.getElementById("passHint");
+  const formStatus = document.getElementById("formStatus");
+  const attemptInfo = document.getElementById("attemptInfo");
+  const welcome = document.getElementById("welcome");
+
+  // -----------------------------
+  // 3) Helpers de UI
+  // -----------------------------
+  function setStatus(type, text) {
+    formStatus.className = `status ${type}`;
+    formStatus.textContent = text;
+  }
+
+  function setInvalid(el, hintEl, baseText, isInvalid) {
+    el.classList.toggle("invalid", isInvalid);
+    hintEl.textContent = isInvalid ? `${baseText}` : baseText;
+    hintEl.style.color = isInvalid ? "#c62828" : "#555";
+    hintEl.style.fontWeight = isInvalid ? "700" : "400";
+  }
+
+  function render() {
+    // Vistas
+    viewForm.classList.toggle("hidden", state.view !== "form" && state.view !== "loading");
+    viewApp.classList.toggle("hidden", state.view !== "app");
+
+    // Intentos / bloqueo
+    const locked = Date.now() < state.lockedUntil;
+    attemptInfo.textContent = locked
+      ? `Bloqueado ${Math.ceil((state.lockedUntil - Date.now()) / 1000)}s`
+      : `Intentos fallidos: ${state.attempts}/3`;
+
+    // Botón login: deshabilitado en loading o bloqueo
+    loginBtn.disabled = (state.view === "loading") || locked;
+
+    // Spinner en loading
+    if (state.view === "loading") {
+      loginBtn.textContent = "Comprobando...";
+      const sp = document.createElement("span");
+      sp.className = "spinner";
+      sp.setAttribute("aria-hidden", "true");
+      loginBtn.appendChild(sp);
+    } else {
+      loginBtn.textContent = "Entrar";
+    }
+  }
+
+  // -----------------------------
+  // 4) Validación básica (control de flujo)
+  // -----------------------------
+  function validate() {
+    const u = user.value.trim();
+    const p = pass.value;
+
+    const okUser = u.length >= 3;
+    const okPass = p.length >= 4;
+
+    setInvalid(user, userHint, "Obligatorio. Mínimo 3 caracteres.", !okUser);
+    setInvalid(pass, passHint, "Obligatorio. Mínimo 4 caracteres.", !okPass);
+
+    // Foco al primer error (gestión de foco)
+    if (!okUser) user.focus();
+    else if (!okPass) pass.focus();
+
+    return okUser && okPass;
+  }
+
+  // -----------------------------
+  // 5) "Servidor" simulado (asincronía)
+  // -----------------------------
+  function fakeAuthRequest(u, p) {
+    // Devuelve una Promise que "resuelve" a true/false tras 1s
+    return new Promise(resolve => {
+      setTimeout(() => {
+        resolve(u === VALID_USER && p === VALID_PASS);
+      }, 1000);
+    });
+  }
+
+  // -----------------------------
+  // 6) Secuencia principal: intentar login
+  // -----------------------------
+  async function attemptLogin() {
+    // Evitar acciones fuera de orden
+    if (state.view === "loading") return;
+
+    // Comprobar bloqueo
+    if (Date.now() < state.lockedUntil) {
+      setStatus("err", "Demasiados intentos. Espera a que se desbloquee.");
+      render();
+      return;
+    }
+
+    // Validación antes de “avanzar”
+    if (!validate()) {
+      setStatus("err", "Corrige los campos marcados en rojo.");
+      return;
+    }
+
+    // Transición a loading
+    state.view = "loading";
+    setStatus("info", "Verificando credenciales...");
+    render();
+
+    // Simular petición
+    const ok = await fakeAuthRequest(user.value.trim(), pass.value);
+
+    if (ok) {
+      // Éxito: transición a app
+      state.view = "app";
+      state.attempts = 0;
+      welcome.textContent = `Bienvenido/a, ${user.value.trim()}`;
+      render();
+
+      // Foco a acción principal del panel
+      logoutBtn.focus();
+      return;
+    }
+
+    // Error: volver a form, incrementar intentos
+    state.view = "form";
+    state.attempts += 1;
+
+    // Si llega a 3, bloquear 10 segundos
+    if (state.attempts >= 3) {
+      state.lockedUntil = Date.now() + 10_000;
+      setStatus("err", "Demasiados intentos. Bloqueado 10 segundos.");
+    } else {
+      setStatus("err", "Usuario o contraseña incorrectos.");
+    }
+
+    // Gestión de foco: suele ser mejor foco en contraseña para reintentar
+    pass.focus();
+    pass.select();
+    render();
+  }
+
+  // -----------------------------
+  // 7) Eventos
+  // -----------------------------
+  loginBtn.addEventListener("click", attemptLogin);
+
+  // Enter en password dispara login
+  pass.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      attemptLogin();
+    }
+  });
+
+  resetBtn.addEventListener("click", () => {
+    user.value = "";
+    pass.value = "";
+    setInvalid(user, userHint, "Obligatorio. Mínimo 3 caracteres.", false);
+    setInvalid(pass, passHint, "Obligatorio. Mínimo 4 caracteres.", false);
+    setStatus("info", "Rellena los datos y pulsa Entrar.");
+    user.focus();
+  });
+
+  logoutBtn.addEventListener("click", () => {
+    // Volver al formulario (otra transición de control)
+    state.view = "form";
+    setStatus("info", "Sesión cerrada. Puedes iniciar sesión de nuevo.");
+    render();
+    user.focus();
+  });
+
+  // “Tick” para refrescar el contador de bloqueo (visual)
+  setInterval(() => {
+    if (state.lockedUntil > 0) render();
+  }, 250);
+
+  // Init
+  render();
+  user.focus();
+</script>
+
+</body>
+</html>

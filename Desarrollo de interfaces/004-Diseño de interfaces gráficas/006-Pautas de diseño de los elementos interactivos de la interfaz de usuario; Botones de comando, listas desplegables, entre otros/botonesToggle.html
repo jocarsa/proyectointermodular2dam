@@ -1,0 +1,354 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Toggles + Botón Loading</title>
+  <style>
+    body { font-family: system-ui, Arial, sans-serif; padding: 20px; max-width: 860px; margin: 0 auto; }
+    .card { border: 1px solid #ddd; border-radius: 12px; padding: 16px; margin-top: 12px; }
+    .row { display: grid; gap: 10px; }
+    .hint { color: #555; margin-top: 6px; }
+    .status { margin-top: 10px; padding: 10px; border-radius: 10px; background: #f4f4f4; border: 1px solid #ddd; }
+
+    /* Botones base */
+    button {
+      padding: 10px 14px;
+      border-radius: 10px;
+      border: 1px solid #bbb;
+      background: #fff;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+    button:focus { outline: 3px solid rgba(0,0,0,0.12); }
+    button:active { transform: translateY(1px); }
+    button:disabled { opacity: .6; cursor: not-allowed; }
+
+    /* Toggle ON/OFF */
+    .toggle-on { font-weight: 800; border-color: #111; }
+
+    /* Segmented control */
+    .segmented { display: inline-flex; border: 1px solid #bbb; border-radius: 12px; overflow: hidden; width: fit-content; }
+    .segmented button { border: 0; border-right: 1px solid #bbb; border-radius: 0; }
+    .segmented button:last-child { border-right: 0; }
+    .segmented .active { background: #111; color: #fff; font-weight: 800; }
+
+    /* Ciclo de estados */
+    .level-low { border-color: #bbb; }
+    .level-mid { border-color: #111; font-weight: 700; }
+    .level-high { border-color: #111; background: #111; color: #fff; font-weight: 800; }
+
+    /* Vista previa + Temas reales */
+    .preview {
+      padding: 12px;
+      border-radius: 12px;
+      border: 1px solid #ddd;
+      transition: all 0.25s ease;
+    }
+    .preview .title { font-weight: 800; margin-bottom: 6px; }
+    .preview .tag {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: #eee;
+      font-size: .9rem;
+      border: 1px solid #e2e2e2;
+    }
+
+    /* Tema claro */
+    .theme-claro { background: #fafafa; color: #111; border-color: #ddd; }
+    .theme-claro .tag { background: #eee; color: #111; border-color: #e2e2e2; }
+
+    /* Tema oscuro */
+    .theme-oscuro { background: #111; color: #fff; border-color: #333; }
+    .theme-oscuro .tag { background: #333; color: #fff; border-color: #444; }
+
+    /* Tema neón */
+    .theme-neon {
+      background: #000;
+      color: #39ff14;
+      border-color: #39ff14;
+      box-shadow: 0 0 18px rgba(57, 255, 20, 0.25);
+    }
+    .theme-neon .title {
+      color: #ff00ff;
+      text-shadow: 0 0 10px rgba(255, 0, 255, 0.35);
+    }
+    .theme-neon .tag {
+      background: #00ffff;
+      color: #000;
+      font-weight: 800;
+      border: 1px solid #00ffff;
+      box-shadow: 0 0 12px rgba(0, 255, 255, 0.25);
+    }
+
+    /* Botón primario (guardar) */
+    .primary {
+      background: #111;
+      border-color: #111;
+      color: #fff;
+      width: fit-content;
+    }
+
+    /* Spinner simple */
+    .spinner {
+      width: 16px;
+      height: 16px;
+      border: 3px solid rgba(255,255,255,0.3);
+      border-top: 3px solid #fff;
+      border-radius: 50%;
+      display: inline-block;
+      margin-left: 10px;
+      vertical-align: middle;
+      animation: spin .8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .inline { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+    .code { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; font-size: .92rem; }
+  </style>
+</head>
+<body>
+
+<h1>Toggles + Botón Loading</h1>
+<p class="hint">
+  Cambia los toggles y pulsa <b>Guardar cambios</b>. Durante el loading se guarda el estado en cookies.
+</p>
+
+<!-- 1) Toggle ON/OFF -->
+<section class="card row">
+  <h2>1) Toggle ON/OFF (activar/desactivar)</h2>
+  <button id="btnNotif" type="button">Notificaciones: OFF</button>
+  <div class="status" id="statusNotif">Estado: desactivadas</div>
+</section>
+
+<!-- 2) Toggle exclusivo (segmented) -->
+<section class="card row">
+  <h2>2) Toggle exclusivo (solo uno activo)</h2>
+  <div class="segmented">
+    <button type="button" class="segBtn active" data-theme="claro">Claro</button>
+    <button type="button" class="segBtn" data-theme="oscuro">Oscuro</button>
+    <button type="button" class="segBtn" data-theme="neon">Neón</button>
+  </div>
+  <div class="status" id="statusTheme">Tema seleccionado: claro</div>
+</section>
+
+<!-- 3) Toggle por ciclo de estados -->
+<section class="card row">
+  <h2>3) Toggle por estados (ciclo)</h2>
+  <button id="btnLevel" type="button" class="level-low">Potencia: BAJA</button>
+  <div class="status" id="statusLevel">Nivel actual: baja</div>
+</section>
+
+<!-- Vista previa combinada -->
+<section class="card row">
+  <h2>Vista previa</h2>
+  <div id="preview" class="preview theme-claro">
+    <div class="title">Panel de ejemplo</div>
+    <div>Notificaciones: <span id="pNotif" class="tag">OFF</span></div>
+    <div>Tema: <span id="pTheme" class="tag">claro</span></div>
+    <div>Potencia: <span id="pLevel" class="tag">baja</span></div>
+  </div>
+</section>
+
+<!-- Botón con loading + guardado en cookies -->
+<section class="card row">
+  <h2>Guardar configuración</h2>
+  <div class="inline">
+    <button id="saveBtn" type="button" class="primary">Guardar cambios</button>
+    <button id="clearCookieBtn" type="button">Borrar cookie</button>
+  </div>
+  <div id="saveStatus" class="status">
+    Sin guardar todavía.
+  </div>
+  <div class="hint">
+    Cookie: <span class="code" id="cookieInfo">—</span>
+  </div>
+</section>
+
+<script>
+  // ---------------------------
+  // Cookies
+  // ---------------------------
+  function setCookie(name, value, days = 7) {
+    const maxAge = days * 24 * 60 * 60; // segundos
+    document.cookie =
+      `${encodeURIComponent(name)}=${encodeURIComponent(value)};` +
+      ` Max-Age=${maxAge}; Path=/; SameSite=Lax`;
+  }
+
+  function getCookie(name) {
+    const cookies = document.cookie ? document.cookie.split("; ") : [];
+    const prefix = encodeURIComponent(name) + "=";
+
+    for (const c of cookies) {
+      if (c.startsWith(prefix)) {
+        return decodeURIComponent(c.slice(prefix.length));
+      }
+    }
+    return null;
+  }
+
+  function deleteCookie(name) {
+    document.cookie = `${encodeURIComponent(name)}=; Max-Age=0; Path=/; SameSite=Lax`;
+  }
+
+  // ---------------------------
+  // Estado global
+  // ---------------------------
+  const DEFAULT_STATE = {
+    notifications: false,
+    theme: "claro",      // claro | oscuro | neon
+    powerLevel: "baja"   // baja | media | alta
+  };
+
+  const state = { ...DEFAULT_STATE };
+
+  // ---------------------------
+  // DOM
+  // ---------------------------
+  const btnNotif = document.getElementById("btnNotif");
+  const statusNotif = document.getElementById("statusNotif");
+
+  const segBtns = Array.from(document.querySelectorAll(".segBtn"));
+  const statusTheme = document.getElementById("statusTheme");
+
+  const btnLevel = document.getElementById("btnLevel");
+  const statusLevel = document.getElementById("statusLevel");
+
+  const preview = document.getElementById("preview");
+  const pNotif = document.getElementById("pNotif");
+  const pTheme = document.getElementById("pTheme");
+  const pLevel = document.getElementById("pLevel");
+
+  const saveBtn = document.getElementById("saveBtn");
+  const clearCookieBtn = document.getElementById("clearCookieBtn");
+  const saveStatus = document.getElementById("saveStatus");
+  const cookieInfo = document.getElementById("cookieInfo");
+
+  // ---------------------------
+  // Render UI
+  // ---------------------------
+  function render() {
+    // 1) ON/OFF
+    btnNotif.textContent = `Notificaciones: ${state.notifications ? "ON" : "OFF"}`;
+    btnNotif.classList.toggle("toggle-on", state.notifications);
+    statusNotif.textContent = `Estado: ${state.notifications ? "activadas" : "desactivadas"}`;
+
+    // 2) Tema (exclusivo)
+    segBtns.forEach(b => {
+      const isActive = b.dataset.theme === state.theme;
+      b.classList.toggle("active", isActive);
+    });
+    statusTheme.textContent = `Tema seleccionado: ${state.theme}`;
+
+    // Aplicar tema real al panel
+    preview.classList.remove("theme-claro", "theme-oscuro", "theme-neon");
+    preview.classList.add(`theme-${state.theme}`);
+
+    // 3) Ciclo: potencia
+    btnLevel.textContent = `Potencia: ${state.powerLevel.toUpperCase()}`;
+    btnLevel.classList.remove("level-low", "level-mid", "level-high");
+    if (state.powerLevel === "baja") btnLevel.classList.add("level-low");
+    if (state.powerLevel === "media") btnLevel.classList.add("level-mid");
+    if (state.powerLevel === "alta") btnLevel.classList.add("level-high");
+    statusLevel.textContent = `Nivel actual: ${state.powerLevel}`;
+
+    // Vista previa (texto)
+    pNotif.textContent = state.notifications ? "ON" : "OFF";
+    pTheme.textContent = state.theme;
+    pLevel.textContent = state.powerLevel;
+
+    // Mostrar cookie actual (si existe)
+    const raw = getCookie("ui_state");
+    cookieInfo.textContent = raw ? raw : "—";
+  }
+
+  // ---------------------------
+  // Eventos toggles
+  // ---------------------------
+  btnNotif.addEventListener("click", () => {
+    state.notifications = !state.notifications;
+    render();
+  });
+
+  segBtns.forEach(b => {
+    b.addEventListener("click", () => {
+      state.theme = b.dataset.theme;
+      render();
+    });
+  });
+
+  const cycle = ["baja", "media", "alta"];
+  btnLevel.addEventListener("click", () => {
+    const i = cycle.indexOf(state.powerLevel);
+    state.powerLevel = cycle[(i + 1) % cycle.length];
+    render();
+  });
+
+  // ---------------------------
+  // Botón loading: guarda cookies durante "carga"
+  // ---------------------------
+  function setSaveLoading(isLoading) {
+    saveBtn.disabled = isLoading;
+
+    if (isLoading) {
+      saveBtn.textContent = "Guardando...";
+      const spinner = document.createElement("span");
+      spinner.className = "spinner";
+      spinner.setAttribute("aria-hidden", "true");
+      saveBtn.appendChild(spinner);
+    } else {
+      saveBtn.textContent = "Guardar cambios";
+    }
+  }
+
+  saveBtn.addEventListener("click", () => {
+    // Estado loading
+    setSaveLoading(true);
+    saveStatus.textContent = "Guardando configuración en cookies...";
+
+    // Guardar en cookies DURANTE el loading
+    const payload = JSON.stringify({
+      notifications: state.notifications,
+      theme: state.theme,
+      powerLevel: state.powerLevel
+    });
+    setCookie("ui_state", payload, 7);
+    render(); // para que se vea la cookie en pantalla
+
+    // Simular proceso
+    setTimeout(() => {
+      setSaveLoading(false);
+      saveStatus.textContent = "Guardado (recarga la página y verás que se mantiene)";
+      render();
+    }, 1500);
+  });
+
+  clearCookieBtn.addEventListener("click", () => {
+    deleteCookie("ui_state");
+    saveStatus.textContent = "Cookie borrada. (El estado actual en pantalla no cambia hasta que recargues o cambies toggles)";
+    render();
+  });
+
+  // ---------------------------
+  // Restaurar estado desde cookie al cargar
+  // ---------------------------
+  function restoreFromCookie() {
+    const raw = getCookie("ui_state");
+    if (!raw) return;
+
+    const parsed = JSON.parse(raw);
+    state.notifications = parsed.notifications;
+    state.theme = parsed.theme;
+    state.powerLevel = parsed.powerLevel;
+    saveStatus.textContent = "Estado restaurado desde cookie";
+  }
+
+  // Init
+  restoreFromCookie();
+  render();
+</script>
+
+</body>
+</html>
