@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Informes incrustados y no incrustados - pdfmake</title>
+
+  <!-- pdfmake CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 30px;
+    }
+
+    h1 {
+      margin-bottom: 10px;
+    }
+
+    .controls {
+      margin-bottom: 20px;
+      padding: 15px;
+      border: 1px solid #ccc;
+      background: #f9f9f9;
+    }
+
+    label {
+      margin-right: 15px;
+    }
+
+    button {
+      margin-right: 10px;
+      padding: 5px 10px;
+      cursor: pointer;
+    }
+
+    iframe {
+      width: 100%;
+      height: 500px;
+      border: 1px solid #ccc;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Informes incrustados y no incrustados</h1>
+
+  <div class="controls">
+    <label>
+      Buscar producto:
+      <input type="text" id="q" placeholder="Ej: teclado">
+    </label>
+
+    <label>
+      Cantidad mínima:
+      <input type="number" id="minCantidad" value="0" min="0" style="width:60px;">
+    </label>
+
+    <br><br>
+
+    <button id="btnPreview">Ver en la app (Incrustado)</button>
+    <button id="btnDownload">Descargar PDF</button>
+    <button id="btnOpen">Abrir en nueva pestaña</button>
+    <button id="btnPrint">Imprimir</button>
+  </div>
+
+  <h3>Previsualización (Informe Incrustado)</h3>
+  <iframe id="preview"></iframe>
+
+<script>
+/* =========================
+   DATOS SIMULADOS (JSON)
+========================= */
+
+const ventas = [
+  { producto: "Teclado", precio: 20, cantidad: 3 },
+  { producto: "Ratón", precio: 15, cantidad: 2 },
+  { producto: "Monitor", precio: 200, cantidad: 1 },
+  { producto: "Alfombrilla", precio: 8, cantidad: 5 },
+  { producto: "Portátil", precio: 800, cantidad: 1 }
+];
+
+/* =========================
+   FILTRADO
+========================= */
+
+function filtrarVentas(textoBusqueda, minCantidad) {
+  const term = textoBusqueda.trim().toLowerCase();
+
+    const resultado = [];
+
+    ventas.forEach(v => {
+        const coincideTexto = v.producto.toLowerCase().includes(term);
+        const coincideCantidad = v.cantidad >= minCantidad;
+
+        if (coincideTexto && coincideCantidad) {
+            resultado.push(v);
+        }
+    });
+
+    return resultado;
+}
+
+/* =========================
+   CONSTRUCCIÓN DEL INFORME
+========================= */
+
+function buildDocDefinition(rows, parametros) {
+  // 1) Total con forEach
+  let total = 0;
+  rows.forEach(r => {
+    total += r.precio * r.cantidad;
+  });
+
+  // 2) Construir el body de la tabla con forEach
+  const body = [];
+  body.push(["Producto", "Precio", "Cantidad", "Subtotal"]);
+
+  rows.forEach(r => {
+    body.push([
+      r.producto,
+      r.precio + " €",
+      r.cantidad,
+      (r.precio * r.cantidad) + " €"
+    ]);
+  });
+
+  // 3) Fila TOTAL al final
+  body.push([
+    { text: "TOTAL", colSpan: 3, alignment: "right", bold: true },
+    {},
+    {},
+    { text: total + " €", bold: true }
+  ]);
+
+  // 4) Devolver docDefinition
+  return {
+    content: [
+      { text: "Informe de Ventas", style: "header" },
+
+      {
+        text:
+          "Parámetros aplicados:\n" +
+          `Búsqueda: ${parametros.busqueda || "Todos"}\n` +
+          `Cantidad mínima: ${parametros.minCantidad}`,
+        margin: [0, 0, 0, 10]
+      },
+
+      {
+        table: {
+          headerRows: 1,
+          widths: ["*", "auto", "auto", "auto"],
+          body: body
+        },
+        layout: "lightHorizontalLines"
+      }
+    ],
+
+    styles: {
+      header: { fontSize: 18, bold: true, margin: [0, 0, 0, 10] }
+    },
+
+    defaultStyle: { fontSize: 10 },
+    pageMargins: [40, 60, 40, 60]
+  };
+}
+
+/* =========================
+   GENERAR DOCUMENTO
+========================= */
+
+function generarDoc() {
+  const busqueda = document.getElementById("q").value;
+  const minCantidad = parseInt(document.getElementById("minCantidad").value) || 0;
+
+  const rows = filtrarVentas(busqueda, minCantidad);
+
+  return buildDocDefinition(rows, {
+    busqueda,
+    minCantidad
+  });
+}
+
+/* =========================
+   BOTONES
+========================= */
+
+// INFORME INCRUSTADO (iframe)
+document.getElementById("btnPreview").addEventListener("click", () => {
+  const doc = generarDoc();
+
+  pdfMake.createPdf(doc).getBlob(blob => {
+    const url = URL.createObjectURL(blob);
+    document.getElementById("preview").src = url;
+  });
+});
+
+// NO INCRUSTADO - Descargar
+document.getElementById("btnDownload").addEventListener("click", () => {
+  const doc = generarDoc();
+  pdfMake.createPdf(doc).download("informe_ventas.pdf");
+});
+
+// NO INCRUSTADO - Abrir en nueva pestaña
+document.getElementById("btnOpen").addEventListener("click", () => {
+  const doc = generarDoc();
+  pdfMake.createPdf(doc).open();
+});
+
+// NO INCRUSTADO - Imprimir
+document.getElementById("btnPrint").addEventListener("click", () => {
+  const doc = generarDoc();
+  pdfMake.createPdf(doc).print();
+});
+
+</script>
+
+</body>
+</html>

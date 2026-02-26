@@ -161,6 +161,9 @@
   <div id="saveStatus" class="status">
     Sin guardar todavía.
   </div>
+  <div id="saveStatusCookie" class="status">
+    Sin guardar todavía.
+  </div>
   <div class="hint">
     Cookie: <span class="code" id="cookieInfo">—</span>
   </div>
@@ -224,6 +227,7 @@
   const saveBtn = document.getElementById("saveBtn");
   const clearCookieBtn = document.getElementById("clearCookieBtn");
   const saveStatus = document.getElementById("saveStatus");
+  const saveStatusCookie = document.getElementById("saveStatusCookie");
   const cookieInfo = document.getElementById("cookieInfo");
 
   // ---------------------------
@@ -262,6 +266,9 @@
     // Mostrar cookie actual (si existe)
     const raw = getCookie("ui_state");
     cookieInfo.textContent = raw ? raw : "—";
+
+    // Comparación entre la cookie y el estado actual
+    changeFromCookie();
   }
 
   // ---------------------------
@@ -343,6 +350,26 @@
     state.theme = parsed.theme;
     state.powerLevel = parsed.powerLevel;
     saveStatus.textContent = "Estado restaurado desde cookie";
+  }
+
+  function changeFromCookie(){
+    const raw = getCookie("ui_state");
+    if (!raw) {
+      saveBtn.disabled = false;
+      saveStatusCookie.textContent = "No hay una cookie almacenada";
+      return;
+    }
+
+    const parsed = JSON.parse(raw);
+
+    if (state.notifications == parsed.notifications && state.theme == parsed.theme && state.powerLevel == parsed.powerLevel) {
+      saveBtn.disabled = true;
+      saveStatusCookie.textContent = "La cookie es igual al valor de estado actual";
+    } else {
+      saveBtn.disabled = false;
+      saveStatusCookie.textContent = "Hay cambios pendientes de guardar";
+    }
+    return;
   }
 
   // Init
