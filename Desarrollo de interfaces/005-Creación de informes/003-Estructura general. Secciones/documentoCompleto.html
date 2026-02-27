@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Demo docDefinition completo - pdfmake</title>
+
+  <!-- pdfmake CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+
+  <style>
+    body { font-family: Arial, sans-serif; margin: 24px; }
+    .controls { padding: 12px; background: #f7f7f7; border: 1px solid #ddd; margin-bottom: 12px; }
+    button { margin-right: 8px; padding: 6px 10px; cursor: pointer; }
+    iframe { width: 100%; height: 520px; border: 1px solid #ccc; }
+    .hint { color: #555; font-size: 14px; margin-top: 6px; }
+  </style>
+</head>
+<body>
+
+  <h1>Demo: docDefinition completo (pdfmake)</h1>
+
+  <div class="controls">
+    <button id="btnPreview">Ver incrustado</button>
+    <button id="btnDownload">Descargar PDF</button>
+    <button id="btnOpen">Abrir PDF</button>
+    <button id="btnPrint">Imprimir</button>
+    <div class="hint">Este ejemplo usa un docDefinition “modelo” con: info, pageSize, márgenes, header/footer, background, styles, tablas, listas y salto de página.</div>
+  </div>
+
+  <h3>Previsualización (informe incrustado)</h3>
+  <iframe id="preview"></iframe>
+
+  <script>
+    // Genera una fecha “bonita” dd/mm/yyyy (solo para mostrar algo dinámico)
+    function fechaHoyES() {
+      const d = new Date();
+      const dd = String(d.getDate()).padStart(2, "0");
+      const mm = String(d.getMonth() + 1).padStart(2, "0");
+      const yyyy = d.getFullYear();
+      return `${dd}/${mm}/${yyyy}`;
+    }
+
+    // ---- DOCDEFINITION COMPLETO ----
+    function crearDocDefinitionCompleto() {
+      return {
+        /* =========================
+           METADATOS DEL DOCUMENTO
+        ========================= */
+        info: {
+          title: "Informe de Ventas 2026",
+          author: "Aplicación Demo DAM",
+          subject: "Resumen de ventas",
+          keywords: "ventas, informe, dam"
+        },
+
+        /* =========================
+           CONFIGURACIÓN GENERAL
+        ========================= */
+        pageSize: "A4",
+        pageOrientation: "portrait",
+        pageMargins: [40, 80, 40, 60],
+
+        /* =========================
+           FONDO (marca de agua)
+        ========================= */
+        background: {
+          text: "BORRADOR",
+          color: "gray",
+          opacity: 0.1,
+          bold: true,
+          fontSize: 80,
+          alignment: "center",
+          margin: [0, 250, 0, 0]
+        },
+
+        /* =========================
+           CABECERA DINÁMICA
+        ========================= */
+        header: function(currentPage, pageCount) {
+          return {
+            columns: [
+              { text: "Empresa XYZ", alignment: "left", margin: [40, 20, 0, 0] },
+              { text: "Informe de Ventas", alignment: "right", margin: [0, 20, 40, 0] }
+            ]
+          };
+        },
+
+        /* =========================
+           PIE DE PÁGINA
+        ========================= */
+        footer: function(currentPage, pageCount) {
+          return {
+            columns: [
+              { text: "Generado automáticamente", alignment: "left", margin: [40, 0, 0, 0] },
+              { text: currentPage + " de " + pageCount, alignment: "right", margin: [0, 0, 40, 0] }
+            ]
+          };
+        },
+
+        /* =========================
+           ESTILOS
+        ========================= */
+        styles: {
+          title: {
+            fontSize: 22,
+            bold: true,
+            margin: [0, 0, 0, 10]
+          },
+          sectionHeader: {
+            fontSize: 16,
+            bold: true,
+            margin: [0, 15, 0, 8]
+          },
+          tableHeader: {
+            bold: true,
+            fillColor: "#eeeeee"
+          }
+        },
+
+        defaultStyle: {
+          fontSize: 11
+        },
+
+        /* =========================
+           CONTENIDO DEL DOCUMENTO
+        ========================= */
+        content: [
+          // TÍTULO
+          { text: "Informe General de Ventas", style: "title", alignment: "center" },
+
+          // INFORMACIÓN EN COLUMNAS
+          {
+            columns: [
+              { text: "Fecha: " + fechaHoyES() },
+              { text: "Responsable: Departamento Comercial", alignment: "right" }
+            ]
+          },
+
+          // TEXTO NORMAL
+          {
+            text: "Este informe muestra el resumen general de ventas registradas durante el periodo seleccionado.",
+            margin: [0, 10, 0, 10]
+          },
+
+          // SECCIÓN TABLA
+          { text: "Detalle de Ventas", style: "sectionHeader" },
+
+          {
+            table: {
+              headerRows: 1,
+              widths: ["*", "auto", "auto", "auto"],
+              body: [
+                [
+                  { text: "Producto", style: "tableHeader" },
+                  { text: "Precio", style: "tableHeader" },
+                  { text: "Cantidad", style: "tableHeader" },
+                  { text: "Subtotal", style: "tableHeader" }
+                ],
+                ["Teclado", "20 €", "3", "60 €"],
+                ["Ratón", "15 €", "2", "30 €"],
+                [
+                  { text: "TOTAL", colSpan: 3, alignment: "right", bold: true },
+                  {},
+                  {},
+                  { text: "90 €", bold: true }
+                ]
+              ]
+            },
+            layout: "lightHorizontalLines"
+          },
+
+          // LISTA
+          { text: "Observaciones", style: "sectionHeader" },
+
+          {
+            ul: [
+              "Las ventas han aumentado respecto al mes anterior.",
+              "El producto más vendido ha sido el teclado.",
+              "Se recomienda revisar el stock de ratones."
+            ]
+          },
+
+          // SALTO DE PÁGINA
+          { text: "Resumen Final", style: "sectionHeader", pageBreak: "before" },
+
+          {
+            text: "Conclusión general del informe. Se observa una tendencia positiva en las ventas.",
+            margin: [0, 10, 0, 10]
+          }
+        ]
+      };
+    }
+
+    // ---- ACCIONES ----
+    const iframe = document.getElementById("preview");
+
+    document.getElementById("btnPreview").addEventListener("click", () => {
+      const doc = crearDocDefinitionCompleto();
+      pdfMake.createPdf(doc).getBlob(blob => {
+        const url = URL.createObjectURL(blob);
+        iframe.src = url;
+      });
+    });
+
+    document.getElementById("btnDownload").addEventListener("click", () => {
+      const doc = crearDocDefinitionCompleto();
+      pdfMake.createPdf(doc).download("informe_doc_completo.pdf");
+    });
+
+    document.getElementById("btnOpen").addEventListener("click", () => {
+      const doc = crearDocDefinitionCompleto();
+      pdfMake.createPdf(doc).open();
+    });
+
+    document.getElementById("btnPrint").addEventListener("click", () => {
+      const doc = crearDocDefinitionCompleto();
+      pdfMake.createPdf(doc).print();
+    });
+  </script>
+</body>
+</html>
