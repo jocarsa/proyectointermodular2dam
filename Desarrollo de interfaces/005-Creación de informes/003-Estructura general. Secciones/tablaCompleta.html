@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Tabla completa - pdfmake</title>
+
+  <!-- pdfmake CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+
+  <style>
+    body { font-family: Arial, sans-serif; margin: 24px; }
+    .controls { padding: 12px; background: #f7f7f7; border: 1px solid #ddd; margin-bottom: 12px; }
+    button { margin-right: 8px; padding: 6px 10px; cursor: pointer; }
+    iframe { width: 100%; height: 520px; border: 1px solid #ccc; }
+    .hint { color: #555; font-size: 14px; margin-top: 6px; }
+  </style>
+</head>
+<body>
+
+  <h1>Demo: Tabla completa (pdfmake)</h1>
+
+  <div class="controls">
+    <button id="btnPreview">Ver incrustado</button>
+    <button id="btnDownload">Descargar PDF</button>
+    <button id="btnOpen">Abrir PDF</button>
+    <button id="btnPrint">Imprimir</button>
+    <div class="hint">
+      Esta tabla incluye: headerRows, widths, heights, estilos de celdas, colSpan y layout con filas alternas.
+    </div>
+  </div>
+
+  <h3>Previsualización</h3>
+  <iframe id="preview"></iframe>
+
+  <script>
+    function crearDocDefinitionConTablaCompleta() {
+      // Tabla "completa" (la que vimos en teoría), metida dentro de content
+      const tablaCompleta = {
+        margin: [0, 20, 0, 20],
+
+        table: {
+          headerRows: 1,
+
+          widths: ["*", "auto", "auto", 80],
+
+          heights: function (rowIndex) {
+            return rowIndex === 0 ? 25 : 20;
+          },
+
+          body: [
+            // CABECERA
+            [
+              { text: "Producto", bold: true, fillColor: "#dddddd", alignment: "center" },
+              { text: "Precio", bold: true, fillColor: "#dddddd", alignment: "center" },
+              { text: "Cantidad", bold: true, fillColor: "#dddddd", alignment: "center" },
+              { text: "Subtotal", bold: true, fillColor: "#dddddd", alignment: "center" }
+            ],
+
+            // FILAS NORMALES
+            [
+              { text: "Teclado" },
+              { text: "20 €", alignment: "right" },
+              { text: "3", alignment: "center" },
+              { text: "60 €", alignment: "right" }
+            ],
+
+            [
+              { text: "Ratón" },
+              { text: "15 €", alignment: "right" },
+              { text: "2", alignment: "center" },
+              { text: "30 €", alignment: "right" }
+            ],
+
+            // EJEMPLO CON COLSPAN
+            [
+              { text: "Descuento aplicado", colSpan: 3, alignment: "right", italics: true },
+              {},
+              {},
+              { text: "-10 €", alignment: "right", color: "red" }
+            ],
+
+            // FILA TOTAL
+            [
+              { text: "TOTAL", colSpan: 3, alignment: "right", bold: true },
+              {},
+              {},
+              { text: "80 €", bold: true, alignment: "right" }
+            ]
+          ]
+        },
+
+        // Layout personalizado: filas alternas (tipo "zebra")
+        layout: {
+          fillColor: function (rowIndex) {
+            if (rowIndex === 0) return null; // cabecera sin zebra
+            return rowIndex % 2 === 0 ? "#f9f9f9" : null;
+          }
+        }
+      };
+
+      // Documento completo con esa tabla dentro de content
+      return {
+        info: {
+          title: "Ejemplo de tabla completa",
+          author: "Demo DAM",
+          subject: "Tablas en pdfmake",
+          keywords: "pdfmake, tabla, colspan"
+        },
+
+        pageSize: "A4",
+        pageOrientation: "portrait",
+        pageMargins: [40, 60, 40, 60],
+
+        styles: {
+          title: { fontSize: 18, bold: true, margin: [0, 0, 0, 10] }
+        },
+
+        defaultStyle: { fontSize: 11 },
+
+        content: [
+          { text: "Ejemplo de tabla completa", style: "title", alignment: "center" },
+          { text: "A continuación se muestra una tabla con configuración avanzada.", margin: [0, 0, 0, 10] },
+          tablaCompleta,
+          { text: "Fin del ejemplo.", margin: [0, 10, 0, 0], italics: true }
+        ]
+      };
+    }
+
+    const iframe = document.getElementById("preview");
+
+    document.getElementById("btnPreview").addEventListener("click", () => {
+      const doc = crearDocDefinitionConTablaCompleta();
+      pdfMake.createPdf(doc).getBlob(blob => {
+        const url = URL.createObjectURL(blob);
+        iframe.src = url;
+      });
+    });
+
+    document.getElementById("btnDownload").addEventListener("click", () => {
+      const doc = crearDocDefinitionConTablaCompleta();
+      pdfMake.createPdf(doc).download("tabla_completa.pdf");
+    });
+
+    document.getElementById("btnOpen").addEventListener("click", () => {
+      const doc = crearDocDefinitionConTablaCompleta();
+      pdfMake.createPdf(doc).open();
+    });
+
+    document.getElementById("btnPrint").addEventListener("click", () => {
+      const doc = crearDocDefinitionConTablaCompleta();
+      pdfMake.createPdf(doc).print();
+    });
+  </script>
+</body>
+</html>
