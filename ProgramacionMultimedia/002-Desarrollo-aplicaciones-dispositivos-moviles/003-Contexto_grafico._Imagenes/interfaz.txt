@@ -1,0 +1,9 @@
+Iconos:	
+	- Añadid un nuevo icono en la rotación de avatares
+	- Cambiad un avatar de los predefinidos
+	- Cambiad el icono de la app
+
+Código:
+	- Añadid un nuevo campo cervezas al alumno
+	- Mostrad el contador de cervezas en la tarjeta
+	- Añadid un botón filtro en la interfaz que muestre a solo los que tienen mas de 5 cervezas
