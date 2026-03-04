@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Numeración, recuentos y totales - pdfmake</title>
+
+  <!-- pdfmake CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+
+  <style>
+    body { font-family: Arial, sans-serif; margin: 24px; }
+    .controls { padding: 12px; background: #f7f7f7; border: 1px solid #ddd; margin-bottom: 12px; }
+    label { margin-right: 12px; }
+    input { margin-left: 6px; }
+    button { margin-right: 8px; padding: 6px 10px; cursor: pointer; }
+    iframe { width: 100%; height: 520px; border: 1px solid #ccc; }
+    .hint { color: #555; font-size: 14px; margin-top: 6px; }
+  </style>
+</head>
+<body>
+
+  <h1>Demo: Numeración, recuentos y totales</h1>
+
+  <div class="controls">
+    <label>
+      Buscar producto:
+      <input type="text" id="producto" placeholder="Ej: teclado">
+    </label>
+
+    <label>
+      Cantidad mínima:
+      <input type="number" id="minCantidad" value="0" min="0" style="width:70px;">
+    </label>
+
+    <button id="btnPreview">Ver incrustado</button>
+    <button id="btnDownload">Descargar PDF</button>
+    <button id="btnOpen">Abrir PDF</button>
+    <button id="btnPrint">Imprimir</button>
+
+    <div class="hint">
+      El PDF muestra: Nº de línea, recuento de registros (totales y filtrados), subtotal por línea y total general.
+    </div>
+  </div>
+
+  <h3>Previsualización</h3>
+  <iframe id="preview"></iframe>
+
+  <script>
+    // Datos simulados
+    const ventas = [
+      { producto: "Teclado", precio: 20, cantidad: 3 },
+      { producto: "Ratón", precio: 15, cantidad: 2 },
+      { producto: "Monitor", precio: 200, cantidad: 1 },
+      { producto: "Alfombrilla", precio: 8, cantidad: 5 },
+      { producto: "Portátil", precio: 800, cantidad: 1 },
+      { producto: "Webcam", precio: 45, cantidad: 4 },
+      { producto: "Auriculares", precio: 35, cantidad: 2 }
+    ];
+
+    // Filtrado
+    function filtrarVentas(textoBusqueda, minCantidad) {
+      const term = textoBusqueda.trim().toLowerCase();
+      const resultado = [];
+
+      ventas.forEach(v => {
+        const coincideTexto = term === "" || v.producto.toLowerCase().includes(term);
+        const coincideCantidad = v.cantidad >= minCantidad;
+
+        if (coincideTexto && coincideCantidad) {
+          resultado.push(v);
+        }
+      });
+
+      return resultado;
+    }
+
+    // Construye un docDefinition que incluye numeración, recuentos y totales
+    function buildDocDefinition(rows, params) {
+      // Recuentos
+      const totalRegistrosSinFiltrar = ventas.length;
+      const totalRegistrosFiltrados = rows.length;
+
+      // Construcción de tabla + totales
+      let totalGeneral = 0;
+      const body = [];
+
+      // Cabecera
+      body.push([
+        { text: "Nº", bold: true, fillColor: "#eeeeee", alignment: "center" },
+        { text: "Producto", bold: true, fillColor: "#eeeeee" },
+        { text: "Precio", bold: true, fillColor: "#eeeeee", alignment: "right" },
+        { text: "Cantidad", bold: true, fillColor: "#eeeeee", alignment: "center" },
+        { text: "Subtotal", bold: true, fillColor: "#eeeeee", alignment: "right" }
+      ]);
+
+      // Filas + numeración + subtotal por línea
+      rows.forEach((r, index) => {
+        const subtotal = r.precio * r.cantidad;
+        totalGeneral += subtotal;
+
+        body.push([
+          { text: String(index + 1), alignment: "center" }, // numeración
+          r.producto,
+          { text: r.precio + " €", alignment: "right" },
+          { text: String(r.cantidad), alignment: "center" },
+          { text: subtotal + " €", alignment: "right" }
+        ]);
+      });
+
+      // Si no hay filas, avisamos en la tabla
+      if (rows.length === 0) {
+        body.push([
+          { text: "No hay resultados con esos filtros", colSpan: 5, italics: true, color: "gray", alignment: "center" },
+          {}, {}, {}, {}
+        ]);
+      }
+
+      // Fila TOTAL
+      body.push([
+        { text: "TOTAL", colSpan: 4, alignment: "right", bold: true },
+        {}, {}, {},
+        { text: totalGeneral + " €", bold: true, alignment: "right" }
+      ]);
+
+      return {
+        info: {
+          title: "Informe: numeración, recuentos y totales",
+          author: "Demo DAM",
+          subject: "Informes con pdfmake",
+          keywords: "pdfmake, totales, recuentos, numeracion"
+        },
+
+        pageSize: "A4",
+        pageOrientation: "portrait",
+        pageMargins: [40, 60, 40, 60],
+
+        header: function(currentPage, pageCount) {
+          return {
+            columns: [
+              { text: "Empresa XYZ", margin: [40, 15, 0, 0] },
+              { text: "Informe de Ventas", alignment: "right", margin: [0, 15, 40, 0] }
+            ]
+          };
+        },
+
+        footer: function(currentPage, pageCount) {
+          return {
+            columns: [
+              { text: "Generado en cliente (Front-only)", margin: [40, 0, 0, 0] },
+              { text: currentPage + " de " + pageCount, alignment: "right", margin: [0, 0, 40, 0] }
+            ]
+          };
+        },
+
+        styles: {
+          title: { fontSize: 18, bold: true, margin: [0, 0, 0, 10] },
+          label: { bold: true }
+        },
+
+        defaultStyle: { fontSize: 11 },
+
+        content: [
+          { text: "Numeración de líneas, recuentos y totales", style: "title", alignment: "center" },
+
+          // Parámetros + recuentos (fuera de la tabla)
+          {
+            text:
+              `Parámetros:\n` +
+              `- Búsqueda: ${params.q || "Todos"}\n` +
+              `- Cantidad mínima: ${params.minCantidad}\n\n` +
+              `Recuentos:\n` +
+              `- Registros totales (sin filtrar): ${totalRegistrosSinFiltrar}\n` +
+              `- Registros mostrados (filtrados): ${totalRegistrosFiltrados}`,
+            margin: [0, 0, 0, 10]
+          },
+
+          // Tabla
+          {
+            table: {
+              headerRows: 1,
+              widths: [30, "*", 60, 60, 70],
+              body: body
+            },
+            layout: "lightHorizontalLines"
+          }
+        ]
+      };
+    }
+
+    function generarDoc() {
+      const producto = document.getElementById("producto").value;
+      const minCantidad = parseInt(document.getElementById("minCantidad").value) || 0;
+
+      const rows = filtrarVentas(producto, minCantidad);
+      return buildDocDefinition(rows, { producto, minCantidad });
+    }
+
+    // Acciones
+    const iframe = document.getElementById("preview");
+
+    document.getElementById("btnPreview").addEventListener("click", () => {
+      const doc = generarDoc();
+      pdfMake.createPdf(doc).getBlob(blob => {
+        const url = URL.createObjectURL(blob);
+        iframe.src = url;
+      });
+    });
+
+    document.getElementById("btnDownload").addEventListener("click", () => {
+      const doc = generarDoc();
+      pdfMake.createPdf(doc).download("informe_numeracion_recuentos_totales.pdf");
+    });
+
+    document.getElementById("btnOpen").addEventListener("click", () => {
+      const doc = generarDoc();
+      pdfMake.createPdf(doc).open();
+    });
+
+    document.getElementById("btnPrint").addEventListener("click", () => {
+      const doc = generarDoc();
+      pdfMake.createPdf(doc).print();
+    });
+
+    // Preview automática al cargar
+    document.getElementById("btnPreview").click();
+  </script>
+</body>
+</html>

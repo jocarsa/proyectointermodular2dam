@@ -3,12 +3,22 @@ package com.example.desarrollodeaplicacionesparadispositivosmviles
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 
 class MainActivity : ComponentActivity() {
@@ -37,7 +47,6 @@ fun PantallaGrupoCompleta() {
     val grupo = remember { crearGrupoDemo() }
 
     // Estado: alumnos en memoria (lista mutable observable por Compose)
-    // Añade todos los alumnos a esta lista
     val alumnos = remember { mutableStateListOf<Alumno>().apply { addAll(grupo.alumnos) } }
 
     // Estado: filtro actual
@@ -53,21 +62,18 @@ fun PantallaGrupoCompleta() {
 
     // ID automático
     var siguienteId by remember {
-        mutableStateOf(
-            (alumnos.maxOfOrNull { it.id } ?: 0) + 1
-        )
+        mutableStateOf((alumnos.maxOfOrNull { it.id } ?: 0) + 1)
     }
 
-    // Filtrado
-    val alumnosFiltrados: List<Alumno>
-
-    if (filtro == Filtro.TODOS) {
-        alumnosFiltrados = alumnos
-    } else if (filtro == Filtro.MAYORES) {
-        alumnosFiltrados = alumnos.filter { it.edad >= 18 }
-    } else {
-        alumnosFiltrados = alumnos.filter { esAlumnoInvalido(it) }
-    }
+    // Filtrado (versión clásica)
+    val alumnosFiltrados: List<Alumno> =
+        if (filtro == Filtro.TODOS) {
+            alumnos
+        } else if (filtro == Filtro.MAYORES) {
+            alumnos.filter { it.edad >= 18 }
+        } else {
+            alumnos.filter { esAlumnoInvalido(it) }
+        }
 
     val scrollState = rememberScrollState()
 
@@ -89,16 +95,24 @@ fun PantallaGrupoCompleta() {
         Text(text = "Filtro:", style = MaterialTheme.typography.titleMedium)
         Spacer(modifier = Modifier.height(6.dp))
 
-        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            Button(onClick = { filtro = Filtro.TODOS; mensaje = "Mostrando todos." }, modifier = Modifier.weight(1f)) {
-                Text("Todos")
-            }
-            Button(onClick = { filtro = Filtro.MAYORES; mensaje = "Mostrando mayores de edad." }, modifier = Modifier.weight(1f)) {
-                Text("Mayores")
-            }
-            Button(onClick = { filtro = Filtro.INVALIDOS; mensaje = "Mostrando inválidos." }, modifier = Modifier.weight(1f)) {
-                Text("Inválidos")
-            }
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Button(
+                onClick = { filtro = Filtro.TODOS; mensaje = "Mostrando todos." },
+                modifier = Modifier.weight(1f)
+            ) { Text("Todos") }
+
+            Button(
+                onClick = { filtro = Filtro.MAYORES; mensaje = "Mostrando mayores de edad." },
+                modifier = Modifier.weight(1f)
+            ) { Text("Mayores") }
+
+            Button(
+                onClick = { filtro = Filtro.INVALIDOS; mensaje = "Mostrando inválidos." },
+                modifier = Modifier.weight(1f)
+            ) { Text("Inválidos") }
         }
 
         Spacer(modifier = Modifier.height(12.dp))
@@ -188,7 +202,6 @@ fun PantallaGrupoCompleta() {
         Spacer(modifier = Modifier.height(8.dp))
 
         alumnosFiltrados.forEach { alumno ->
-            // Asignamos el valor de cada parámetro de la función por nombre del parámetro y no por orden de estos
             AlumnoItem(alumno = alumno)
             Spacer(modifier = Modifier.height(8.dp))
         }
@@ -201,18 +214,105 @@ fun PantallaGrupoCompleta() {
     }
 }
 
+/**
+ * Asigna una imagen NORMAL (bitmap) distinta según el id del alumno.
+ * Necesitas en drawable: avatar1, avatar2, avatar3
+ */
+fun avatarParaAlumno(alumno: Alumno): Int {
+    return when (alumno.id % 3) {
+        0 -> R.drawable.avatar1
+        1 -> R.drawable.avatar2
+        else -> R.drawable.avatar3
+    }
+}
+
+/**
+ * Icono de estado usando SOLO ICONOS BÁSICOS (sin material-icons-extended)
+ * - inválido -> Close
+ * - menor -> Info
+ * - OK -> Check
+ */
+@Composable
+fun IconoEstadoAlumno(alumno: Alumno) {
+    val invalido = esAlumnoInvalido(alumno)
+    val esMenor = alumno.edad in 0..17
+
+    when {
+        invalido -> Icon(
+            imageVector = Icons.Filled.Close,
+            contentDescription = "Alumno inválido"
+        )
+        esMenor -> Icon(
+            imageVector = Icons.Filled.Info,
+            contentDescription = "Alumno menor"
+        )
+        else -> Icon(
+            imageVector = Icons.Filled.Check,
+            contentDescription = "Alumno correcto"
+        )
+    }
+}
+
 @Composable
 fun AlumnoItem(alumno: Alumno) {
     val categoria = etiquetaEdad(alumno.edad)
     val emailTexto = alumno.email ?: "sin email"
     val invalido = esAlumnoInvalido(alumno)
 
+    val avatarRes = avatarParaAlumno(alumno)
+
     Card(modifier = Modifier.fillMaxWidth()) {
-        Column(modifier = Modifier.padding(12.dp)) {
-            Text(text = "${alumno.nombre} (id=${alumno.id})", style = MaterialTheme.typography.titleMedium)
-            Text(text = "Edad: ${alumno.edad} -> $categoria")
-            Text(text = "Email: $emailTexto")
-            Text(text = "Estado: ${if (invalido) "INVÁLIDO" else "OK"}")
+        Row(
+            modifier = Modifier.padding(12.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+
+            // IMAGEN NORMAL (bitmap) + AVATAR CIRCULAR
+            Image(
+                // La imagen que pintamos
+                painter = painterResource(id = avatarRes),
+                // Descripción interna de la imagen
+                contentDescription = "Avatar de ${alumno.nombre}",
+                // Modificadores (tamaño y forma circular)
+                modifier = Modifier
+                    .size(64.dp)
+                    .clip(CircleShape),
+                // Ajuste de la imagen. Si sobra espacio lo recorta en vez de deformar la imagen
+                contentScale = ContentScale.Crop
+            )
+
+            Spacer(modifier = Modifier.width(12.dp))
+
+            Column(modifier = Modifier.weight(1f)) {
+
+                Row(verticalAlignment = Alignment.CenterVertically) {
+
+                    // VECTOR DRAWABLE creado con Vector Asset (ic_student.xml)
+                    // Sobre el icono podríamos interactuar, aunque no lo hemos implementado aún.
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_student),
+                        contentDescription = "Icono alumno"
+                    )
+
+                    Spacer(modifier = Modifier.width(8.dp))
+
+                    Text(
+                        text = "${alumno.nombre} (id=${alumno.id})",
+                        style = MaterialTheme.typography.titleMedium
+                    )
+
+                    Spacer(modifier = Modifier.width(8.dp))
+
+                    // ICONO DE ESTADO dinámico
+                    IconoEstadoAlumno(alumno)
+                }
+
+                Spacer(modifier = Modifier.height(6.dp))
+
+                Text(text = "Edad: ${alumno.edad} -> $categoria")
+                Text(text = "Email: $emailTexto")
+                Text(text = "Estado: ${if (invalido) "INVÁLIDO" else "OK"}")
+            }
         }
     }
 }
