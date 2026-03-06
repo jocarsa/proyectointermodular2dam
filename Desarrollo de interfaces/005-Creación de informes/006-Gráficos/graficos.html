@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Informe con gráficos - pdfmake + Chart.js</title>
+
+  <!-- pdfmake -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    body {
+      font-family: Arial;
+      margin: 24px;
+    }
+
+    .controls {
+      background: #f7f7f7;
+      padding: 12px;
+      border: 1px solid #ddd;
+      margin-bottom: 20px;
+    }
+
+    button {
+      padding: 6px 10px;
+      margin-right: 8px;
+      cursor: pointer;
+    }
+
+    canvas {
+      max-width: 600px;
+      margin-bottom: 30px;
+    }
+
+    iframe {
+      width: 100%;
+      height: 520px;
+      border: 1px solid #ccc;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1>Informe con gráficos (pdfmake + Chart.js)</h1>
+
+  <div class="controls">
+    <button id="preview">Ver incrustado</button>
+    <button id="download">Descargar PDF</button>
+    <button id="open">Abrir PDF</button>
+    <button id="print">Imprimir</button>
+  </div>
+
+  <h3>Gráfico de barras</h3>
+  <canvas id="graficoBarras"></canvas>
+
+  <h3>Gráfico de quesito</h3>
+  <canvas id="graficoPie"></canvas>
+
+  <h3>Previsualización PDF</h3>
+  <iframe id="previewFrame"></iframe>
+
+  <script>
+
+    /* =============================
+       DATOS DE EJEMPLO
+    ============================= */
+
+    const ventas = [
+      { producto: "Teclado", precio: 20, cantidad: 3 },
+      { producto: "Ratón", precio: 15, cantidad: 2 },
+      { producto: "Monitor", precio: 200, cantidad: 1 },
+      { producto: "Alfombrilla", precio: 8, cantidad: 5 },
+      { producto: "Webcam", precio: 45, cantidad: 4 }
+    ];
+
+
+    /* =============================
+       CREACIÓN GRÁFICOS
+    ============================= */
+
+    let graficoBarras;
+    let graficoPie;
+
+    function crearGraficos() {
+
+      const labels = [];
+      const cantidades = [];
+
+      ventas.forEach(v => {
+        labels.push(v.producto);
+        cantidades.push(v.cantidad);
+      });
+
+      /* GRÁFICO DE BARRAS */
+
+      const ctxBarras = document.getElementById("graficoBarras");
+
+      graficoBarras = new Chart(ctxBarras, {
+        type: "bar",
+        data: {
+          labels: labels,
+          datasets: [
+            {
+              label: "Cantidad vendida",
+              data: cantidades,
+              borderWidth: 1
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          animation: false,
+          plugins: {
+            title: {
+              display: true,
+              text: "Ventas por producto"
+            }
+          },
+          scales: {
+            y: { beginAtZero: true }
+          }
+        }
+      });
+
+      /* GRÁFICO DE QUESITO */
+
+      const ctxPie = document.getElementById("graficoPie");
+
+      graficoPie = new Chart(ctxPie, {
+        type: "pie",
+        data: {
+          labels: labels,
+          datasets: [
+            {
+              data: cantidades
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          animation: false,
+          plugins: {
+            title: {
+              display: true,
+              text: "Distribución de ventas"
+            }
+          }
+        }
+      });
+
+    }
+
+
+    /* =============================
+       TABLA
+    ============================= */
+
+    function construirTabla() {
+
+      const body = [];
+
+      body.push([
+        { text: "Producto", bold: true, fillColor: "#eeeeee" },
+        { text: "Precio", bold: true, fillColor: "#eeeeee", alignment: "right" },
+        { text: "Cantidad", bold: true, fillColor: "#eeeeee", alignment: "center" },
+        { text: "Subtotal", bold: true, fillColor: "#eeeeee", alignment: "right" }
+      ]);
+
+      let total = 0;
+
+      ventas.forEach(v => {
+
+        const subtotal = v.precio * v.cantidad;
+        total += subtotal;
+
+        body.push([
+          v.producto,
+          { text: v.precio + " €", alignment: "right" },
+          { text: v.cantidad, alignment: "center" },
+          { text: subtotal + " €", alignment: "right" }
+        ]);
+
+      });
+
+      body.push([
+        { text: "TOTAL", colSpan: 3, bold: true, alignment: "right" },
+        {},
+        {},
+        { text: total + " €", bold: true, alignment: "right" }
+      ]);
+
+      return body;
+    }
+
+
+    /* =============================
+       DOCDEFINITION
+    ============================= */
+
+    function crearDocumento() {
+
+      const imgBarras = document.getElementById("graficoBarras").toDataURL("image/png");
+      const imgPie = document.getElementById("graficoPie").toDataURL("image/png");
+
+      return {
+
+        info: {
+          title: "Informe de ventas",
+          author: "Demo DAM"
+        },
+
+        pageMargins: [40, 60, 40, 60],
+
+        header: function (currentPage, pageCount) {
+          return {
+            columns: [
+              { text: "Empresa XYZ", margin: [40, 20, 0, 0] },
+              { text: "Informe de ventas", alignment: "right", margin: [0, 20, 40, 0] }
+            ]
+          };
+        },
+
+        footer: function (currentPage, pageCount) {
+          return {
+            columns: [
+              { text: "Generado con Chart.js y pdfmake", margin: [40, 0, 0, 0] },
+              { text: currentPage + " de " + pageCount, alignment: "right", margin: [0, 0, 40, 0] }
+            ]
+          };
+        },
+
+        styles: {
+          titulo: {
+            fontSize: 18,
+            bold: true,
+            margin: [0, 0, 0, 10]
+          },
+          seccion: {
+            fontSize: 14,
+            bold: true,
+            margin: [0, 15, 0, 10]
+          }
+        },
+
+        content: [
+
+          { text: "Informe de ventas con gráficos", style: "titulo", alignment: "center" },
+
+          { text: "Tabla de ventas", style: "seccion" },
+
+          {
+            table: {
+              headerRows: 1,
+              widths: ["*", 60, 60, 70],
+              body: construirTabla()
+            },
+            layout: "lightHorizontalLines"
+          },
+
+          { text: "Gráfico de barras", style: "seccion" },
+
+          {
+            image: imgBarras,
+            width: 450,
+            alignment: "center"
+          },
+
+          { text: "Gráfico de quesito", style: "seccion" },
+
+          {
+            image: imgPie,
+            width: 350,
+            alignment: "center"
+          }
+
+        ]
+
+      };
+
+    }
+
+
+    /* =============================
+       BOTONES
+    ============================= */
+
+    const iframe = document.getElementById("previewFrame");
+
+    document.getElementById("preview").onclick = () => {
+
+      const doc = crearDocumento();
+
+      pdfMake.createPdf(doc).getBlob(blob => {
+        const url = URL.createObjectURL(blob);
+        iframe.src = url;
+      });
+
+    };
+
+    document.getElementById("download").onclick = () => {
+      pdfMake.createPdf(crearDocumento()).download("informe_ventas.pdf");
+    };
+
+    document.getElementById("open").onclick = () => {
+      pdfMake.createPdf(crearDocumento()).open();
+    };
+
+    document.getElementById("print").onclick = () => {
+      pdfMake.createPdf(crearDocumento()).print();
+    };
+
+
+    /* =============================
+       INICIO
+    ============================= */
+
+    crearGraficos();
+
+    setTimeout(() => {
+      document.getElementById("preview").click();
+    }, 400);
+
+  </script>
+
+</body>
+</html>
