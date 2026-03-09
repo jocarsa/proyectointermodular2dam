@@ -1,0 +1,6 @@
+Crea un informe a partir de los datos del archivo "ventasEjercicio.json"
+	- Utiliza todos los datos de este archivo para generar el informe
+		- Añade empresa y año en la cabecera del documento
+	- Genera una tabla con todos los datos de ventas
+		- En el atributo "vendedor" de cada venta tendrás que mostrar su nombre, no la id
+		- Tienes los nombres en el array "vendedores"

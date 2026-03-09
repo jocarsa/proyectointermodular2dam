@@ -1,0 +1,97 @@
+{
+  "empresa": "TechStore S.L.",
+  "anio": 2025,
+
+  "vendedores": [
+    { "id": 1, "nombre": "Ana" },
+    { "id": 2, "nombre": "Carlos" },
+    { "id": 3, "nombre": "Lucía" },
+    { "id": 4, "nombre": "Pedro" }
+  ],
+
+  "ventas": [
+    {
+      "mes": "Enero",
+      "operaciones": [
+        {
+          "id": 101,
+          "vendedor": 1,
+          "productos": [
+            { "nombre": "Portátil Lenovo", "categoria": "Ordenadores", "precio": 850, "cantidad": 1 },
+            { "nombre": "Ratón Logitech", "categoria": "Periféricos", "precio": 25, "cantidad": 2 }
+          ]
+        },
+        {
+          "id": 102,
+          "vendedor": 2,
+          "productos": [
+            { "nombre": "Monitor Samsung 24", "categoria": "Pantallas", "precio": 210, "cantidad": 2 }
+          ]
+        }
+      ]
+    },
+
+    {
+      "mes": "Febrero",
+      "operaciones": [
+        {
+          "id": 201,
+          "vendedor": 3,
+          "productos": [
+            { "nombre": "Auriculares Sony", "categoria": "Audio", "precio": 90, "cantidad": 3 },
+            { "nombre": "Altavoces Logitech", "categoria": "Audio", "precio": 70, "cantidad": 2 }
+          ]
+        },
+        {
+          "id": 202,
+          "vendedor": 1,
+          "productos": [
+            { "nombre": "Tablet Samsung", "categoria": "Dispositivos", "precio": 320, "cantidad": 1 }
+          ]
+        }
+      ]
+    },
+
+    {
+      "mes": "Marzo",
+      "operaciones": [
+        {
+          "id": 301,
+          "vendedor": 4,
+          "productos": [
+            { "nombre": "Portátil HP", "categoria": "Ordenadores", "precio": 780, "cantidad": 1 }
+          ]
+        },
+        {
+          "id": 302,
+          "vendedor": 2,
+          "productos": [
+            { "nombre": "Impresora HP", "categoria": "Impresión", "precio": 150, "cantidad": 2 },
+            { "nombre": "Webcam Logitech", "categoria": "Periféricos", "precio": 55, "cantidad": 3 }
+          ]
+        }
+      ]
+    },
+
+    {
+      "mes": "Abril",
+      "operaciones": [
+        {
+          "id": 401,
+          "vendedor": 1,
+          "productos": [
+            { "nombre": "Teclado Microsoft", "categoria": "Periféricos", "precio": 40, "cantidad": 4 }
+          ]
+        },
+        {
+          "id": 402,
+          "vendedor": 3,
+          "productos": [
+            { "nombre": "Monitor Dell 24", "categoria": "Pantallas", "precio": 230, "cantidad": 1 },
+            { "nombre": "Altavoces JBL", "categoria": "Audio", "precio": 95, "cantidad": 2 }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Informe desde JSON - pdfmake</title>
+
+  <!-- pdfmake -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+
+  <style>
+    body {
+      font-family: Arial;
+      margin: 24px;
+    }
+
+    .controls {
+      padding: 12px;
+      background: #f7f7f7;
+      border: 1px solid #ddd;
+      margin-bottom: 12px;
+    }
+
+    button {
+      margin-right: 8px;
+      padding: 6px 10px;
+      cursor: pointer;
+    }
+
+    iframe {
+      width: 100%;
+      height: 520px;
+      border: 1px solid #ccc;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1>Informe de ventas desde JSON</h1>
+
+  <div class="controls">
+
+    <label>
+      Producto:
+      <input type="text" id="producto">
+    </label>
+
+    <label>
+      Cantidad mínima:
+      <input type="number" id="minCantidad" value="0">
+    </label>
+
+    <button id="btnPreview">Ver incrustado</button>
+    <button id="btnOpenTab">Abrir en nueva pestaña</button>
+    <button id="btnDownload">Descargar PDF</button>
+    <button id="btnPrint">Imprimir</button>
+
+  </div>
+
+  <iframe id="viewer"></iframe>
+
+  <script>
+
+    let ventas = [];
+
+    /* ==============================
+       CARGAR JSON
+    ============================== */
+
+    async function cargarDatos() {
+      const response = await fetch("ventas.json");
+      ventas = await response.json();
+
+      generarInforme();
+    }
+
+    /* ==============================
+       FILTRADO
+    ============================== */
+
+    function filtrarVentas(producto, minCantidad) {
+
+      const term = producto.toLowerCase();
+
+      return ventas.filter(v => {
+        return (
+          (term === "" || v.producto.toLowerCase().includes(term)) &&
+          v.cantidad >= minCantidad
+        );
+      });
+
+    }
+
+    /* ==============================
+       CONSTRUCCIÓN TABLA
+    ============================== */
+
+    function crearDocumento(rows) {
+
+      let total = 0;
+
+      const body = [];
+
+      body.push([
+        { text: "Nº", bold: true, fillColor: "#eeeeee" },
+        { text: "Producto", bold: true, fillColor: "#eeeeee" },
+        { text: "Categoría", bold: true, fillColor: "#eeeeee" },
+        { text: "Precio", bold: true, fillColor: "#eeeeee", alignment: "right" },
+        { text: "Cantidad", bold: true, fillColor: "#eeeeee", alignment: "center" },
+        { text: "Subtotal", bold: true, fillColor: "#eeeeee", alignment: "right" }
+      ]);
+
+      rows.forEach((v, i) => {
+
+        const subtotal = v.precio * v.cantidad;
+        total += subtotal;
+
+        body.push([
+          i + 1,
+          v.producto,
+          v.categoria,
+          { text: v.precio + " €", alignment: "right" },
+          { text: v.cantidad, alignment: "center" },
+          { text: subtotal + " €", alignment: "right" }
+        ]);
+
+      });
+
+      body.push([
+        { text: "TOTAL", colSpan: 5, alignment: "right", bold: true },
+        {},
+        {},
+        {},
+        {},
+        { text: total + " €", bold: true, alignment: "right" }
+      ]);
+
+      return {
+
+        info: {
+          title: "Informe de ventas desde JSON",
+          author: "Demo DAM"
+        },
+
+        pageMargins: [40, 60, 40, 60],
+
+        styles: {
+          header: {
+            fontSize: 18,
+            bold: true,
+            margin: [0, 0, 0, 10]
+          }
+        },
+
+        content: [
+
+          {
+            text: "Informe de ventas desde JSON",
+            style: "header",
+            alignment: "center"
+          },
+
+          {
+            table: {
+              headerRows: 1,
+              widths: [30, "*", "*", 60, 60, 70],
+              body: body
+            },
+            layout: "lightHorizontalLines"
+          }
+
+        ]
+
+      };
+
+    }
+
+    /* ==============================
+       GENERAR INFORME
+    ============================== */
+
+    function obtenerParametros() {
+
+      const producto = document.getElementById("producto").value;
+      const minCantidad = parseInt(document.getElementById("minCantidad").value) || 0;
+
+      return { producto, minCantidad };
+
+    }
+
+    function generarInforme() {
+
+      const params = obtenerParametros();
+      const rows = filtrarVentas(params.producto, params.minCantidad);
+      const doc = crearDocumento(rows);
+
+      pdfMake.createPdf(doc).getBlob(blob => {
+        const url = URL.createObjectURL(blob);
+        document.getElementById("viewer").src = url;
+      });
+
+    }
+
+    function abrirNuevaPestana() {
+
+      const params = obtenerParametros();
+      const rows = filtrarVentas(params.producto, params.minCantidad);
+      const doc = crearDocumento(rows);
+
+      pdfMake.createPdf(doc).open();
+
+    }
+
+    function descargarPDF() {
+
+      const params = obtenerParametros();
+      const rows = filtrarVentas(params.producto, params.minCantidad);
+      const doc = crearDocumento(rows);
+
+      pdfMake.createPdf(doc).download("informe_ventas.json.pdf");
+
+    }
+
+    function imprimirPDF() {
+
+      const params = obtenerParametros();
+      const rows = filtrarVentas(params.producto, params.minCantidad);
+      const doc = crearDocumento(rows);
+
+      pdfMake.createPdf(doc).print();
+
+    }
+
+    /* ==============================
+       EVENTOS
+    ============================== */
+
+    document.getElementById("btnPreview").addEventListener("click", generarInforme);
+
+    document.getElementById("btnOpenTab").addEventListener("click", abrirNuevaPestana);
+
+    document.getElementById("btnDownload").addEventListener("click", descargarPDF);
+
+    document.getElementById("btnPrint").addEventListener("click", imprimirPDF);
+
+    /* ==============================
+       INICIO
+    ============================== */
+
+    cargarDatos();
+
+  </script>
+
+</body>
+</html>

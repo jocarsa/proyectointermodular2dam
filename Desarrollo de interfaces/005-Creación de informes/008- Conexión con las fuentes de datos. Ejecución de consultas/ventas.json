@@ -1,0 +1,12 @@
+[
+  { "producto": "Teclado", "precio": 20, "cantidad": 3, "categoria": "Periféricos", "cliente": "Juan", "fecha": "2025-01-10" },
+  { "producto": "Ratón", "precio": 15, "cantidad": 2, "categoria": "Periféricos", "cliente": "Ana", "fecha": "2025-01-11" },
+  { "producto": "Monitor", "precio": 200, "cantidad": 1, "categoria": "Pantallas", "cliente": "Carlos", "fecha": "2025-01-12" },
+  { "producto": "Alfombrilla", "precio": 8, "cantidad": 5, "categoria": "Periféricos", "cliente": "Laura", "fecha": "2025-01-13" },
+  { "producto": "Portátil", "precio": 800, "cantidad": 1, "categoria": "Ordenadores", "cliente": "Pedro", "fecha": "2025-01-14" },
+  { "producto": "Webcam", "precio": 45, "cantidad": 4, "categoria": "Periféricos", "cliente": "Lucía", "fecha": "2025-01-15" },
+  { "producto": "Auriculares", "precio": 35, "cantidad": 2, "categoria": "Audio", "cliente": "Sergio", "fecha": "2025-01-16" },
+  { "producto": "Impresora", "precio": 150, "cantidad": 1, "categoria": "Impresión", "cliente": "Marta", "fecha": "2025-01-17" },
+  { "producto": "Tablet", "precio": 300, "cantidad": 2, "categoria": "Dispositivos", "cliente": "Raúl", "fecha": "2025-01-18" },
+  { "producto": "Altavoces", "precio": 60, "cantidad": 3, "categoria": "Audio", "cliente": "Eva", "fecha": "2025-01-19" }
+]
