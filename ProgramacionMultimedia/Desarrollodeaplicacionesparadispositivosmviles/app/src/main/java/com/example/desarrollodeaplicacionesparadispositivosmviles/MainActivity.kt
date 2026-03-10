@@ -7,17 +7,13 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -27,6 +23,8 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 
@@ -37,58 +35,10 @@ class MainActivity : ComponentActivity() {
         setContent {
             MaterialTheme {
                 Surface(modifier = Modifier.fillMaxSize()) {
-                    AppPantallas()
+                    PantallaGrupoCompleta()
                 }
             }
         }
-    }
-}
-
-// --------------------------------------------------
-// CONTROL SIMPLE DE ESCENAS
-// --------------------------------------------------
-enum class Escena {
-    ALUMNOS, PROFESORES
-}
-
-@Composable
-fun AppPantallas() {
-    var escenaActual by remember { mutableStateOf(Escena.ALUMNOS) }
-
-    // Datos iniciales del grupo
-    val grupo = remember { crearGrupoDemo() }
-
-    // La lista de alumnos vive ahora en AppPantallas()
-    // Así NO se pierde al cambiar de escena
-    val alumnos = remember {
-        mutableStateListOf<Alumno>().apply {
-            addAll(grupo.alumnos)
-        }
-    }
-
-    // El siguiente ID también vive arriba
-    var siguienteId by remember {
-        mutableStateOf((alumnos.maxOfOrNull { it.id } ?: 0) + 1)
-    }
-
-    if (escenaActual == Escena.ALUMNOS) {
-        PantallaGrupoCompleta(
-            grupo = grupo,
-            alumnos = alumnos,
-            siguienteId = siguienteId,
-            onSiguienteIdChange = { nuevoId ->
-                siguienteId = nuevoId
-            },
-            irAProfesores = {
-                escenaActual = Escena.PROFESORES
-            }
-        )
-    } else {
-        PantallaProfesores(
-            volverAAlumnos = {
-                escenaActual = Escena.ALUMNOS
-            }
-        )
     }
 }
 
@@ -98,13 +48,14 @@ enum class Filtro {
 }
 
 @Composable
-fun PantallaGrupoCompleta(
-    grupo: Grupo,
-    alumnos: SnapshotStateList<Alumno>,
-    siguienteId: Int,
-    onSiguienteIdChange: (Int) -> Unit,
-    irAProfesores: () -> Unit
-) {
+fun PantallaGrupoCompleta() {
+
+    // Datos iniciales
+    val grupo = remember { crearGrupoDemo() }
+
+    // Estado: alumnos en memoria (lista mutable observable por Compose)
+    val alumnos = remember { mutableStateListOf<Alumno>().apply { addAll(grupo.alumnos) } }
+
     // Estado: filtro actual
     var filtro by remember { mutableStateOf(Filtro.TODOS) }
 
@@ -124,6 +75,11 @@ fun PantallaGrupoCompleta(
     val edadFocus = remember { FocusRequester() }
     val emailFocus = remember { FocusRequester() }
 
+    // ID automático
+    var siguienteId by remember {
+        mutableStateOf((alumnos.maxOfOrNull { it.id } ?: 0) + 1)
+    }
+
     // Filtrado
     val alumnosFiltrados: List<Alumno> =
         if (filtro == Filtro.TODOS) {
@@ -139,32 +95,15 @@ fun PantallaGrupoCompleta(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .statusBarsPadding()
             .verticalScroll(scrollState)
             .padding(16.dp)
     ) {
-        // CABECERA CON ICONO PARA CAMBIAR DE ESCENA
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.Top
-        ) {
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = "Acontecimientos del teclado (Compose)",
-                    style = MaterialTheme.typography.titleLarge
-                )
-                Spacer(modifier = Modifier.height(6.dp))
-                Text(text = "Grupo: ${grupo.nombre}")
-            }
-
-            IconButton(onClick = irAProfesores) {
-                Icon(
-                    imageVector = Icons.Filled.ArrowForward,
-                    contentDescription = "Ir a pantalla de profesores"
-                )
-            }
-        }
+        Text(
+            text = "Acontecimientos del teclado (Compose)",
+            style = MaterialTheme.typography.titleLarge
+        )
+        Spacer(modifier = Modifier.height(6.dp))
+        Text(text = "Grupo: ${grupo.nombre}")
 
         Spacer(modifier = Modifier.height(12.dp))
 
@@ -292,7 +231,7 @@ fun PantallaGrupoCompleta(
                     )
 
                     alumnos.add(nuevo)
-                    onSiguienteIdChange(siguienteId + 1)
+                    siguienteId++
 
                     nombreInput = ""
                     edadInput = ""
@@ -331,7 +270,7 @@ fun PantallaGrupoCompleta(
                 )
 
                 alumnos.add(nuevo)
-                onSiguienteIdChange(siguienteId + 1)
+                siguienteId++
 
                 nombreInput = ""
                 edadInput = ""
@@ -367,43 +306,6 @@ fun PantallaGrupoCompleta(
 
         val totalMayores = alumnos.count { it.edad >= 18 }
         Text(text = "Resumen: total=${alumnos.size}, mayores=$totalMayores")
-    }
-}
-
-// --------------------------------------------------
-// SEGUNDA ESCENA VACÍA PARA EL EJERCICIO
-// --------------------------------------------------
-@Composable
-fun PantallaProfesores(volverAAlumnos: () -> Unit) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .statusBarsPadding()
-            .padding(16.dp)
-    ) {
-        Text(
-            text = "Pantalla de profesores",
-            style = MaterialTheme.typography.titleLarge
-        )
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-        Text(
-            text = "Esta pantalla está vacía a propósito.",
-            style = MaterialTheme.typography.bodyLarge
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        Text(
-            text = "Ejercicio: añadir un listado de profesores con formulario para agregarlos, siguiendo una estructura similar a la pantalla de alumnos."
-        )
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        Button(onClick = volverAAlumnos) {
-            Text("Volver a alumnos")
-        }
     }
 }
 
