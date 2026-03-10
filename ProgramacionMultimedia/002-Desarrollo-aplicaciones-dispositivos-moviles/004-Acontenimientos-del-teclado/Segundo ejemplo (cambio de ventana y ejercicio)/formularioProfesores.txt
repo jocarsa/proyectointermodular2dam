@@ -1,0 +1,8 @@
+Añade en la segunda escena un formulario para añadir nuevos profesores
+	- Los profesores se tienen que añadir mediante formulario
+		- El formulario tiene que tener una estructura similar al de alumnos
+		- Los profesores tienen como campos nombre, edad, correo, grupo y si son tutores
+		- Añade gestión de eventos de teclado y foco
+	- Muestra los datos en formato tarjeta, como los alumnos
+		- Modifica el diseño para que no sea exactamente igual
+		- Cambia los iconos de los profesores

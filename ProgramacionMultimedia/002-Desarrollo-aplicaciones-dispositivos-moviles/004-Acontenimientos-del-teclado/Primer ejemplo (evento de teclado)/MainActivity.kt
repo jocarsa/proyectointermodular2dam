@@ -7,27 +7,18 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 
 class MainActivity : ComponentActivity() {
@@ -37,58 +28,10 @@ class MainActivity : ComponentActivity() {
         setContent {
             MaterialTheme {
                 Surface(modifier = Modifier.fillMaxSize()) {
-                    AppPantallas()
+                    PantallaGrupoCompleta()
                 }
             }
         }
-    }
-}
-
-// --------------------------------------------------
-// CONTROL SIMPLE DE ESCENAS
-// --------------------------------------------------
-enum class Escena {
-    ALUMNOS, PROFESORES
-}
-
-@Composable
-fun AppPantallas() {
-    var escenaActual by remember { mutableStateOf(Escena.ALUMNOS) }
-
-    // Datos iniciales del grupo
-    val grupo = remember { crearGrupoDemo() }
-
-    // La lista de alumnos vive ahora en AppPantallas()
-    // Así NO se pierde al cambiar de escena
-    val alumnos = remember {
-        mutableStateListOf<Alumno>().apply {
-            addAll(grupo.alumnos)
-        }
-    }
-
-    // El siguiente ID también vive arriba
-    var siguienteId by remember {
-        mutableStateOf((alumnos.maxOfOrNull { it.id } ?: 0) + 1)
-    }
-
-    if (escenaActual == Escena.ALUMNOS) {
-        PantallaGrupoCompleta(
-            grupo = grupo,
-            alumnos = alumnos,
-            siguienteId = siguienteId,
-            onSiguienteIdChange = { nuevoId ->
-                siguienteId = nuevoId
-            },
-            irAProfesores = {
-                escenaActual = Escena.PROFESORES
-            }
-        )
-    } else {
-        PantallaProfesores(
-            volverAAlumnos = {
-                escenaActual = Escena.ALUMNOS
-            }
-        )
     }
 }
 
@@ -98,13 +41,14 @@ enum class Filtro {
 }
 
 @Composable
-fun PantallaGrupoCompleta(
-    grupo: Grupo,
-    alumnos: SnapshotStateList<Alumno>,
-    siguienteId: Int,
-    onSiguienteIdChange: (Int) -> Unit,
-    irAProfesores: () -> Unit
-) {
+fun PantallaGrupoCompleta() {
+
+    // Datos iniciales
+    val grupo = remember { crearGrupoDemo() }
+
+    // Estado: alumnos en memoria (lista mutable observable por Compose)
+    val alumnos = remember { mutableStateListOf<Alumno>().apply { addAll(grupo.alumnos) } }
+
     // Estado: filtro actual
     var filtro by remember { mutableStateOf(Filtro.TODOS) }
 
@@ -116,15 +60,12 @@ fun PantallaGrupoCompleta(
     var edadInput by remember { mutableStateOf("") }
     var emailInput by remember { mutableStateOf("") }
 
-    // Gestor de foco
-    val focusManager = LocalFocusManager.current
+    // ID automático
+    var siguienteId by remember {
+        mutableStateOf((alumnos.maxOfOrNull { it.id } ?: 0) + 1)
+    }
 
-    // Controladores de foco
-    val nombreFocus = remember { FocusRequester() }
-    val edadFocus = remember { FocusRequester() }
-    val emailFocus = remember { FocusRequester() }
-
-    // Filtrado
+    // Filtrado (versión clásica)
     val alumnosFiltrados: List<Alumno> =
         if (filtro == Filtro.TODOS) {
             alumnos
@@ -139,32 +80,15 @@ fun PantallaGrupoCompleta(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .statusBarsPadding()
             .verticalScroll(scrollState)
             .padding(16.dp)
     ) {
-        // CABECERA CON ICONO PARA CAMBIAR DE ESCENA
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.Top
-        ) {
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = "Acontecimientos del teclado (Compose)",
-                    style = MaterialTheme.typography.titleLarge
-                )
-                Spacer(modifier = Modifier.height(6.dp))
-                Text(text = "Grupo: ${grupo.nombre}")
-            }
-
-            IconButton(onClick = irAProfesores) {
-                Icon(
-                    imageVector = Icons.Filled.ArrowForward,
-                    contentDescription = "Ir a pantalla de profesores"
-                )
-            }
-        }
+        Text(
+            text = "Interfaces de usuario (Compose)",
+            style = MaterialTheme.typography.titleLarge
+        )
+        Spacer(modifier = Modifier.height(6.dp))
+        Text(text = "Grupo: ${grupo.nombre}")
 
         Spacer(modifier = Modifier.height(12.dp))
 
@@ -176,137 +100,54 @@ fun PantallaGrupoCompleta(
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Button(
-                onClick = {
-                    filtro = Filtro.TODOS
-                    mensaje = "Mostrando todos."
-                },
+                onClick = { filtro = Filtro.TODOS; mensaje = "Mostrando todos." },
                 modifier = Modifier.weight(1f)
-            ) {
-                Text("Todos")
-            }
+            ) { Text("Todos") }
 
             Button(
-                onClick = {
-                    filtro = Filtro.MAYORES
-                    mensaje = "Mostrando mayores de edad."
-                },
+                onClick = { filtro = Filtro.MAYORES; mensaje = "Mostrando mayores de edad." },
                 modifier = Modifier.weight(1f)
-            ) {
-                Text("Mayores")
-            }
+            ) { Text("Mayores") }
 
             Button(
-                onClick = {
-                    filtro = Filtro.INVALIDOS
-                    mensaje = "Mostrando inválidos."
-                },
+                onClick = { filtro = Filtro.INVALIDOS; mensaje = "Mostrando inválidos." },
                 modifier = Modifier.weight(1f)
-            ) {
-                Text("Inválidos")
-            }
+            ) { Text("Inválidos") }
         }
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        Text(
-            text = "Añadir alumno con teclado:",
-            style = MaterialTheme.typography.titleMedium
-        )
+        // Añadir alumno con TextField
+        Text(text = "Añadir alumno:", style = MaterialTheme.typography.titleMedium)
         Spacer(modifier = Modifier.height(6.dp))
 
-        // CAMPO NOMBRE
         OutlinedTextField(
             value = nombreInput,
             onValueChange = { nombreInput = it },
             label = { Text("Nombre") },
-            modifier = Modifier
-                .fillMaxWidth()
-                .focusRequester(nombreFocus),
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Text,
-                imeAction = ImeAction.Next
-            ),
-            keyboardActions = KeyboardActions(
-                onNext = {
-                    edadFocus.requestFocus()
-                }
-            )
+            modifier = Modifier.fillMaxWidth()
         )
 
         Spacer(modifier = Modifier.height(6.dp))
 
-        // CAMPO EDAD
         OutlinedTextField(
             value = edadInput,
             onValueChange = { edadInput = it },
-            label = { Text("Edad") },
-            modifier = Modifier
-                .fillMaxWidth()
-                .focusRequester(edadFocus),
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Number,
-                imeAction = ImeAction.Next
-            ),
-            keyboardActions = KeyboardActions(
-                onNext = {
-                    emailFocus.requestFocus()
-                }
-            )
+            label = { Text("Edad (número)") },
+            modifier = Modifier.fillMaxWidth()
         )
 
         Spacer(modifier = Modifier.height(6.dp))
 
-        // CAMPO EMAIL
         OutlinedTextField(
             value = emailInput,
             onValueChange = { emailInput = it },
-            label = { Text("Email") },
-            modifier = Modifier
-                .fillMaxWidth()
-                .focusRequester(emailFocus),
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Email,
-                imeAction = ImeAction.Done
-            ),
-            keyboardActions = KeyboardActions(
-                onDone = {
-                    val nombre = nombreInput.trim()
-                    val edad = edadInput.trim().toIntOrNull()
-                    val email = emailInput.trim().ifEmpty { null }
-
-                    if (nombre.isEmpty()) {
-                        mensaje = "Error: el nombre está vacío."
-                        return@KeyboardActions
-                    }
-
-                    if (edad == null) {
-                        mensaje = "Error: la edad no es válida."
-                        return@KeyboardActions
-                    }
-
-                    val nuevo = Alumno(
-                        id = siguienteId,
-                        nombre = nombre,
-                        edad = edad,
-                        email = email
-                    )
-
-                    alumnos.add(nuevo)
-                    onSiguienteIdChange(siguienteId + 1)
-
-                    nombreInput = ""
-                    edadInput = ""
-                    emailInput = ""
-
-                    mensaje = "Alumno añadido: ${nuevo.nombre}"
-                    focusManager.clearFocus()
-                }
-            )
+            label = { Text("Email (opcional)") },
+            modifier = Modifier.fillMaxWidth()
         )
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // BOTÓN NORMAL (opcional)
         Button(
             onClick = {
                 val nombre = nombreInput.trim()
@@ -319,7 +160,7 @@ fun PantallaGrupoCompleta(
                 }
 
                 if (edad == null) {
-                    mensaje = "Error: la edad no es válida."
+                    mensaje = "Error: la edad no es un número válido."
                     return@Button
                 }
 
@@ -331,14 +172,14 @@ fun PantallaGrupoCompleta(
                 )
 
                 alumnos.add(nuevo)
-                onSiguienteIdChange(siguienteId + 1)
+                siguienteId++
 
+                // limpiamos formulario
                 nombreInput = ""
                 edadInput = ""
                 emailInput = ""
 
-                mensaje = "Alumno añadido: ${nuevo.nombre}"
-                focusManager.clearFocus()
+                mensaje = "Alumno añadido: ${nuevo.nombre} (id=${nuevo.id})"
             },
             modifier = Modifier.fillMaxWidth()
         ) {
@@ -347,11 +188,13 @@ fun PantallaGrupoCompleta(
 
         Spacer(modifier = Modifier.height(16.dp))
 
+        // Mensaje
         Text(text = "Mensaje:")
         Text(text = mensaje, style = MaterialTheme.typography.bodyLarge)
 
         Spacer(modifier = Modifier.height(16.dp))
 
+        // Mostrar lista de alumnos en pantalla
         Text(
             text = "Lista de alumnos (${alumnosFiltrados.size}):",
             style = MaterialTheme.typography.titleMedium
@@ -365,45 +208,9 @@ fun PantallaGrupoCompleta(
 
         Spacer(modifier = Modifier.height(16.dp))
 
+        // Resumen simple
         val totalMayores = alumnos.count { it.edad >= 18 }
         Text(text = "Resumen: total=${alumnos.size}, mayores=$totalMayores")
-    }
-}
-
-// --------------------------------------------------
-// SEGUNDA ESCENA VACÍA PARA EL EJERCICIO
-// --------------------------------------------------
-@Composable
-fun PantallaProfesores(volverAAlumnos: () -> Unit) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .statusBarsPadding()
-            .padding(16.dp)
-    ) {
-        Text(
-            text = "Pantalla de profesores",
-            style = MaterialTheme.typography.titleLarge
-        )
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-        Text(
-            text = "Esta pantalla está vacía a propósito.",
-            style = MaterialTheme.typography.bodyLarge
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        Text(
-            text = "Ejercicio: añadir un listado de profesores con formulario para agregarlos, siguiendo una estructura similar a la pantalla de alumnos."
-        )
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        Button(onClick = volverAAlumnos) {
-            Text("Volver a alumnos")
-        }
     }
 }
 
@@ -420,7 +227,10 @@ fun avatarParaAlumno(alumno: Alumno): Int {
 }
 
 /**
- * Icono de estado usando solo iconos básicos.
+ * Icono de estado usando SOLO ICONOS BÁSICOS (sin material-icons-extended)
+ * - inválido -> Close
+ * - menor -> Info
+ * - OK -> Check
  */
 @Composable
 fun IconoEstadoAlumno(alumno: Alumno) {
@@ -432,12 +242,10 @@ fun IconoEstadoAlumno(alumno: Alumno) {
             imageVector = Icons.Filled.Close,
             contentDescription = "Alumno inválido"
         )
-
         esMenor -> Icon(
             imageVector = Icons.Filled.Info,
             contentDescription = "Alumno menor"
         )
-
         else -> Icon(
             imageVector = Icons.Filled.Check,
             contentDescription = "Alumno correcto"
@@ -450,6 +258,7 @@ fun AlumnoItem(alumno: Alumno) {
     val categoria = etiquetaEdad(alumno.edad)
     val emailTexto = alumno.email ?: "sin email"
     val invalido = esAlumnoInvalido(alumno)
+
     val avatarRes = avatarParaAlumno(alumno)
 
     Card(modifier = Modifier.fillMaxWidth()) {
@@ -457,19 +266,29 @@ fun AlumnoItem(alumno: Alumno) {
             modifier = Modifier.padding(12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
+
+            // IMAGEN NORMAL (bitmap) + AVATAR CIRCULAR
             Image(
+                // La imagen que pintamos
                 painter = painterResource(id = avatarRes),
+                // Descripción interna de la imagen
                 contentDescription = "Avatar de ${alumno.nombre}",
+                // Modificadores (tamaño y forma circular)
                 modifier = Modifier
                     .size(64.dp)
                     .clip(CircleShape),
+                // Ajuste de la imagen. Si sobra espacio lo recorta en vez de deformar la imagen
                 contentScale = ContentScale.Crop
             )
 
             Spacer(modifier = Modifier.width(12.dp))
 
             Column(modifier = Modifier.weight(1f)) {
+
                 Row(verticalAlignment = Alignment.CenterVertically) {
+
+                    // VECTOR DRAWABLE creado con Vector Asset (ic_student.xml)
+                    // Sobre el icono podríamos interactuar, aunque no lo hemos implementado aún.
                     Icon(
                         painter = painterResource(id = R.drawable.ic_student),
                         contentDescription = "Icono alumno"
@@ -484,6 +303,7 @@ fun AlumnoItem(alumno: Alumno) {
 
                     Spacer(modifier = Modifier.width(8.dp))
 
+                    // ICONO DE ESTADO dinámico
                     IconoEstadoAlumno(alumno)
                 }
 
@@ -501,6 +321,8 @@ fun AlumnoItem(alumno: Alumno) {
  * Criterio simple para "inválido":
  * - edad < 0
  * - email no nulo y no válido
+ *
+ * (Así un email null NO se considera inválido automáticamente)
  */
 fun esAlumnoInvalido(alumno: Alumno): Boolean {
     if (alumno.edad < 0) return true
