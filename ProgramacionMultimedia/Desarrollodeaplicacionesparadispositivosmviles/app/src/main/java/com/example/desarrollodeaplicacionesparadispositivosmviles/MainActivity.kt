@@ -3,17 +3,24 @@ package com.example.desarrollodeaplicacionesparadispositivosmviles
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -23,10 +30,15 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.core.tween
+import kotlinx.coroutines.delay
+import androidx.compose.runtime.LaunchedEffect
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -35,10 +47,58 @@ class MainActivity : ComponentActivity() {
         setContent {
             MaterialTheme {
                 Surface(modifier = Modifier.fillMaxSize()) {
-                    PantallaGrupoCompleta()
+                    AppPantallas()
                 }
             }
         }
+    }
+}
+
+// --------------------------------------------------
+// CONTROL SIMPLE DE ESCENAS
+// --------------------------------------------------
+enum class Escena {
+    ALUMNOS, PROFESORES
+}
+
+@Composable
+fun AppPantallas() {
+    var escenaActual by remember { mutableStateOf(Escena.ALUMNOS) }
+
+    // Datos iniciales del grupo
+    val grupo = remember { crearGrupoDemo() }
+
+    // La lista de alumnos vive ahora en AppPantallas()
+    // Así NO se pierde al cambiar de escena
+    val alumnos = remember {
+        mutableStateListOf<Alumno>().apply {
+            addAll(grupo.alumnos)
+        }
+    }
+
+    // El siguiente ID también vive arriba
+    var siguienteId by remember {
+        mutableStateOf((alumnos.maxOfOrNull { it.id } ?: 0) + 1)
+    }
+
+    if (escenaActual == Escena.ALUMNOS) {
+        PantallaGrupoCompleta(
+            grupo = grupo,
+            alumnos = alumnos,
+            siguienteId = siguienteId,
+            onSiguienteIdChange = { nuevoId ->
+                siguienteId = nuevoId
+            },
+            irAProfesores = {
+                escenaActual = Escena.PROFESORES
+            }
+        )
+    } else {
+        PantallaProfesores(
+            volverAAlumnos = {
+                escenaActual = Escena.ALUMNOS
+            }
+        )
     }
 }
 
@@ -48,19 +108,29 @@ enum class Filtro {
 }
 
 @Composable
-fun PantallaGrupoCompleta() {
-
-    // Datos iniciales
-    val grupo = remember { crearGrupoDemo() }
-
-    // Estado: alumnos en memoria (lista mutable observable por Compose)
-    val alumnos = remember { mutableStateListOf<Alumno>().apply { addAll(grupo.alumnos) } }
-
+fun PantallaGrupoCompleta(
+    grupo: Grupo,
+    alumnos: SnapshotStateList<Alumno>,
+    siguienteId: Int,
+    onSiguienteIdChange: (Int) -> Unit,
+    irAProfesores: () -> Unit
+) {
     // Estado: filtro actual
     var filtro by remember { mutableStateOf(Filtro.TODOS) }
 
     // Estado: mensaje informativo
-    var mensaje by remember { mutableStateOf("Listo. Puedes filtrar o añadir alumnos.") }
+    var mensaje by remember { mutableStateOf("") }
+
+    // Animación de desaparición
+    LaunchedEffect(mensaje) {
+
+        if (mensaje.isNotEmpty()) {
+
+            delay(2500) // tiempo que permanece visible
+
+            mensaje = ""
+        }
+    }
 
     // Estado: formulario
     var nombreInput by remember { mutableStateOf("") }
@@ -74,11 +144,6 @@ fun PantallaGrupoCompleta() {
     val nombreFocus = remember { FocusRequester() }
     val edadFocus = remember { FocusRequester() }
     val emailFocus = remember { FocusRequester() }
-
-    // ID automático
-    var siguienteId by remember {
-        mutableStateOf((alumnos.maxOfOrNull { it.id } ?: 0) + 1)
-    }
 
     // Filtrado
     val alumnosFiltrados: List<Alumno> =
@@ -95,15 +160,32 @@ fun PantallaGrupoCompleta() {
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .statusBarsPadding()
             .verticalScroll(scrollState)
             .padding(16.dp)
     ) {
-        Text(
-            text = "Acontecimientos del teclado (Compose)",
-            style = MaterialTheme.typography.titleLarge
-        )
-        Spacer(modifier = Modifier.height(6.dp))
-        Text(text = "Grupo: ${grupo.nombre}")
+        // Cabecera con icono para cambiar de escena
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.Top
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = "Técnicas de animación (Compose)",
+                    style = MaterialTheme.typography.titleLarge
+                )
+                Spacer(modifier = Modifier.height(6.dp))
+                Text(text = "Grupo: ${grupo.nombre}")
+            }
+
+            IconButton(onClick = irAProfesores) {
+                Icon(
+                    imageVector = Icons.Filled.ArrowForward,
+                    contentDescription = "Ir a pantalla de profesores"
+                )
+            }
+        }
 
         Spacer(modifier = Modifier.height(12.dp))
 
@@ -153,7 +235,7 @@ fun PantallaGrupoCompleta() {
         )
         Spacer(modifier = Modifier.height(6.dp))
 
-        // CAMPO NOMBRE
+        // Campo nombre
         OutlinedTextField(
             value = nombreInput,
             onValueChange = { nombreInput = it },
@@ -174,7 +256,7 @@ fun PantallaGrupoCompleta() {
 
         Spacer(modifier = Modifier.height(6.dp))
 
-        // CAMPO EDAD
+        // Campo edad
         OutlinedTextField(
             value = edadInput,
             onValueChange = { edadInput = it },
@@ -195,7 +277,7 @@ fun PantallaGrupoCompleta() {
 
         Spacer(modifier = Modifier.height(6.dp))
 
-        // CAMPO EMAIL
+        // Campo email
         OutlinedTextField(
             value = emailInput,
             onValueChange = { emailInput = it },
@@ -231,7 +313,7 @@ fun PantallaGrupoCompleta() {
                     )
 
                     alumnos.add(nuevo)
-                    siguienteId++
+                    onSiguienteIdChange(siguienteId + 1)
 
                     nombreInput = ""
                     edadInput = ""
@@ -245,7 +327,7 @@ fun PantallaGrupoCompleta() {
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // BOTÓN NORMAL (opcional)
+        // Botón normal
         Button(
             onClick = {
                 val nombre = nombreInput.trim()
@@ -270,7 +352,7 @@ fun PantallaGrupoCompleta() {
                 )
 
                 alumnos.add(nuevo)
-                siguienteId++
+                onSiguienteIdChange(siguienteId + 1)
 
                 nombreInput = ""
                 edadInput = ""
@@ -286,8 +368,40 @@ fun PantallaGrupoCompleta() {
 
         Spacer(modifier = Modifier.height(16.dp))
 
+        // Mensaje animado
         Text(text = "Mensaje:")
-        Text(text = mensaje, style = MaterialTheme.typography.bodyLarge)
+
+        AnimatedVisibility(
+            // Si el mensaje esta vacío se oculta
+            visible = mensaje.isNotEmpty(),
+            enter = slideInVertically(
+                initialOffsetY = { -40 },
+                animationSpec = tween(durationMillis = 500)
+            ) + fadeIn(
+                animationSpec = tween(durationMillis = 500)
+            ),
+            exit = slideOutVertically(
+                targetOffsetY = { -40 },
+                animationSpec = tween(durationMillis = 400)
+            ) + fadeOut(
+                animationSpec = tween(durationMillis = 400)
+            )
+        ) {
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 8.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.secondaryContainer
+                )
+            ) {
+                Text(
+                    text = mensaje,
+                    style = MaterialTheme.typography.bodyLarge,
+                    modifier = Modifier.padding(12.dp)
+                )
+            }
+        }
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -306,6 +420,43 @@ fun PantallaGrupoCompleta() {
 
         val totalMayores = alumnos.count { it.edad >= 18 }
         Text(text = "Resumen: total=${alumnos.size}, mayores=$totalMayores")
+    }
+}
+
+// --------------------------------------------------
+// SEGUNDA ESCENA VACÍA PARA EL EJERCICIO
+// --------------------------------------------------
+@Composable
+fun PantallaProfesores(volverAAlumnos: () -> Unit) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .statusBarsPadding()
+            .padding(16.dp)
+    ) {
+        Text(
+            text = "Pantalla de profesores",
+            style = MaterialTheme.typography.titleLarge
+        )
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        Text(
+            text = "Esta pantalla está vacía a propósito.",
+            style = MaterialTheme.typography.bodyLarge
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Text(
+            text = "Ejercicio: añadir un listado de profesores con formulario para agregarlos, siguiendo una estructura similar a la pantalla de alumnos."
+        )
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        Button(onClick = volverAAlumnos) {
+            Text("Volver a alumnos")
+        }
     }
 }
 
@@ -349,51 +500,95 @@ fun IconoEstadoAlumno(alumno: Alumno) {
 
 @Composable
 fun AlumnoItem(alumno: Alumno) {
+    // Estado para expandir o contraer la tarjeta
+    var expandido by remember { mutableStateOf(false) }
+
     val categoria = etiquetaEdad(alumno.edad)
     val emailTexto = alumno.email ?: "sin email"
     val invalido = esAlumnoInvalido(alumno)
     val avatarRes = avatarParaAlumno(alumno)
 
-    Card(modifier = Modifier.fillMaxWidth()) {
-        Row(
-            modifier = Modifier.padding(12.dp),
-            verticalAlignment = Alignment.CenterVertically
+    // Animación de color
+    val colorEstado by animateColorAsState(
+        targetValue = if (invalido) {
+            MaterialTheme.colorScheme.error
+        } else {
+            MaterialTheme.colorScheme.primary
+        },
+        label = "colorEstado"
+    )
+
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            // Animación de tamaño
+            .animateContentSize()
+    ) {
+        Column(
+            modifier = Modifier.padding(12.dp)
         ) {
-            Image(
-                painter = painterResource(id = avatarRes),
-                contentDescription = "Avatar de ${alumno.nombre}",
-                modifier = Modifier
-                    .size(64.dp)
-                    .clip(CircleShape),
-                contentScale = ContentScale.Crop
-            )
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Image(
+                    painter = painterResource(id = avatarRes),
+                    contentDescription = "Avatar de ${alumno.nombre}",
+                    modifier = Modifier
+                        .size(64.dp)
+                        .clip(CircleShape),
+                    contentScale = ContentScale.Crop
+                )
 
-            Spacer(modifier = Modifier.width(12.dp))
+                Spacer(modifier = Modifier.width(12.dp))
 
-            Column(modifier = Modifier.weight(1f)) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_student),
-                        contentDescription = "Icono alumno"
-                    )
+                Column(modifier = Modifier.weight(1f)) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_student),
+                            contentDescription = "Icono alumno"
+                        )
 
-                    Spacer(modifier = Modifier.width(8.dp))
+                        Spacer(modifier = Modifier.width(8.dp))
+
+                        Text(
+                            text = "${alumno.nombre} (id=${alumno.id})",
+                            style = MaterialTheme.typography.titleMedium
+                        )
+
+                        Spacer(modifier = Modifier.width(8.dp))
+
+                        IconoEstadoAlumno(alumno)
+                    }
+
+                    Spacer(modifier = Modifier.height(6.dp))
 
                     Text(
-                        text = "${alumno.nombre} (id=${alumno.id})",
-                        style = MaterialTheme.typography.titleMedium
+                        text = "Edad: ${alumno.edad} -> $categoria",
+                        color = colorEstado
                     )
 
-                    Spacer(modifier = Modifier.width(8.dp))
+                    // Contenido extra que aparece al expandir
+                    if (expandido) {
+                        Spacer(modifier = Modifier.height(6.dp))
 
-                    IconoEstadoAlumno(alumno)
+                        Text(text = "Email: $emailTexto")
+
+                        Text(
+                            text = "Estado: ${if (invalido) "INVÁLIDO" else "OK"}",
+                            color = colorEstado
+                        )
+                    }
                 }
 
-                Spacer(modifier = Modifier.height(6.dp))
+                Spacer(modifier = Modifier.width(8.dp))
 
-                Text(text = "Edad: ${alumno.edad} -> $categoria")
-                Text(text = "Email: $emailTexto")
-                Text(text = "Estado: ${if (invalido) "INVÁLIDO" else "OK"}")
+                Button(
+                    onClick = {
+                        expandido = !expandido
+                    }
+                ) {
+                    Text(if (expandido) "Menos" else "Más")
+                }
             }
         }
     }
