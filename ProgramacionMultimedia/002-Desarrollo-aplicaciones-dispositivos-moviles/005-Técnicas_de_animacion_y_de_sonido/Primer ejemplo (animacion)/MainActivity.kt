@@ -1,16 +1,11 @@
 package com.example.desarrollodeaplicacionesparadispositivosmviles
 
-import android.media.MediaPlayer
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.animateColor
 import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
-import androidx.compose.animation.core.tween
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -30,7 +25,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -38,7 +32,24 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.core.tween
 import kotlinx.coroutines.delay
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.animateColor
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.setValue
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -65,14 +76,18 @@ enum class Escena {
 fun AppPantallas() {
     var escenaActual by remember { mutableStateOf(Escena.ALUMNOS) }
 
+    // Datos iniciales del grupo
     val grupo = remember { crearGrupoDemo() }
 
+    // La lista de alumnos vive ahora en AppPantallas()
+    // Así NO se pierde al cambiar de escena
     val alumnos = remember {
         mutableStateListOf<Alumno>().apply {
             addAll(grupo.alumnos)
         }
     }
 
+    // El siguiente ID también vive arriba
     var siguienteId by remember {
         mutableStateOf((alumnos.maxOfOrNull { it.id } ?: 0) + 1)
     }
@@ -98,6 +113,7 @@ fun AppPantallas() {
     }
 }
 
+// Tipo enumerado con varios posibles valores
 enum class Filtro {
     TODOS, MAYORES, INVALIDOS
 }
@@ -110,23 +126,38 @@ fun PantallaGrupoCompleta(
     onSiguienteIdChange: (Int) -> Unit,
     irAProfesores: () -> Unit
 ) {
-    // El contexto representa la actividad actual
-    // Lo utilizamos para reproducir audio (mediante MediaPlayer)
-    val context = LocalContext.current
-
+    // Estado: filtro actual
     var filtro by remember { mutableStateOf(Filtro.TODOS) }
+
+    // Estado: mensaje informativo
     var mensaje by remember { mutableStateOf("") }
 
+    // Animación de desaparición
+    // Cada vez que cambie el valor (mensaje) se ejecuta esto
+    LaunchedEffect(mensaje) {
+
+        if (mensaje.isNotEmpty()) {
+
+            delay(2500) // tiempo que permanece visible
+
+            mensaje = ""
+        }
+    }
+
+    // Estado: formulario
     var nombreInput by remember { mutableStateOf("") }
     var edadInput by remember { mutableStateOf("") }
     var emailInput by remember { mutableStateOf("") }
 
+    // Gestor de foco
     val focusManager = LocalFocusManager.current
 
+    // Controladores de foco
     val nombreFocus = remember { FocusRequester() }
     val edadFocus = remember { FocusRequester() }
     val emailFocus = remember { FocusRequester() }
 
+    // Filtrado
     val alumnosFiltrados: List<Alumno> =
         if (filtro == Filtro.TODOS) {
             alumnos
@@ -138,14 +169,6 @@ fun PantallaGrupoCompleta(
 
     val scrollState = rememberScrollState()
 
-    // El mensaje desaparece solo para poder volver a ver la animación
-    LaunchedEffect(mensaje) {
-        if (mensaje.isNotEmpty()) {
-            delay(2500)
-            mensaje = ""
-        }
-    }
-
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -153,6 +176,7 @@ fun PantallaGrupoCompleta(
             .verticalScroll(scrollState)
             .padding(16.dp)
     ) {
+        // Cabecera con icono para cambiar de escena
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -160,7 +184,7 @@ fun PantallaGrupoCompleta(
         ) {
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = "Técnicas de animación y sonido",
+                    text = "Técnicas de animación (Compose)",
                     style = MaterialTheme.typography.titleLarge
                 )
                 Spacer(modifier = Modifier.height(6.dp))
@@ -223,6 +247,7 @@ fun PantallaGrupoCompleta(
         )
         Spacer(modifier = Modifier.height(6.dp))
 
+        // Campo nombre
         OutlinedTextField(
             value = nombreInput,
             onValueChange = { nombreInput = it },
@@ -243,6 +268,7 @@ fun PantallaGrupoCompleta(
 
         Spacer(modifier = Modifier.height(6.dp))
 
+        // Campo edad
         OutlinedTextField(
             value = edadInput,
             onValueChange = { edadInput = it },
@@ -263,6 +289,7 @@ fun PantallaGrupoCompleta(
 
         Spacer(modifier = Modifier.height(6.dp))
 
+        // Campo email
         OutlinedTextField(
             value = emailInput,
             onValueChange = { emailInput = it },
@@ -282,13 +309,11 @@ fun PantallaGrupoCompleta(
 
                     if (nombre.isEmpty()) {
                         mensaje = "Error: el nombre está vacío."
-                        reproducirSonido(context, R.raw.sonido_error)
                         return@KeyboardActions
                     }
 
                     if (edad == null) {
                         mensaje = "Error: la edad no es válida."
-                        reproducirSonido(context, R.raw.sonido_error)
                         return@KeyboardActions
                     }
 
@@ -307,7 +332,6 @@ fun PantallaGrupoCompleta(
                     emailInput = ""
 
                     mensaje = "Alumno añadido: ${nuevo.nombre}"
-                    reproducirSonido(context, R.raw.sonido_acierto)
                     focusManager.clearFocus()
                 }
             )
@@ -315,6 +339,7 @@ fun PantallaGrupoCompleta(
 
         Spacer(modifier = Modifier.height(8.dp))
 
+        // Botón normal
         Button(
             onClick = {
                 val nombre = nombreInput.trim()
@@ -323,13 +348,11 @@ fun PantallaGrupoCompleta(
 
                 if (nombre.isEmpty()) {
                     mensaje = "Error: el nombre está vacío."
-                    reproducirSonido(context, R.raw.sonido_error)
                     return@Button
                 }
 
                 if (edad == null) {
                     mensaje = "Error: la edad no es válida."
-                    reproducirSonido(context, R.raw.sonido_error)
                     return@Button
                 }
 
@@ -348,7 +371,6 @@ fun PantallaGrupoCompleta(
                 emailInput = ""
 
                 mensaje = "Alumno añadido: ${nuevo.nombre}"
-                reproducirSonido(context, R.raw.sonido_acierto)
                 focusManager.clearFocus()
             },
             modifier = Modifier.fillMaxWidth()
@@ -358,10 +380,34 @@ fun PantallaGrupoCompleta(
 
         Spacer(modifier = Modifier.height(16.dp))
 
+        // Mensaje animado
         Text(text = "Mensaje:")
 
+        // Animación de aparición y desaparición del contenido en función de si es visible o no
         AnimatedVisibility(
-            visible = mensaje.isNotEmpty()
+            // Si el mensaje esta vacío se oculta
+            visible = mensaje.isNotEmpty(),
+            // Animación de aparición del elemento
+            // El elemento cae de manera vertical sobre su posición
+            enter = slideInVertically(
+                // Posición inicial relativa a la final
+                initialOffsetY = { -40 },
+                // Duración de la animación (0.5 s). El cambio es progresivo.
+                animationSpec = tween(durationMillis = 500)
+                // Combinamos con una segunda animación
+                // El elemento aparece progresivamente
+            ) + fadeIn(
+                animationSpec = tween(durationMillis = 500)
+            ),
+            // Animación de desaparición del elemento
+            // El elemento cae de su posición inicial
+            exit = slideOutVertically(
+                targetOffsetY = { -40 },
+                animationSpec = tween(durationMillis = 400)
+                // El elemento desaparece progresivamente
+            ) + fadeOut(
+                animationSpec = tween(durationMillis = 400)
+            )
         ) {
             Card(
                 modifier = Modifier
@@ -399,6 +445,9 @@ fun PantallaGrupoCompleta(
     }
 }
 
+// --------------------------------------------------
+// SEGUNDA ESCENA VACÍA PARA EL EJERCICIO
+// --------------------------------------------------
 @Composable
 fun PantallaProfesores(volverAAlumnos: () -> Unit) {
     Column(
@@ -433,6 +482,10 @@ fun PantallaProfesores(volverAAlumnos: () -> Unit) {
     }
 }
 
+/**
+ * Asigna una imagen NORMAL (bitmap) distinta según el id del alumno.
+ * Necesitas en drawable: avatar1, avatar2, avatar3
+ */
 fun avatarParaAlumno(alumno: Alumno): Int {
     return when (alumno.id % 3) {
         0 -> R.drawable.avatar1
@@ -441,6 +494,9 @@ fun avatarParaAlumno(alumno: Alumno): Int {
     }
 }
 
+/**
+ * Icono de estado usando solo iconos básicos.
+ */
 @Composable
 fun IconoEstadoAlumno(alumno: Alumno) {
     val invalido = esAlumnoInvalido(alumno)
@@ -466,6 +522,7 @@ fun IconoEstadoAlumno(alumno: Alumno) {
 
 @Composable
 fun AlumnoItem(alumno: Alumno) {
+    // Estado para expandir o contraer la tarjeta
     var expandido by remember { mutableStateOf(false) }
 
     val categoria = etiquetaEdad(alumno.edad)
@@ -473,25 +530,34 @@ fun AlumnoItem(alumno: Alumno) {
     val invalido = esAlumnoInvalido(alumno)
     val avatarRes = avatarParaAlumno(alumno)
 
+    // Animación infinita solo para alumnos inválidos
     val infiniteTransition = rememberInfiniteTransition(label = "transicionNombre")
 
     val colorNombre by if (invalido) {
         infiniteTransition.animateColor(
-            initialValue = MaterialTheme.colorScheme.error,
-            targetValue = MaterialTheme.colorScheme.onSurface,
+            // Valor inicial a animar (el color, que está a por defecto)
+            initialValue = MaterialTheme.colorScheme.onSurface,
+            // Valor final a animar (el color, que está a error (rojo))
+            targetValue = MaterialTheme.colorScheme.error,
+            // La animación se repite infinitamente
             animationSpec = infiniteRepeatable(
-                animation = tween(durationMillis = 800),
+                // Duración de las transiciones
+                animation = tween(durationMillis = 2000),
+                // Las transiciones van en ambos sentidos, de inicial a final y de final a inicial
                 repeatMode = RepeatMode.Reverse
             ),
             label = "colorNombreInvalido"
         )
     } else {
+        // Color en caso de ser válido (el azul)
         rememberUpdatedState(MaterialTheme.colorScheme.primary)
     }
 
     Card(
         modifier = Modifier
             .fillMaxWidth()
+            // Animación de tamaño
+            // Ajusta mediante animación automática el tamaño del componente que puede cambiar en tiempo de ejecución
             .animateContentSize()
     ) {
         Column(
@@ -523,6 +589,7 @@ fun AlumnoItem(alumno: Alumno) {
                         Text(
                             text = "${alumno.nombre} (id=${alumno.id})",
                             style = MaterialTheme.typography.titleMedium,
+                            // El color se va modificando en función de la animación
                             color = colorNombre
                         )
 
@@ -537,6 +604,7 @@ fun AlumnoItem(alumno: Alumno) {
                         text = "Edad: ${alumno.edad} -> $categoria"
                     )
 
+                    // Contenido extra que aparece al expandir
                     if (expandido) {
                         Spacer(modifier = Modifier.height(6.dp))
 
@@ -562,24 +630,13 @@ fun AlumnoItem(alumno: Alumno) {
     }
 }
 
+/**
+ * Criterio simple para "inválido":
+ * - edad < 0
+ * - email no nulo y no válido
+ */
 fun esAlumnoInvalido(alumno: Alumno): Boolean {
     if (alumno.edad < 0) return true
     if (alumno.email != null && !validarEmail(alumno.email)) return true
     return false
-}
-
-/**
- * Reproduce un sonido corto desde res/raw
- * Recibe el contexto y el nombre del archivo de audio
- */
-fun reproducirSonido(context: android.content.Context, sonidoResId: Int) {
-    // Creamos el reproductor
-    val mediaPlayer = MediaPlayer.create(context, sonidoResId)
-    // Reproducimos el audio
-    mediaPlayer.start()
-
-    // Cuando el sonido se termina liberamos memoria
-    mediaPlayer.setOnCompletionListener {
-        it.release()
-    }
 }

@@ -110,8 +110,6 @@ fun PantallaGrupoCompleta(
     onSiguienteIdChange: (Int) -> Unit,
     irAProfesores: () -> Unit
 ) {
-    // El contexto representa la actividad actual
-    // Lo utilizamos para reproducir audio (mediante MediaPlayer)
     val context = LocalContext.current
 
     var filtro by remember { mutableStateOf(Filtro.TODOS) }
@@ -570,15 +568,11 @@ fun esAlumnoInvalido(alumno: Alumno): Boolean {
 
 /**
  * Reproduce un sonido corto desde res/raw
- * Recibe el contexto y el nombre del archivo de audio
  */
 fun reproducirSonido(context: android.content.Context, sonidoResId: Int) {
-    // Creamos el reproductor
     val mediaPlayer = MediaPlayer.create(context, sonidoResId)
-    // Reproducimos el audio
     mediaPlayer.start()
 
-    // Cuando el sonido se termina liberamos memoria
     mediaPlayer.setOnCompletionListener {
         it.release()
     }
