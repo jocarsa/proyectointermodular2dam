@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Formulario, cookies y PDF con pdfMake</title>
+
+  <!-- ===================================================== -->
+  <!-- LIBRERÍAS EXTERNAS                                    -->
+  <!-- ===================================================== -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- ===================================================== -->
+  <!-- ESTILOS                                               -->
+  <!-- ===================================================== -->
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 30px;
+    }
+
+    .contenedor {
+      max-width: 900px;
+    }
+
+    .campo {
+      margin-bottom: 15px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: bold;
+    }
+
+    input {
+      width: 100%;
+      padding: 8px;
+      font-size: 16px;
+      box-sizing: border-box;
+    }
+
+    .botones {
+      margin-top: 20px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      padding: 10px 14px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .focused {
+      outline: 2px solid steelblue;
+      background-color: #eef6ff;
+    }
+
+    #mensaje {
+      margin-top: 15px;
+      font-weight: bold;
+    }
+
+    iframe {
+      width: 100%;
+      height: 600px;
+      border: 1px solid #ccc;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===================================================== -->
+  <!-- ESTRUCTURA HTML                                       -->
+  <!-- ===================================================== -->
+  <div class="contenedor">
+    <h1>Control de eventos en dos inputs</h1>
+
+    <div class="campo">
+      <label for="input1">Primer input</label>
+      <input type="text" id="input1" placeholder="Pulsa la tecla a aquí">
+    </div>
+
+    <div class="campo">
+      <label for="input2">Segundo input</label>
+      <input type="text" id="input2" placeholder="Pulsa la tecla e aquí">
+    </div>
+
+    <div class="botones">
+      <button id="guardarCookie">Guardar JSON en cookie</button>
+      <button id="borrarCookie">Borrar cookie</button>
+      <button id="verPdf">Ver PDF incrustado</button>
+      <button id="abrirPdf">Abrir PDF en nueva pestaña</button>
+    </div>
+
+    <p id="mensaje"></p>
+
+    <h2>Previsualización PDF</h2>
+    <iframe id="previewPdf"></iframe>
+  </div>
+
+  <script>
+    // =====================================================
+    // REFERENCIAS A ELEMENTOS DEL DOM
+    // =====================================================
+    const input1 = document.getElementById("input1");
+    const input2 = document.getElementById("input2");
+    const mensaje = document.getElementById("mensaje");
+    const botonGuardar = document.getElementById("guardarCookie");
+    const botonBorrar = document.getElementById("borrarCookie");
+    const botonVerPdf = document.getElementById("verPdf");
+    const botonAbrirPdf = document.getElementById("abrirPdf");
+    const iframe = document.getElementById("previewPdf");
+
+    // =====================================================
+    // FUNCIONES PARA GESTIONAR COOKIES
+    // =====================================================
+    function setCookie(nombre, valor, dias) {
+      const fecha = new Date();
+      fecha.setTime(fecha.getTime() + (dias * 24 * 60 * 60 * 1000));
+      const expiracion = "expires=" + fecha.toUTCString();
+      document.cookie = nombre + "=" + encodeURIComponent(valor) + ";" + expiracion + ";path=/";
+    }
+
+    function getCookie(nombre) {
+      const nombreEQ = nombre + "=";
+      const cookies = document.cookie.split(";");
+      for (let i = 0; i < cookies.length; i++) {
+        let c = cookies[i].trim();
+        if (c.indexOf(nombreEQ) === 0) {
+          return decodeURIComponent(c.substring(nombreEQ.length));
+        }
+      }
+      return null;
+    }
+
+    function deleteCookie(nombre) {
+      document.cookie = nombre + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    }
+
+    // =====================================================
+    // ESTADO INICIAL DE LA APLICACIÓN
+    // =====================================================
+    function crearEstadoInicial() {
+      return {
+        input1: {
+          focus: 0,
+          blur: 0,
+          change: 0,
+          tecla_a: 0
+        },
+        input2: {
+          focus: 0,
+          blur: 0,
+          change: 0,
+          tecla_e: 0
+        }
+      };
+    }
+
+    let estadisticas = crearEstadoInicial();
+
+    // =====================================================
+    // CARGA DE DATOS DESDE COOKIE AL INICIAR
+    // =====================================================
+    function cargarDesdeCookie() {
+      const datosGuardados = getCookie("estadisticasFormulario");
+
+      if (datosGuardados) {
+        try {
+          estadisticas = JSON.parse(datosGuardados);
+          mensaje.textContent = "Se han recuperado los datos guardados en la cookie.";
+        } catch (error) {
+          mensaje.textContent = "La cookie existe, pero su contenido no es válido.";
+          estadisticas = crearEstadoInicial();
+        }
+      } else {
+        mensaje.textContent = "No existe cookie previa. Se inicia el JSON a 0.";
+      }
+    }
+
+    // =====================================================
+    // EVENTOS DEL PRIMER INPUT
+    // =====================================================
+
+    // TODO 1:
+    // Crear el listener que cuenta cuántas veces el usuario entra en foco en el primer input.
+    // Debe incrementar el contador correspondiente dentro de estadisticas.input1.
+    // Además, debe aplicar al primer input la clase CSS exacta llamada focused.
+
+    // TODO 2:
+    // Crear el listener que cuenta cuántas veces el usuario sale de foco del primer input.
+    // Debe incrementar el contador correspondiente dentro de estadisticas.input1.
+    // Además, debe quitar del primer input la clase CSS exacta llamada focused.
+
+    // TODO 3:
+    // Crear el listener que cuenta cuántas veces cambia el valor del primer input.
+    // Debe incrementar el contador correspondiente dentro de estadisticas.input1.
+
+    // TODO 4:
+    // Crear el listener de teclado del primer input.
+    // Solo debe contar las pulsaciones de la letra a, tanto en minúscula como en mayúscula.
+    // Debe incrementar el contador correspondiente dentro de estadisticas.input1.
+
+    // =====================================================
+    // EVENTOS DEL SEGUNDO INPUT
+    // =====================================================
+
+    // TODO 5:
+    // Crear el listener que cuenta cuántas veces el usuario entra en foco en el segundo input.
+    // Debe incrementar el contador correspondiente dentro de estadisticas.input2.
+    // Además, debe aplicar al segundo input la clase CSS exacta llamada focused.
+
+    // TODO 6:
+    // Crear el listener que cuenta cuántas veces el usuario sale de foco del segundo input.
+    // Debe incrementar el contador correspondiente dentro de estadisticas.input2.
+    // Además, debe quitar del segundo input la clase CSS exacta llamada focused.
+
+    // TODO 7:
+    // Crear el listener que cuenta cuántas veces cambia el valor del segundo input.
+    // Debe incrementar el contador correspondiente dentro de estadisticas.input2.
+
+    // TODO 8:
+    // Crear el listener de teclado del segundo input.
+    // Solo debe contar las pulsaciones de la letra e, tanto en minúscula como en mayúscula.
+    // Debe incrementar el contador correspondiente dentro de estadisticas.input2.
+
+    // =====================================================
+    // EVENTOS DE LOS BOTONES DE COOKIES
+    // =====================================================
+
+    // TODO 9:
+    // Crear el listener completo del botón de guardar cookie.
+    // Debe guardar en una cookie el contenido actual del objeto estadisticas.
+    // La cookie debe usar el nombre exacto estadisticasFormulario.
+    // Después debe mostrar en pantalla el mensaje exacto:
+    // Cookie guardada correctamente.
+
+    // TODO 10:
+    // Crear el listener completo del botón de borrar cookie.
+    // Debe eliminar la cookie cuyo nombre exacto es estadisticasFormulario.
+    // Después debe reiniciar la variable estadisticas usando la función de estado inicial.
+    // Finalmente debe mostrar en pantalla el mensaje exacto:
+    // Cookie eliminada y JSON reiniciado.
+
+    // =====================================================
+    // FUNCIONES AUXILIARES PARA TABLA Y GRÁFICA
+    // =====================================================
+    function obtenerDatosTabla() {
+      // TODO 11:
+      // Completar el contenido de esta función.
+      // Debe devolver una estructura con ocho filas de datos.
+      // Cada fila debe tener exactamente tres columnas.
+      // Primera columna: el nombre del input correspondiente, usando input1 o input2.
+      // Segunda columna: el nombre del evento correspondiente, usando focus, blur, change, tecla_a o tecla_e.
+      // Tercera columna: el valor numérico asociado a ese contador dentro del objeto estadisticas.
+      // Deben aparecer, en este orden, las cuatro estadísticas del primer input y después las cuatro del segundo input.
+    }
+
+    function obtenerLabelsGrafico() {
+      return [
+        "i1 focus",
+        "i1 blur",
+        "i1 change",
+        "i1 tecla_a",
+        "i2 focus",
+        "i2 blur",
+        "i2 change",
+        "i2 tecla_e"
+      ];
+    }
+
+    function obtenerValoresGrafico() {
+      // TODO 12:
+      // Completar el contenido de esta función.
+      // Debe devolver una colección con ocho valores numéricos.
+      // Deben aparecer en este orden:
+      // contador de focus del primer input,
+      // contador de blur del primer input,
+      // contador de change del primer input,
+      // contador de tecla_a del primer input,
+      // contador de focus del segundo input,
+      // contador de blur del segundo input,
+      // contador de change del segundo input,
+      // contador de tecla_e del segundo input.
+    }
+
+    function fechaHoyES() {
+      const d = new Date();
+      const dd = String(d.getDate()).padStart(2, "0");
+      const mm = String(d.getMonth() + 1).padStart(2, "0");
+      const yyyy = d.getFullYear();
+      return `${dd}/${mm}/${yyyy}`;
+    }
+
+    function construirTablaPdf() {
+      const body = [];
+
+      body.push([
+        { text: "Input", bold: true, fillColor: "#eeeeee", alignment: "center" },
+        { text: "Evento", bold: true, fillColor: "#eeeeee", alignment: "center" },
+        { text: "Cantidad", bold: true, fillColor: "#eeeeee", alignment: "center" }
+      ]);
+
+      const filas = obtenerDatosTabla();
+
+      filas.forEach(fila => {
+        body.push([
+          fila[0],
+          fila[1],
+          { text: String(fila[2]), alignment: "center" }
+        ]);
+      });
+
+      return body;
+    }
+
+    // =====================================================
+    // GENERACIÓN DE LA IMAGEN DE LA GRÁFICA
+    // =====================================================
+    function generarImagenGrafico() {
+      const canvas = document.createElement("canvas");
+      canvas.width = 900;
+      canvas.height = 450;
+
+      const ctx = canvas.getContext("2d");
+
+      const graficoTemporal = new Chart(ctx, {
+        type: "bar",
+        data: {
+          // TODO 13:
+          // Completar la asignación de las etiquetas del gráfico.
+          // Deben obtenerse llamando a la función que devuelve los textos de cada barra.
+          datasets: [
+            {
+              label: "Número de eventos",
+              // TODO 14:
+              // Completar la asignación de los datos numéricos del gráfico.
+              // Deben obtenerse llamando a la función que devuelve los valores de las estadísticas.
+              borderWidth: 1
+            }
+          ]
+        },
+        options: {
+          responsive: false,
+          animation: false,
+          plugins: {
+            title: {
+              display: true,
+              text: "Estadísticas de eventos"
+            },
+            legend: {
+              display: true
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: {
+                precision: 0
+              }
+            }
+          }
+        }
+      });
+
+      const imagenBase64 = canvas.toDataURL("image/png");
+      graficoTemporal.destroy();
+
+      return imagenBase64;
+    }
+
+    // =====================================================
+    // CREACIÓN DEL DOCUMENTO PDFMAKE
+    // =====================================================
+    function crearDocumentoPdf(imagenGrafico) {
+      return {
+        info: {
+          // TODO 15:
+          // Completar las propiedades title y author del documento PDF.
+          subject: "Eventos, cookies y pdfMake",
+          keywords: "pdfmake, formulario, eventos, cookies, grafica"
+        },
+
+        pageSize: "A4",
+        pageOrientation: "portrait",
+        pageMargins: [40, 80, 40, 60],
+
+        background: {
+          text: "INFORME",
+          color: "gray",
+          opacity: 0.08,
+          bold: true,
+          fontSize: 70,
+          alignment: "center",
+          margin: [0, 250, 0, 0]
+        },
+
+        header: function(currentPage, pageCount) {
+          return {
+            columns: [
+              { text: "Aplicación de eventos", alignment: "left", margin: [40, 20, 0, 0] },
+              { text: "Informe PDF", alignment: "right", margin: [0, 20, 40, 0] }
+            ]
+          };
+        },
+
+        // TODO 16:
+        // Completar la función del footer del documento PDF.
+        // Debe ser una función que reciba currentPage y pageCount.
+        // Debe devolver un objeto con una propiedad columns.
+        // En la primera columna debe mostrarse exactamente el texto:
+        // Generado automáticamente con pdfMake
+        // alineado a la izquierda y con margen izquierdo 40.
+        // En la segunda columna debe mostrarse la paginación con el formato:
+        // número de página actual, espacio, la palabra de, espacio, número total de páginas
+        // alineado a la derecha y con margen derecho 40.
+
+        styles: {
+          title: {
+            fontSize: 22,
+            bold: true,
+            margin: [0, 0, 0, 10]
+          },
+          sectionHeader: {
+            fontSize: 16,
+            bold: true,
+            margin: [0, 15, 0, 8]
+          },
+          tableHeader: {
+            bold: true,
+            fillColor: "#eeeeee"
+          }
+        },
+
+        defaultStyle: {
+          fontSize: 11
+        },
+
+        content: [
+          { text: "Informe de estadísticas del formulario", style: "title", alignment: "center" },
+
+          {
+            columns: [
+              // TODO 17:
+              // Completar la primera columna para que muestre la fecha actual.
+              // Debe concatenar el texto exacto Fecha: con el resultado de la función fechaHoyES.
+
+              // TODO 18:
+              // Completar la segunda columna para que muestre:
+              // Responsable: Alumno / Aplicación
+              // Debe estar alineada a la derecha.
+            ]
+          },
+
+          {
+            text: "Este documento recoge los valores actuales de los campos del formulario y las estadísticas de eventos registradas en los dos inputs.",
+            margin: [0, 10, 0, 10]
+          },
+
+          { text: "Campos del formulario", style: "sectionHeader" },
+
+          {
+            table: {
+              widths: ["auto", "*"],
+              body: [
+                [
+                  { text: "Campo", style: "tableHeader" },
+                  { text: "Valor actual", style: "tableHeader" }
+                ],
+                ["Primer input", input1.value || "(vacío)"],
+                ["Segundo input", input2.value || "(vacío)"]
+              ]
+            },
+            layout: "lightHorizontalLines"
+          },
+
+          { text: "Tabla de estadísticas", style: "sectionHeader" },
+
+          {
+            table: {
+              headerRows: 1,
+              widths: ["*", "*", 70],
+              // TODO 19:
+              // Completar el body de la tabla de estadísticas.
+              // Debe construirse llamando a la función que genera las filas de la tabla a partir de los datos de estadisticas.
+            },
+            layout: "lightHorizontalLines"
+          },
+
+          { text: "Gráfica de barras", style: "sectionHeader" },
+
+          {
+            // TODO 20:
+            // Completar la propiedad image para insertar la imagen de la gráfica en el documento PDF.
+            width: 500,
+            alignment: "center"
+          }
+        ]
+      };
+    }
+
+    // =====================================================
+    // EVENTOS DE LOS BOTONES DEL PDF
+    // =====================================================
+
+    // TODO 21:
+    // Crear el listener completo del botón verPdf.
+    // Debe generar la imagen de la gráfica, crear el documento PDF y obtener un blob del PDF.
+    // Después debe crear una URL temporal a partir del blob y asignarla al iframe de previsualización.
+
+    // TODO 22:
+    // Crear el listener completo del botón abrirPdf.
+    // Debe generar la imagen de la gráfica, crear el documento PDF y abrirlo en una nueva pestaña.
+
+    // =====================================================
+    // INICIALIZACIÓN DE LA APLICACIÓN
+    // =====================================================
+    cargarDesdeCookie();
+  </script>
+
+</body>
+</html>

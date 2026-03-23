@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Formulario, cookies y PDF con pdfMake</title>
+
+  <!-- ===================================================== -->
+  <!-- LIBRERÍAS EXTERNAS                                    -->
+  <!-- ===================================================== -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- ===================================================== -->
+  <!-- ESTILOS                                               -->
+  <!-- ===================================================== -->
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 30px;
+    }
+
+    .contenedor {
+      max-width: 900px;
+    }
+
+    .campo {
+      margin-bottom: 15px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: bold;
+    }
+
+    input {
+      width: 100%;
+      padding: 8px;
+      font-size: 16px;
+      box-sizing: border-box;
+    }
+
+    .botones {
+      margin-top: 20px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      padding: 10px 14px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .focused {
+      outline: 2px solid steelblue;
+      background-color: #eef6ff;
+    }
+
+    #mensaje {
+      margin-top: 15px;
+      font-weight: bold;
+    }
+
+    iframe {
+      width: 100%;
+      height: 600px;
+      border: 1px solid #ccc;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===================================================== -->
+  <!-- ESTRUCTURA HTML                                       -->
+  <!-- ===================================================== -->
+  <div class="contenedor">
+    <h1>Control de eventos en dos inputs</h1>
+
+    <div class="campo">
+      <label for="input1">Primer input</label>
+      <input type="text" id="input1" placeholder="Pulsa la tecla a aquí">
+    </div>
+
+    <div class="campo">
+      <label for="input2">Segundo input</label>
+      <input type="text" id="input2" placeholder="Pulsa la tecla e aquí">
+    </div>
+
+    <div class="botones">
+      <button id="guardarCookie">Guardar JSON en cookie</button>
+      <button id="borrarCookie">Borrar cookie</button>
+      <button id="verPdf">Ver PDF incrustado</button>
+      <button id="abrirPdf">Abrir PDF en nueva pestaña</button>
+    </div>
+
+    <p id="mensaje"></p>
+
+    <h2>Previsualización PDF</h2>
+    <iframe id="previewPdf"></iframe>
+  </div>
+
+  <script>
+    // =====================================================
+    // REFERENCIAS A ELEMENTOS DEL DOM
+    // =====================================================
+    const input1 = document.getElementById("input1");
+    const input2 = document.getElementById("input2");
+    const mensaje = document.getElementById("mensaje");
+    const botonGuardar = document.getElementById("guardarCookie");
+    const botonBorrar = document.getElementById("borrarCookie");
+    const botonVerPdf = document.getElementById("verPdf");
+    const botonAbrirPdf = document.getElementById("abrirPdf");
+    const iframe = document.getElementById("previewPdf");
+
+    // =====================================================
+    // FUNCIONES PARA GESTIONAR COOKIES
+    // =====================================================
+    function setCookie(nombre, valor, dias) {
+      const fecha = new Date();
+      fecha.setTime(fecha.getTime() + (dias * 24 * 60 * 60 * 1000));
+      const expiracion = "expires=" + fecha.toUTCString();
+      document.cookie = nombre + "=" + encodeURIComponent(valor) + ";" + expiracion + ";path=/";
+    }
+
+    function getCookie(nombre) {
+      const nombreEQ = nombre + "=";
+      const cookies = document.cookie.split(";");
+      for (let i = 0; i < cookies.length; i++) {
+        let c = cookies[i].trim();
+        if (c.indexOf(nombreEQ) === 0) {
+          return decodeURIComponent(c.substring(nombreEQ.length));
+        }
+      }
+      return null;
+    }
+
+    function deleteCookie(nombre) {
+      document.cookie = nombre + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    }
+
+    // =====================================================
+    // ESTADO INICIAL DE LA APLICACIÓN
+    // =====================================================
+    function crearEstadoInicial() {
+      return {
+        input1: {
+          focus: 0,
+          blur: 0,
+          change: 0,
+          tecla_a: 0
+        },
+        input2: {
+          focus: 0,
+          blur: 0,
+          change: 0,
+          tecla_e: 0
+        }
+      };
+    }
+
+    let estadisticas = crearEstadoInicial();
+
+    // =====================================================
+    // CARGA DE DATOS DESDE COOKIE AL INICIAR
+    // =====================================================
+    function cargarDesdeCookie() {
+      const datosGuardados = getCookie("estadisticasFormulario");
+
+      if (datosGuardados) {
+        try {
+          estadisticas = JSON.parse(datosGuardados);
+          mensaje.textContent = "Se han recuperado los datos guardados en la cookie.";
+        } catch (error) {
+          mensaje.textContent = "La cookie existe, pero su contenido no es válido.";
+          estadisticas = crearEstadoInicial();
+        }
+      } else {
+        mensaje.textContent = "No existe cookie previa. Se inicia el JSON a 0.";
+      }
+    }
+
+    // =====================================================
+    // EVENTOS DEL PRIMER INPUT
+    // =====================================================
+    input1.addEventListener("focus", function () {
+      estadisticas.input1.focus++;
+      input1.classList.add("focused");
+    });
+
+    input1.addEventListener("blur", function () {
+      estadisticas.input1.blur++;
+      input1.classList.remove("focused");
+    });
+
+    input1.addEventListener("change", function () {
+      estadisticas.input1.change++;
+    });
+
+    input1.addEventListener("keydown", function (event) {
+      if (event.key === "a" || event.key === "A") {
+        estadisticas.input1.tecla_a++;
+      }
+    });
+
+    // =====================================================
+    // EVENTOS DEL SEGUNDO INPUT
+    // =====================================================
+    input2.addEventListener("focus", function () {
+      estadisticas.input2.focus++;
+      input2.classList.add("focused");
+    });
+
+    input2.addEventListener("blur", function () {
+      estadisticas.input2.blur++;
+      input2.classList.remove("focused");
+    });
+
+    input2.addEventListener("change", function () {
+      estadisticas.input2.change++;
+    });
+
+    input2.addEventListener("keydown", function (event) {
+      if (event.key === "e" || event.key === "E") {
+        estadisticas.input2.tecla_e++;
+      }
+    });
+
+    // =====================================================
+    // EVENTOS DE LOS BOTONES DE COOKIES
+    // =====================================================
+    botonGuardar.addEventListener("click", function () {
+      const jsonTexto = JSON.stringify(estadisticas);
+      setCookie("estadisticasFormulario", jsonTexto, 7);
+      mensaje.textContent = "Cookie guardada correctamente.";
+    });
+
+    botonBorrar.addEventListener("click", function () {
+      deleteCookie("estadisticasFormulario");
+      estadisticas = crearEstadoInicial();
+      mensaje.textContent = "Cookie eliminada y JSON reiniciado.";
+    });
+
+    // =====================================================
+    // FUNCIONES AUXILIARES PARA TABLA Y GRÁFICA
+    // =====================================================
+    function obtenerDatosTabla() {
+      return [
+        ["input1", "focus", estadisticas.input1.focus],
+        ["input1", "blur", estadisticas.input1.blur],
+        ["input1", "change", estadisticas.input1.change],
+        ["input1", "tecla_a", estadisticas.input1.tecla_a],
+        ["input2", "focus", estadisticas.input2.focus],
+        ["input2", "blur", estadisticas.input2.blur],
+        ["input2", "change", estadisticas.input2.change],
+        ["input2", "tecla_e", estadisticas.input2.tecla_e]
+      ];
+    }
+
+    function obtenerLabelsGrafico() {
+      return [
+        "i1 focus",
+        "i1 blur",
+        "i1 change",
+        "i1 tecla_a",
+        "i2 focus",
+        "i2 blur",
+        "i2 change",
+        "i2 tecla_e"
+      ];
+    }
+
+    function obtenerValoresGrafico() {
+      return [
+        estadisticas.input1.focus,
+        estadisticas.input1.blur,
+        estadisticas.input1.change,
+        estadisticas.input1.tecla_a,
+        estadisticas.input2.focus,
+        estadisticas.input2.blur,
+        estadisticas.input2.change,
+        estadisticas.input2.tecla_e
+      ];
+    }
+
+    function fechaHoyES() {
+      const d = new Date();
+      const dd = String(d.getDate()).padStart(2, "0");
+      const mm = String(d.getMonth() + 1).padStart(2, "0");
+      const yyyy = d.getFullYear();
+      return `${dd}/${mm}/${yyyy}`;
+    }
+
+    function construirTablaPdf() {
+      const body = [];
+
+      body.push([
+        { text: "Input", bold: true, fillColor: "#eeeeee", alignment: "center" },
+        { text: "Evento", bold: true, fillColor: "#eeeeee", alignment: "center" },
+        { text: "Cantidad", bold: true, fillColor: "#eeeeee", alignment: "center" }
+      ]);
+
+      const filas = obtenerDatosTabla();
+
+      filas.forEach(fila => {
+        body.push([
+          fila[0],
+          fila[1],
+          { text: String(fila[2]), alignment: "center" }
+        ]);
+      });
+
+      return body;
+    }
+
+    // =====================================================
+    // GENERACIÓN DE LA IMAGEN DE LA GRÁFICA
+    // =====================================================
+    function generarImagenGrafico() {
+      const canvas = document.createElement("canvas");
+      canvas.width = 900;
+      canvas.height = 450;
+
+      const ctx = canvas.getContext("2d");
+
+      const graficoTemporal = new Chart(ctx, {
+        type: "bar",
+        data: {
+          labels: obtenerLabelsGrafico(),
+          datasets: [
+            {
+              label: "Número de eventos",
+              data: obtenerValoresGrafico(),
+              borderWidth: 1
+            }
+          ]
+        },
+        options: {
+          responsive: false,
+          animation: false,
+          plugins: {
+            title: {
+              display: true,
+              text: "Estadísticas de eventos"
+            },
+            legend: {
+              display: true
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: {
+                precision: 0
+              }
+            }
+          }
+        }
+      });
+
+      const imagenBase64 = canvas.toDataURL("image/png");
+      graficoTemporal.destroy();
+
+      return imagenBase64;
+    }
+
+    // =====================================================
+    // CREACIÓN DEL DOCUMENTO PDFMAKE
+    // =====================================================
+    function crearDocumentoPdf(imagenGrafico) {
+      return {
+        info: {
+          title: "Informe de eventos del formulario",
+          author: "Aplicación Demo DAM",
+          subject: "Eventos, cookies y pdfMake",
+          keywords: "pdfmake, formulario, eventos, cookies, grafica"
+        },
+
+        pageSize: "A4",
+        pageOrientation: "portrait",
+        pageMargins: [40, 80, 40, 60],
+
+        background: {
+          text: "INFORME",
+          color: "gray",
+          opacity: 0.08,
+          bold: true,
+          fontSize: 70,
+          alignment: "center",
+          margin: [0, 250, 0, 0]
+        },
+
+        header: function(currentPage, pageCount) {
+          return {
+            columns: [
+              { text: "Aplicación de eventos", alignment: "left", margin: [40, 20, 0, 0] },
+              { text: "Informe PDF", alignment: "right", margin: [0, 20, 40, 0] }
+            ]
+          };
+        },
+
+        footer: function(currentPage, pageCount) {
+          return {
+            columns: [
+              { text: "Generado automáticamente con pdfMake", alignment: "left", margin: [40, 0, 0, 0] },
+              { text: currentPage + " de " + pageCount, alignment: "right", margin: [0, 0, 40, 0] }
+            ]
+          };
+        },
+
+        styles: {
+          title: {
+            fontSize: 22,
+            bold: true,
+            margin: [0, 0, 0, 10]
+          },
+          sectionHeader: {
+            fontSize: 16,
+            bold: true,
+            margin: [0, 15, 0, 8]
+          },
+          tableHeader: {
+            bold: true,
+            fillColor: "#eeeeee"
+          }
+        },
+
+        defaultStyle: {
+          fontSize: 11
+        },
+
+        content: [
+          { text: "Informe de estadísticas del formulario", style: "title", alignment: "center" },
+
+          {
+            columns: [
+              { text: "Fecha: " + fechaHoyES() },
+              { text: "Responsable: Alumno / Aplicación", alignment: "right" }
+            ]
+          },
+
+          {
+            text: "Este documento recoge los valores actuales de los campos del formulario y las estadísticas de eventos registradas en los dos inputs.",
+            margin: [0, 10, 0, 10]
+          },
+
+          { text: "Campos del formulario", style: "sectionHeader" },
+
+          {
+            table: {
+              widths: ["auto", "*"],
+              body: [
+                [
+                  { text: "Campo", style: "tableHeader" },
+                  { text: "Valor actual", style: "tableHeader" }
+                ],
+                ["Primer input", input1.value || "(vacío)"],
+                ["Segundo input", input2.value || "(vacío)"]
+              ]
+            },
+            layout: "lightHorizontalLines"
+          },
+
+          { text: "Tabla de estadísticas", style: "sectionHeader" },
+
+          {
+            table: {
+              headerRows: 1,
+              widths: ["*", "*", 70],
+              body: construirTablaPdf()
+            },
+            layout: "lightHorizontalLines"
+          },
+
+          { text: "Gráfica de barras", style: "sectionHeader" },
+
+          {
+            image: imagenGrafico,
+            width: 500,
+            alignment: "center"
+          }
+        ]
+      };
+    }
+
+    // =====================================================
+    // EVENTOS DE LOS BOTONES DEL PDF
+    // =====================================================
+    botonVerPdf.addEventListener("click", function () {
+      const imagenGrafico = generarImagenGrafico();
+      const doc = crearDocumentoPdf(imagenGrafico);
+
+      pdfMake.createPdf(doc).getBlob(function(blob) {
+        const url = URL.createObjectURL(blob);
+        iframe.src = url;
+      });
+    });
+
+    botonAbrirPdf.addEventListener("click", function () {
+      const imagenGrafico = generarImagenGrafico();
+      const doc = crearDocumentoPdf(imagenGrafico);
+      pdfMake.createPdf(doc).open();
+    });
+
+    // =====================================================
+    // INICIALIZACIÓN DE LA APLICACIÓN
+    // =====================================================
+    cargarDesdeCookie();
+  </script>
+
+</body>
+</html>
