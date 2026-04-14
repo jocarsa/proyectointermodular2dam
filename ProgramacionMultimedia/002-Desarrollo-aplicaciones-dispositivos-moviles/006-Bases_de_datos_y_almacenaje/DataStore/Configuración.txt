@@ -1,0 +1,9 @@
+Añade 2 nuevas opciones de configuración:
+	- Grupo
+		- Se edita en la pantalla de configuración
+		- Se muestra en la pantalla principal
+		- Se guarda en DataStore
+	- Mostrar más
+		- Se edita en la pantalla de configuración
+		- Permite que aparezca o no el botón de mostrar más
+		- Se guarda en DataStore
