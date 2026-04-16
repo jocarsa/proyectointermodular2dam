@@ -1,0 +1,16 @@
+{
+  "name": "calculadora-pruebas-unitarias",
+  "version": "1.0.0",
+  "description": "Ejemplo de calculadora ampliada con test unitario en JavaScript",
+  "scripts": {
+    "test": "jest"
+  },
+  "main": "calculadora.js",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "jest": "^30.3.0"
+  }
+}
