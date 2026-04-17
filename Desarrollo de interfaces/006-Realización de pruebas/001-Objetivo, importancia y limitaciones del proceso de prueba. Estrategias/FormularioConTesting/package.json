@@ -1,0 +1,16 @@
+{
+  "name": "formulario-registro-testing",
+  "version": "1.0.0",
+  "description": "Formulario de registro con validación y test unitario en Jest",
+  "scripts": {
+    "test": "jest"
+  },
+  "main": "formularioRegistro.js",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "jest": "^30.3.0"
+  }
+}
