@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  * 
  * Para instalar jsdom (test al DOM)
- * npm install --save-dev jest-environment-jsdom
+ * npm.cmd install --save-dev jest-environment-jsdom
  * 
  * Ejecutar los test específicos
  * npm.cmd run test:integracion
