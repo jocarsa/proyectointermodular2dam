@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calculadora ampliada</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="contenedor">
+    <section class="calculadora">
+      <h1>Calculadora ampliada</h1>
+      <p class="subtitulo">Con validación, control de errores e historial</p>
+
+      <form id="formCalculadora" novalidate>
+        <div class="grupo-campo">
+          <label for="numero1">Primer número</label>
+          <input type="text" id="numero1" placeholder="Ejemplo: 8 o 2.5">
+        </div>
+
+        <div class="grupo-campo">
+          <label for="numero2">Segundo número</label>
+          <input type="text" id="numero2" placeholder="Ejemplo: 4 o -3">
+        </div>
+
+        <div class="grupo-campo">
+          <label for="operacion">Operación</label>
+          <select id="operacion">
+            <option value="">-- Selecciona una operación --</option>
+            <option value="sumar">Sumar</option>
+            <option value="restar">Restar</option>
+            <option value="multiplicar">Multiplicar</option>
+            <option value="dividir">Dividir</option>
+          </select>
+        </div>
+
+        <div class="botones">
+          <button type="submit" id="btnCalcular">Calcular</button>
+          <button type="button" id="btnLimpiar">Limpiar</button>
+        </div>
+      </form>
+
+      <div id="mensaje" class="mensaje"></div>
+      <div id="resultado" class="resultado">Resultado: --</div>
+
+      <section class="historial-bloque">
+        <div class="historial-cabecera">
+          <h2>Historial</h2>
+          <button type="button" id="btnVaciarHistorial" class="btn-secundario">
+            Vaciar historial
+          </button>
+        </div>
+        <ul id="historial" class="historial-lista">
+          <li class="historial-vacio">Todavía no hay operaciones.</li>
+        </ul>
+      </section>
+    </section>
+  </main>
+
+  <script src="calculadora.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
