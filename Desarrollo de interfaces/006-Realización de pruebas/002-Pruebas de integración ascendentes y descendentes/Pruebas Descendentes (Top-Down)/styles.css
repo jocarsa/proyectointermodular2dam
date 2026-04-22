@@ -1,0 +1,152 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: #f4f6f8;
+  color: #222;
+}
+
+.contenedor {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 30px 20px;
+}
+
+.registro {
+  width: 100%;
+  max-width: 540px;
+  background-color: white;
+  padding: 24px;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+h1 {
+  margin-top: 0;
+  margin-bottom: 8px;
+  text-align: center;
+}
+
+.subtitulo {
+  margin-top: 0;
+  margin-bottom: 20px;
+  text-align: center;
+  color: #666;
+}
+
+.grupo-campo {
+  margin-bottom: 16px;
+}
+
+label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: bold;
+}
+
+input[type="text"],
+input[type="password"] {
+  width: 100%;
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+}
+
+.grupo-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.grupo-checkbox label {
+  margin-bottom: 0;
+  font-weight: normal;
+}
+
+.botones {
+  display: flex;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+button {
+  width: 100%;
+  padding: 10px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+#btnEnviar {
+  background-color: #1d4ed8;
+  color: white;
+}
+
+#btnEnviar:hover {
+  background-color: #1e40af;
+}
+
+#btnLimpiar {
+  background-color: #e5e7eb;
+  color: #222;
+}
+
+#btnLimpiar:hover {
+  background-color: #d1d5db;
+}
+
+.error-campo {
+  min-height: 18px;
+  margin: 6px 0 0;
+  color: #b91c1c;
+  font-size: 14px;
+}
+
+.mensaje-general {
+  min-height: 24px;
+  margin-top: 18px;
+  font-weight: bold;
+  text-align: center;
+}
+
+.mensaje-general.error {
+  color: #b91c1c;
+}
+
+.mensaje-general.correcto {
+  color: #166534;
+}
+
+.input-error {
+  border: 2px solid #b91c1c;
+}
+
+.input-correcto {
+  border: 2px solid #15803d;
+}
+
+.resumen {
+  margin-top: 24px;
+  padding: 16px;
+  border: 1px solid #dbeafe;
+  border-radius: 10px;
+  background-color: #f8fafc;
+  display: none;
+}
+
+.resumen.visible {
+  display: block;
+}
+
+.resumen h2 {
+  margin-top: 0;
+}
