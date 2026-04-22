@@ -1,0 +1,6 @@
+Amplia la conexión a servidor, conectándote a alumnosAmpliacion.php:
+	- Mediante get recibe el nombre de un alumno
+		- Devuelve la nota de dicho alumno
+	- Mediante post recibe la edad del alumno
+		- Devuelve si es mayor de edad
+	- Ambos datos recibidos del servidor tienen que ser introducidos en la tarjeta del alumno

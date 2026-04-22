@@ -2,4 +2,6 @@
 
 - Añade una nueva corrutina para gestionar el añadido de datos de alumno en la base de datos SQLite 
 
+- Añade una nueva corrutina para gestionar el borrado de datos de alumno en la base de datos SQLite 
+
 - Gestiona la persistencia de datos de profesor en SQLite mediante corrutina
