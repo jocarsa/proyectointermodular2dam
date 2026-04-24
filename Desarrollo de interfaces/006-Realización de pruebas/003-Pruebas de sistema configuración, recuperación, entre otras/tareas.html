@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>App de tareas con localStorage</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="contenedor">
+    <section class="app">
+      <h1>App de tareas</h1>
+      <p class="subtitulo">Ejemplo para pruebas de sistema: configuración y recuperación</p>
+
+      <section class="panel">
+        <h2>Nueva tarea</h2>
+        <form id="formTarea" novalidate>
+          <div class="fila-formulario">
+            <input
+              type="text"
+              id="tituloTarea"
+              placeholder="Escribe una tarea"
+              maxlength="80"
+            >
+            <button type="submit">Añadir</button>
+          </div>
+          <p id="errorFormulario" class="error"></p>
+        </form>
+      </section>
+
+      <section class="panel">
+        <h2>Acciones de prueba</h2>
+        <div class="acciones-prueba">
+          <button id="btnCargarEjemplo" type="button">Cargar 5 tareas de ejemplo</button>
+          <button id="btnCargarMuchas" type="button">Cargar 200 tareas</button>
+          <button id="btnCorromperStorage" type="button">Corromper localStorage</button>
+          <button id="btnVaciarStorage" type="button">Vaciar localStorage</button>
+          <button id="btnBorrarTodas" type="button">Borrar todas las tareas</button>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>Estado del sistema</h2>
+        <div id="mensajeSistema" class="mensaje-sistema"></div>
+        <div class="estado">
+          <p><strong>Tareas totales:</strong> <span id="totalTareas">0</span></p>
+          <p><strong>Tareas completadas:</strong> <span id="tareasCompletadas">0</span></p>
+          <p><strong>Tareas pendientes:</strong> <span id="tareasPendientes">0</span></p>
+          <p><strong>Estado de localStorage:</strong> <span id="estadoStorage">--</span></p>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>Listado de tareas</h2>
+        <ul id="listaTareas" class="lista-tareas"></ul>
+        <p id="mensajeListaVacia" class="lista-vacia">No hay tareas guardadas.</p>
+      </section>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>

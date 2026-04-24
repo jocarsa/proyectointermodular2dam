@@ -1,0 +1,180 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: #f4f6f8;
+  color: #222;
+}
+
+.contenedor {
+  min-height: 100vh;
+  padding: 24px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.app {
+  width: 100%;
+  max-width: 900px;
+  background-color: white;
+  border-radius: 14px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  padding: 24px;
+}
+
+h1 {
+  margin-top: 0;
+  margin-bottom: 8px;
+  text-align: center;
+}
+
+.subtitulo {
+  margin-top: 0;
+  margin-bottom: 24px;
+  text-align: center;
+  color: #666;
+}
+
+.panel {
+  margin-bottom: 20px;
+  padding: 18px;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  background-color: #fafafa;
+}
+
+.panel h2 {
+  margin-top: 0;
+  margin-bottom: 14px;
+  font-size: 20px;
+}
+
+.fila-formulario {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.fila-formulario input {
+  flex: 1;
+  min-width: 220px;
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+}
+
+button {
+  padding: 10px 14px;
+  font-size: 15px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  background-color: #1d4ed8;
+  color: white;
+}
+
+button:hover {
+  background-color: #1e40af;
+}
+
+.acciones-prueba {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.error {
+  min-height: 18px;
+  margin: 10px 0 0;
+  color: #b91c1c;
+  font-size: 14px;
+}
+
+.mensaje-sistema {
+  min-height: 24px;
+  margin-bottom: 14px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background-color: #eef2ff;
+}
+
+.mensaje-sistema.info {
+  background-color: #eef2ff;
+  color: #1e3a8a;
+}
+
+.mensaje-sistema.ok {
+  background-color: #ecfdf5;
+  color: #166534;
+}
+
+.mensaje-sistema.warning {
+  background-color: #fff7ed;
+  color: #9a3412;
+}
+
+.mensaje-sistema.error {
+  background-color: #fef2f2;
+  color: #b91c1c;
+}
+
+.estado p {
+  margin: 6px 0;
+}
+
+.lista-tareas {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.tarea {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  margin-bottom: 10px;
+  border: 1px solid #dbeafe;
+  border-radius: 8px;
+  background-color: white;
+}
+
+.tarea-izquierda {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+}
+
+.tarea-texto {
+  word-break: break-word;
+}
+
+.tarea.completada .tarea-texto {
+  text-decoration: line-through;
+  color: #666;
+}
+
+.btn-eliminar {
+  background-color: #dc2626;
+}
+
+.btn-eliminar:hover {
+  background-color: #b91c1c;
+}
+
+.lista-vacia {
+  margin: 10px 0 0;
+  color: #666;
+  font-style: italic;
+}
+
+.oculto {
+  display: none;
+}

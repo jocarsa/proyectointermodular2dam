@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pruebas de uso de recursos</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="contenedor">
+    <section class="app">
+      <h1>Uso de recursos: lista de tareas</h1>
+      <p class="subtitulo">
+        Ejemplo intencionadamente ineficiente para observar cómo empeora la aplicación
+        al crecer el número de elementos.
+      </p>
+
+      <section class="panel">
+        <h2>Escenarios de carga</h2>
+        <div class="botonera">
+          <button id="btn5" type="button">Cargar 5 tareas</button>
+          <button id="btn500" type="button">Cargar 500 tareas</button>
+          <button id="btn5000" type="button">Cargar 5000 tareas</button>
+          <button id="btnVaciar" type="button">Vaciar</button>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>Estado</h2>
+        <p><strong>Total de tareas:</strong> <span id="totalTareas">0</span></p>
+        <p><strong>Completadas:</strong> <span id="tareasCompletadas">0</span></p>
+        <p><strong>Pendientes:</strong> <span id="tareasPendientes">0</span></p>
+        <p><strong>Tiempo de renderizado:</strong> <span id="tiempoRender">--</span></p>
+        <p><strong>Observación:</strong> <span id="mensajeEstado">Todavía no se ha cargado ninguna lista.</span></p>
+      </section>
+
+      <section class="panel">
+        <h2>Listado de tareas</h2>
+        <ul id="listaTareas" class="lista-tareas"></ul>
+        <p id="mensajeVacio" class="mensaje-vacio">No hay tareas cargadas.</p>
+      </section>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
