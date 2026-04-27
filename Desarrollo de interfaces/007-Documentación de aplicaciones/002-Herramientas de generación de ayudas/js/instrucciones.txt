@@ -7,7 +7,7 @@
 
     JSDoc permite añadir etiquetas dentro de comentarios que empiezan por:
 
-        /** ... *\/
+        /** ... */
 
     Estas etiquetas ayudan a generar documentación automática del código.
 
