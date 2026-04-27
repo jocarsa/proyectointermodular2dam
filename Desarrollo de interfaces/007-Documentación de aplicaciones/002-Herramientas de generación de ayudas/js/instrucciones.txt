@@ -1,5 +1,5 @@
 // npm.cmd install para instalar
-// npm run generar-docs para ejecutar
+// npm.cmd run generar-docs para ejecutar
 // /api/index.html para comprobar el resultado
 
 /*
