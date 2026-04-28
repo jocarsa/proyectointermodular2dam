@@ -45,6 +45,7 @@ fun PantallaGrupoCompleta(
     onInsertarAlumno: (Alumno) -> Boolean,
     onBorrarAlumno: (Alumno) -> Boolean,
     onIrAEditarAlumno: (Alumno) -> Unit,
+    onIrAVideoAlumno: (Alumno) -> Unit,
     irAConfiguracion: () -> Unit
 ) {
     val context = LocalContext.current
@@ -392,6 +393,9 @@ fun PantallaGrupoCompleta(
                 },
                 onEditarAlumno = { alumnoAEditar ->
                     onIrAEditarAlumno(alumnoAEditar)
+                },
+                onVerVideoAlumno = { alumnoVideo ->
+                    onIrAVideoAlumno(alumnoVideo)
                 }
             )
             Spacer(modifier = Modifier.height(8.dp))

@@ -1,0 +1,10 @@
+Añade nuevos sonidos largos:
+	- Añade clips de audio personalizados que vayan rotando entre los alumnos, como las imágenes
+
+Añade nuevos sonidos de interfaz
+	- Añade sonido a los botones a los que le falte
+
+Añade 2 nuevos videos de presentación:
+	- Por defecto se abre el primer video
+	- Al clicar en un botón se salta al segundo video y del segundo al tercero
+	- Al clicar en siguiente en el tercero se regresa al primero
