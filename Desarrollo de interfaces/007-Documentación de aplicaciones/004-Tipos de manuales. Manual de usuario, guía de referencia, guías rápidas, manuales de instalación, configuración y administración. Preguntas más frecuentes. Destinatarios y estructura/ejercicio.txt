@@ -1,1 +1,1 @@
-Documenta los archivos "calculadora.js" y "script.js" del ejemplo de calculadora bottom-up del tema anterior
+Genera la documentación para el usuario de la aplicación de "calculadora" del tema anterior.
