@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Ayuda de usuario - Calculadora de precios</title>
+</head>
+<body>
+    <main>
+        <header id="inicio">
+            <h1>Ayuda de usuario</h1>
+
+            <p>
+                Esta página explica cómo usar la calculadora de precios.
+                Está pensada para el usuario final de la aplicación, no para el desarrollador.
+            </p>
+
+            <p>
+                Desde aquí puedes consultar qué datos debes introducir, qué significa cada
+                resultado y qué errores pueden aparecer.
+            </p>
+        </header>
+
+        <nav>
+            <h2>Índice de ayuda</h2>
+
+            <ul>
+                <li><a href="#descripcion">Descripción de la aplicación</a></li>
+                <li><a href="#uso">Cómo usar la calculadora</a></li>
+                <li><a href="#datos">Datos que debe introducir el usuario</a></li>
+                <li><a href="#resultados">Resultados que muestra la aplicación</a></li>
+                <li><a href="#errores">Errores frecuentes</a></li>
+                <li><a href="#documentacion">Documentación técnica</a></li>
+            </ul>
+        </nav>
+
+        <section id="descripcion">
+            <h2>Descripción de la aplicación</h2>
+
+            <p>
+                La calculadora de precios permite obtener el precio final de una compra
+                a partir de cuatro datos:
+            </p>
+
+            <ul>
+                <li>precio unitario del producto;</li>
+                <li>cantidad de unidades compradas;</li>
+                <li>porcentaje de IVA;</li>
+                <li>porcentaje de descuento.</li>
+            </ul>
+
+            <p>
+                La aplicación calcula automáticamente el subtotal, el descuento aplicado,
+                el IVA y el total final.
+            </p>
+
+            <p>
+                <a href="#inicio">Volver al índice</a>
+            </p>
+        </section>
+
+        <section id="uso">
+            <h2>Cómo usar la calculadora</h2>
+
+            <ol>
+                <li>Introduce el precio unitario del producto.</li>
+                <li>Introduce la cantidad de unidades.</li>
+                <li>Introduce el porcentaje de IVA.</li>
+                <li>Introduce el porcentaje de descuento.</li>
+                <li>Pulsa el botón <strong>Calcular</strong>.</li>
+                <li>Consulta los resultados que aparecen debajo del formulario.</li>
+            </ol>
+
+            <p>
+                Si algún dato no es válido, la aplicación mostrará un mensaje de error
+                y no realizará el cálculo.
+            </p>
+
+            <p>
+                <a href="#inicio">Volver al índice</a>
+            </p>
+        </section>
+
+        <section id="datos">
+            <h2>Datos que debe introducir el usuario</h2>
+
+            <h3>Precio unitario</h3>
+            <p>
+                Es el precio de una sola unidad del producto. Debe ser un número mayor
+                o igual que cero.
+            </p>
+
+            <h3>Cantidad</h3>
+            <p>
+                Es el número de unidades compradas. Debe ser un número mayor que cero.
+            </p>
+
+            <h3>IVA</h3>
+            <p>
+                Es el porcentaje de impuesto que se aplica sobre la base con descuento.
+                Por ejemplo, un IVA del 21% debe introducirse como <strong>21</strong>.
+            </p>
+
+            <h3>Descuento</h3>
+            <p>
+                Es el porcentaje que se descuenta sobre el subtotal. Por ejemplo, un
+                descuento del 10% debe introducirse como <strong>10</strong>.
+            </p>
+
+            <p>
+                <a href="#inicio">Volver al índice</a>
+            </p>
+        </section>
+
+        <section id="resultados">
+            <h2>Resultados que muestra la aplicación</h2>
+
+            <p>
+                Después de pulsar el botón <strong>Calcular</strong>, la aplicación muestra
+                varios resultados.
+            </p>
+
+            <ul>
+                <li>
+                    <strong>Subtotal:</strong>
+                    precio unitario multiplicado por la cantidad.
+                </li>
+                <li>
+                    <strong>Descuento:</strong>
+                    importe que se resta al subtotal.
+                </li>
+                <li>
+                    <strong>IVA:</strong>
+                    impuesto calculado sobre la base con descuento.
+                </li>
+                <li>
+                    <strong>Total final:</strong>
+                    cantidad definitiva que debe pagar el usuario.
+                </li>
+            </ul>
+
+            <h3>Ejemplo de cálculo</h3>
+
+            <p>
+                Si el precio unitario es 100 €, la cantidad es 2, el IVA es 21%
+                y el descuento es 10%, el cálculo sería:
+            </p>
+
+            <ul>
+                <li>Subtotal: 100 × 2 = 200 €</li>
+                <li>Descuento: 10% de 200 = 20 €</li>
+                <li>Base con descuento: 200 - 20 = 180 €</li>
+                <li>IVA: 21% de 180 = 37,80 €</li>
+                <li>Total final: 180 + 37,80 = 217,80 €</li>
+            </ul>
+
+            <p>
+                <a href="#inicio">Volver al índice</a>
+            </p>
+        </section>
+
+        <section id="errores">
+            <h2>Errores frecuentes</h2>
+
+            <h3>La aplicación muestra un mensaje de error</h3>
+
+            <p>
+                Esto ocurre cuando alguno de los datos introducidos no es válido.
+            </p>
+
+            <p>
+                Algunos casos que producen error son:
+            </p>
+
+            <ul>
+                <li>dejar un campo vacío;</li>
+                <li>introducir una cantidad igual a cero;</li>
+                <li>introducir valores negativos;</li>
+                <li>introducir datos que no sean numéricos.</li>
+            </ul>
+
+            <h3>La cantidad no puede ser cero</h3>
+
+            <p>
+                La cantidad representa el número de unidades compradas. Por eso debe ser
+                mayor que cero. No tendría sentido calcular una compra de cero productos.
+            </p>
+
+            <h3>El IVA se calcula después del descuento</h3>
+
+            <p>
+                En esta aplicación primero se aplica el descuento y después se calcula
+                el IVA sobre la base resultante.
+            </p>
+
+            <p>
+                <a href="#inicio">Volver al índice</a>
+            </p>
+        </section>
+
+        <section id="documentacion">
+            <h2>Documentación técnica</h2>
+
+            <p>
+                Esta ayuda está pensada para usuarios finales. Para consultar la
+                documentación técnica del código JavaScript, se puede acceder a la
+                documentación generada automáticamente con JSDoc.
+            </p>
+
+            <p>
+                <a href="docs/api/calculadora-precios-jsdoc/1.0.0/index.html">Ver documentación técnica generada con JSDoc</a>
+            </p>
+
+            <p>
+                Esta documentación técnica incluye información sobre funciones como:
+            </p>
+
+            <ul>
+                <li><code>calcularSubtotal()</code></li>
+                <li><code>calcularIVA()</code></li>
+                <li><code>calcularDescuento()</code></li>
+                <li><code>calcularTotal()</code></li>
+                <li><code>validarDatos()</code></li>
+                <li><code>gestionarFormulario()</code></li>
+            </ul>
+
+            <p>
+                <a href="#inicio">Volver al índice</a>
+            </p>
+        </section>
+
+        <footer>
+            <hr>
+
+            <p>
+                <a href="calculadoraPrecios.html">Volver a la calculadora</a>
+            </p>
+        </footer>
+    </main>
+</body>
+</html>

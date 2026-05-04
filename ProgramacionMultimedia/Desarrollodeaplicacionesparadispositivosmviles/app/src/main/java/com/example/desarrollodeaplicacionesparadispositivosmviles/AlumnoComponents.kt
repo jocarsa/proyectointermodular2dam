@@ -69,7 +69,8 @@ fun AlumnoItem(
     audioActivado: Boolean,
     reproductorAudioLargo: ReproductorAudioLargo,
     onBorrarAlumno: (Alumno) -> Unit,
-    onEditarAlumno: (Alumno) -> Unit
+    onEditarAlumno: (Alumno) -> Unit,
+    onVerVideoAlumno: (Alumno) -> Unit
 ) {
     var expandido by remember { mutableStateOf(false) }
 
@@ -264,6 +265,17 @@ fun AlumnoItem(
                     ) {
                         Text("Detener")
                     }
+                }
+
+                Spacer(modifier = Modifier.height(10.dp))
+
+                Button(
+                    onClick = {
+                        onVerVideoAlumno(alumno)
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("Ver vídeo de presentación")
                 }
 
                 Spacer(modifier = Modifier.height(10.dp))

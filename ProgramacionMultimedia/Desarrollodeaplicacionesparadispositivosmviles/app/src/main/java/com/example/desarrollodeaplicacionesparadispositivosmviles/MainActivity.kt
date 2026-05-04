@@ -45,7 +45,7 @@ private object ClavesDataStore {
 // ESCENAS Y FILTROS
 // --------------------------------------------------
 enum class Escena {
-    ALUMNOS, CONFIGURACION, EDICION
+    ALUMNOS, CONFIGURACION, EDICION, VIDEO
 }
 
 enum class Filtro {
@@ -111,14 +111,13 @@ fun AppPantallas() {
     // Guardamos aquí el alumno que vamos a editar
     var alumnoEnEdicion by remember { mutableStateOf<Alumno?>(null) }
 
-    // Estados nuevos para el apartado 11
+    // Guardamos aquí el alumno cuyo vídeo vamos a ver
+    var alumnoEnVideo by remember { mutableStateOf<Alumno?>(null) }
+
+    // Estados del apartado de hilos
     var cargandoInicial by remember { mutableStateOf(true) }
     var recargandoAlumnos by remember { mutableStateOf(false) }
 
-    // Una función suspend está pensada para poderse suspender en caso de ser necesario
-    // Obligatoriamente tiene que ser llamada mediante una corrutina
-    // La usamos para conectarnos a la base de datos sin bloquear el hilo principal
-    // También nos sirve para forzar la suspensión mediante delay()
     suspend fun cargarListaDesdeSQLite(simularRetardo: Long, esCargaInicial: Boolean) {
         if (esCargaInicial) {
             cargandoInicial = true
@@ -126,7 +125,6 @@ fun AppPantallas() {
             recargandoAlumnos = true
         }
 
-        // Simulamos una carga lenta para que se aprecie el estado visual
         delay(simularRetardo)
 
         val listaFinal = crud.consultarTodos()
@@ -212,7 +210,6 @@ fun AppPantallas() {
                     recargandoAlumnos = recargandoAlumnos,
                     onRecargarAlumnos = {
                         if (!recargandoAlumnos) {
-                            // Lanzamos la corrutina que va a manejar nuestra función suspend
                             coroutineScope.launch {
                                 cargarListaDesdeSQLite(
                                     simularRetardo = 2000L,
@@ -248,6 +245,10 @@ fun AppPantallas() {
                     onIrAEditarAlumno = { alumnoAEditar ->
                         alumnoEnEdicion = alumnoAEditar
                         escenaActual = Escena.EDICION
+                    },
+                    onIrAVideoAlumno = { alumnoVideo ->
+                        alumnoEnVideo = alumnoVideo
+                        escenaActual = Escena.VIDEO
                     },
                     irAConfiguracion = {
                         escenaActual = Escena.CONFIGURACION
@@ -298,6 +299,22 @@ fun AppPantallas() {
                     },
                     volverAAlumnos = {
                         alumnoEnEdicion = null
+                        escenaActual = Escena.ALUMNOS
+                    }
+                )
+            } else {
+                escenaActual = Escena.ALUMNOS
+            }
+        }
+
+        Escena.VIDEO -> {
+            val alumnoVideo = alumnoEnVideo
+
+            if (alumnoVideo != null) {
+                PantallaVideoAlumno(
+                    alumno = alumnoVideo,
+                    volverAAlumnos = {
+                        alumnoEnVideo = null
                         escenaActual = Escena.ALUMNOS
                     }
                 )
