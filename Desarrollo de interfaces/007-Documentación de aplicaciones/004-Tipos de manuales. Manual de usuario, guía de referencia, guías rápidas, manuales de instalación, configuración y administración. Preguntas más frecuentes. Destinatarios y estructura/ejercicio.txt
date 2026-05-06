@@ -1,1 +1,0 @@
-Genera la documentación para el usuario de la aplicación de "calculadora" del tema anterior.

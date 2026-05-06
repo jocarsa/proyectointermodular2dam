@@ -12,7 +12,7 @@ import android.media.SoundPool
 // Devuelve el audio largo de demostración.
 // Usa un único archivo para todos los alumnos.
 fun audioPresentacionDemo(): Int {
-    return R.raw.audio_largo
+    return R.raw.audio_presentacion
 }
 
 // Estados sencillos para explicar el ciclo de vida del audio largo.

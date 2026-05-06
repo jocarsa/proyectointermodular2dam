@@ -92,7 +92,7 @@ fun AlumnoItem(
     var cargandoServidor by remember(alumno.id) { mutableStateOf(false) }
     var errorServidor by remember(alumno.id) { mutableStateOf("") }
 
-    // Estados del audio largo
+    // Estados nuevos del audio largo
     var mediaPlayer by remember(alumno.id) { mutableStateOf<MediaPlayer?>(null) }
     var estadoAudio by remember(alumno.id) { mutableStateOf(EstadoAudio.PREPARADO) }
     var posicionAudioMs by remember(alumno.id) { mutableIntStateOf(0) }
@@ -149,27 +149,6 @@ fun AlumnoItem(
         posicionAudioMs = 0
         duracionAudioMs = 0
         estadoAudio = EstadoAudio.DETENIDO
-    }
-
-    fun retrasarAudio5Segundos() {
-        prepararAudioSiHaceFalta()
-
-        val reproductor = mediaPlayer ?: return
-        val nuevaPosicion = (reproductor.currentPosition - 5000).coerceAtLeast(0)
-
-        reproductor.seekTo(nuevaPosicion)
-        posicionAudioMs = nuevaPosicion
-    }
-
-    fun adelantarAudio5Segundos() {
-        prepararAudioSiHaceFalta()
-
-        val reproductor = mediaPlayer ?: return
-        val duracion = if (duracionAudioMs > 0) duracionAudioMs else reproductor.duration
-        val nuevaPosicion = (reproductor.currentPosition + 5000).coerceAtMost(duracion)
-
-        reproductor.seekTo(nuevaPosicion)
-        posicionAudioMs = nuevaPosicion
     }
 
     LaunchedEffect(estadoAudio, mediaPlayer) {
@@ -374,29 +353,6 @@ fun AlumnoItem(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text("Detener")
-                }
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    Button(
-                        onClick = { retrasarAudio5Segundos() },
-                        enabled = audioActivado && mediaPlayer != null,
-                        modifier = Modifier.weight(1f)
-                    ) {
-                        Text("-5 s")
-                    }
-
-                    Button(
-                        onClick = { adelantarAudio5Segundos() },
-                        enabled = audioActivado && mediaPlayer != null,
-                        modifier = Modifier.weight(1f)
-                    ) {
-                        Text("+5 s")
-                    }
                 }
 
                 Spacer(modifier = Modifier.height(10.dp))

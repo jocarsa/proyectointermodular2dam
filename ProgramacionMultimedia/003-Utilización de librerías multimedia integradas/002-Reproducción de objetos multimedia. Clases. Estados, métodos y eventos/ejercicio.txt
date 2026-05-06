@@ -1,0 +1,13 @@
+Audio:
+	- Añade un nuevo texto "Porcentaje de audio"
+		- Este mostrará el porcentaje exacto de audio reproducido
+	- Añade un texto "Presentación escuchada"
+		- Este mostrará que la presentación ha sido escuchada la primera vez que se pase del 80% del tiempo de reproducción del audio
+		- La presentación quedará marcada como completada aunque se reinicie
+
+Video:
+	- Añade un nuevo texto "Porcentaje de audio"
+		- Este mostrará el porcentaje exacto de video reproducido
+	- Añade una nueva sección con anuncios debajo de todos los botones
+		- El primer anuncio se mostrará pasados 3 segundos de reproducción del video
+		- El segundo anuncio se mostrará pasado el 50% del tiempo total de reproducción
