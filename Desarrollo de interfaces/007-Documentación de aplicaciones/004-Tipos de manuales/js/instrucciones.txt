@@ -1,0 +1,135 @@
+// npm.cmd install para instalar
+// npm.cmd run generar-docs para ejecutar
+// /api/index.html para comprobar el resultado
+
+/*
+    ETIQUETAS PRINCIPALES DE JSDOC
+
+    JSDoc permite añadir etiquetas dentro de comentarios que empiezan por:
+
+        /** ... */
+
+    Estas etiquetas ayudan a generar documentación automática del código.
+
+    Algunas de las más habituales son:
+
+    @file
+        Describe el archivo completo.
+        Se suele colocar al principio del documento.
+        Ejemplo:
+        @file app.js
+
+    @author
+        Indica el autor del archivo o del código documentado.
+        Ejemplo:
+        @author Departamento de Desarrollo de Interfaces
+
+    @description
+        Añade una descripción más detallada.
+        Muchas veces no hace falta escribirla porque la descripción puede ir directamente
+        en el texto principal del comentario.
+
+    @param
+        Documenta un parámetro de una función.
+        Se indica el tipo de dato entre llaves, el nombre del parámetro y una descripción.
+        Ejemplo:
+        @param {number} precio Precio unitario introducido por el usuario.
+
+    @returns
+        Documenta el valor que devuelve una función.
+        También se puede escribir como @return.
+        Ejemplo:
+        @returns {number} Total final calculado.
+
+    @example
+        Permite añadir un ejemplo de uso de la función.
+        Ejemplo:
+        @example
+        calcularSubtotal(10, 3);
+        // Devuelve 30
+
+    @throws
+        Indica que una función puede lanzar un error.
+        Ejemplo:
+        @throws {Error} Si el precio es negativo.
+
+    @typedef
+        Permite definir un tipo de dato propio, normalmente para objetos.
+        Ejemplo:
+        @typedef {Object} Producto
+
+    @property
+        Se usa junto con @typedef para describir las propiedades de un objeto.
+        Ejemplo:
+        @property {number} id Identificador del producto.
+        @property {string} nombre Nombre del producto.
+        @property {number} precio Precio del producto.
+
+    @type
+        Documenta el tipo de una variable o constante.
+        Ejemplo:
+        @type {number}
+
+    @constant
+        Indica que un valor es constante.
+        También puede usarse @const.
+        Ejemplo:
+        @constant {number}
+
+    @module
+        Documenta un archivo como módulo.
+        Es útil en proyectos más avanzados con import/export.
+        Ejemplo:
+        @module calculadoraPrecios
+
+    @requires
+        Indica que un archivo o módulo necesita otro.
+        Ejemplo:
+        @requires precios.js
+
+    @see
+        Añade una referencia a otra función, archivo o recurso relacionado.
+        Ejemplo:
+        @see calcularTotal
+
+    @deprecated
+        Indica que una función está obsoleta y no debería seguir usándose.
+        Ejemplo:
+        @deprecated Usar calcularTotalFinal en su lugar.
+
+    @todo
+        Marca una tarea pendiente.
+        Ejemplo:
+        @todo Añadir validación para descuentos superiores al 100%.
+
+    @version
+        Indica la versión del archivo, módulo o función.
+        Ejemplo:
+        @version 1.0.0
+
+    @since
+        Indica desde qué versión existe una función o característica.
+        Ejemplo:
+        @since 1.0.0
+
+    @private
+        Indica que una función o variable es de uso interno.
+
+    @public
+        Indica que una función forma parte de la parte pública o reutilizable del código.
+
+    TIPOS HABITUALES EN JSDOC
+
+    {number}             Número.
+    {string}             Cadena de texto.
+    {boolean}            true o false.
+    {Array}              Array genérico.
+    {Array<number>}      Array de números.
+    {Array<string>}      Array de textos.
+    {Object}             Objeto genérico.
+    {HTMLElement}        Elemento HTML.
+    {HTMLInputElement}   Campo input de HTML.
+    {SubmitEvent}        Evento de envío de formulario.
+    {void}               La función no devuelve nada.
+    {null}               Valor nulo.
+*/
