@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Documentación de usuario</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Tema visual de Docsify -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsify@4/lib/themes/vue.css">
+</head>
+<body>
+    <div id="app">Cargando documentación...</div>
+
+    <script>
+        window.$docsify = {
+            name: "Calculadora de precios",
+            repo: "",
+            homepage: "README.md",
+            loadSidebar: false,
+            search: {
+                placeholder: "Buscar en la documentación",
+                noData: "No se encontraron resultados",
+                depth: 3
+            }
+        };
+    </script>
+
+    <!-- Docsify -->
+    <script src="https://cdn.jsdelivr.net/npm/docsify@4/lib/docsify.min.js"></script>
+
+    <!-- Plugin de búsqueda -->
+    <script src="https://cdn.jsdelivr.net/npm/docsify@4/lib/plugins/search.min.js"></script>
+</body>
+</html>

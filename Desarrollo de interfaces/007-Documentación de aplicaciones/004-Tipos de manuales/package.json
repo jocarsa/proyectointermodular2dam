@@ -1,12 +1,14 @@
 {
   "name": "calculadora-precios-jsdoc",
   "version": "1.0.0",
-  "description": "Ejemplo didáctico de documentación de código JavaScript con JSDoc.",
+  "description": "Ejemplo didáctico de documentación de código JavaScript con JSDoc y Docsify.",
   "private": true,
   "scripts": {
-    "generar-docs": "jsdoc -c jsdoc.json -P package.json"
+    "generar-docs": "jsdoc js/app.js js/precios.js -d docs/api -P package.json",
+    "ver-docs-usuario": "docsify serve docs/usuario"
   },
   "devDependencies": {
+    "docsify-cli": "^4.4.4",
     "jsdoc": "^4.0.0"
   }
 }
