@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Mini encuesta</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f6f8;
+      margin: 0;
+      padding: 30px;
+      color: #222;
+    }
+
+    .contenedor {
+      max-width: 800px;
+      margin: 0 auto;
+      background-color: white;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+      margin-top: 0;
+      color: #2c3e50;
+    }
+
+    .pregunta {
+      font-size: 1.2rem;
+      font-weight: bold;
+      margin-bottom: 20px;
+    }
+
+    .opcion {
+      display: block;
+      padding: 10px;
+      margin-bottom: 8px;
+      background-color: #eef2f5;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .opcion:hover {
+      background-color: #dde6ee;
+    }
+
+    button {
+      margin-top: 15px;
+      margin-right: 10px;
+      padding: 10px 16px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      background-color: #3498db;
+      color: white;
+      font-weight: bold;
+    }
+
+    button:hover {
+      background-color: #2980b9;
+    }
+
+    #btnReiniciar {
+      background-color: #e67e22;
+    }
+
+    #btnReiniciar:hover {
+      background-color: #ca6f1e;
+    }
+
+    .mensaje {
+      margin-top: 15px;
+      font-weight: bold;
+      min-height: 24px;
+    }
+
+    .mensaje.error {
+      color: #c0392b;
+    }
+
+    .mensaje.exito {
+      color: #27ae60;
+    }
+
+    .resultados {
+      margin-top: 30px;
+    }
+
+    .resultado {
+      margin-bottom: 15px;
+    }
+
+    .barra-contenedor {
+      background-color: #ecf0f1;
+      height: 22px;
+      border-radius: 10px;
+      overflow: hidden;
+      margin-top: 5px;
+    }
+
+    .barra {
+      height: 100%;
+      width: 0%;
+      background-color: #2ecc71;
+      transition: width 0.3s ease;
+    }
+
+    .total {
+      margin-top: 20px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <main class="contenedor">
+    <h1>Mini encuesta</h1>
+
+    <section>
+      <p id="pregunta" class="pregunta"></p>
+
+      <form id="formEncuesta">
+        <div id="contenedorOpciones"></div>
+
+        <button type="submit" id="btnVotar">Votar</button>
+        <button type="button" id="btnReiniciar">Reiniciar encuesta</button>
+      </form>
+
+      <p id="mensaje" class="mensaje"></p>
+    </section>
+
+    <section class="resultados">
+      <h2>Resultados</h2>
+      <div id="contenedorResultados"></div>
+      <p id="totalVotos" class="total"></p>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>

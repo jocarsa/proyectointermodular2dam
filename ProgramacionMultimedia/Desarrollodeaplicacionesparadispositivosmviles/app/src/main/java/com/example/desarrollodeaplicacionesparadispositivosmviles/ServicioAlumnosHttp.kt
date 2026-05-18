@@ -12,7 +12,7 @@ import java.net.URLEncoder
 
 // Cambia esta URL si metes el php en una carpeta dentro de htdocs
 // 10.0.2.2 es una ip especial porque usar localhost apuntaría al propio emulador
-private const val URL_SERVIDOR_ALUMNOS = "http://10.0.2.2/ServidorAndroid/alumnos.php"
+private const val URL_SERVIDOR_ALUMNOS = "http://192.168.1.25/ServidorAndroid/alumnos.php"
 
 // --------------------------------------------------
 // PETICIÓN GET
