@@ -242,24 +242,24 @@ function actualizarInterfaz() {
 // =====================================================
 
 const formulario = document.getElementById("formEncuesta");
-  const botonReiniciar = document.getElementById("btnReiniciar");
+const botonReiniciar = document.getElementById("btnReiniciar");
 
-  formulario.addEventListener("submit", function(evento) {
+formulario.addEventListener("submit", function(evento) {
     evento.preventDefault();
 
     const idOpcion = obtenerOpcionSeleccionada();
     const resultado = registrarVoto(estadoEncuesta, idOpcion);
 
     if (resultado.correcto) {
-      mostrarMensaje(resultado.mensaje, "exito");
-      limpiarSeleccion();
-      pintarResultados();
+        mostrarMensaje(resultado.mensaje, "exito");
+        limpiarSeleccion();
+        pintarResultados();
     } else {
-      mostrarMensaje(resultado.mensaje, "error");
+        mostrarMensaje(resultado.mensaje, "error");
     }
-  });
+    });
 
-  botonReiniciar.addEventListener("click", function() {
+    botonReiniciar.addEventListener("click", function() {
     reiniciarEncuesta();
     actualizarInterfaz();
     mostrarMensaje("La encuesta se ha reiniciado.", "exito");
